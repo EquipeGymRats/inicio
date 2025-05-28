@@ -26,16 +26,16 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    overflow-x: hidden;
+    overflow-x: hidden; /* Prevenir scroll horizontal indesejado */
 }
 
 .main-header-simplified {
     background-color: var(--secondary-color);
     color: var(--primary-color);
-    padding: 12px 20px; /* Reduzido um pouco */
+    padding: 12px 20px;
     text-align: center;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    position: sticky; /* Mantém no topo ao rolar */
+    position: sticky;
     top: 0;
     z-index: 100;
 }
@@ -44,20 +44,19 @@ body {
 .app-container {
     flex-grow: 1;
     display: flex;
-    position: relative; /* Necessário para .phase-section absolute */
+    position: relative;
     width: 100%;
 }
 
 .phase-section {
     width: 100%;
-    /* height: 100%; */ /* Removido para permitir rolagem se necessário */
-    min-height: calc(100vh - 50px); /* Altura do header (aprox) */
+    min-height: calc(100vh - 50px); /* Ajustar conforme altura do header */
     display: none;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Alinha ao topo para melhor fluxo */
-    padding: 20px 15px; /* Padding lateral */
-    position: absolute; /* Para transição entre fases */
+    justify-content: flex-start;
+    padding: 15px; /* Padding geral para a seção */
+    position: absolute;
     top: 0;
     left: 0;
     opacity: 0;
@@ -68,7 +67,7 @@ body {
     display: flex;
     opacity: 1;
     visibility: visible;
-    position: relative; /* Torna relativo quando ativo para ocupar espaço */
+    position: relative;
 }
 
 .explanation-box {
@@ -110,12 +109,12 @@ body {
 .camera-view-container {
     position: relative;
     width: 100%;
-    max-width: 380px; /* Levemente menor para caber melhor */
+    max-width: 360px; /* Reduzido para melhor encaixe geral */
     aspect-ratio: 3 / 4;
     background-color: #000;
     border-radius: 10px;
     overflow: hidden;
-    margin: 0 auto 10px auto; /* Centralizado, espaço abaixo */
+    margin: 0 auto 10px auto;
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
@@ -125,14 +124,13 @@ body {
 #userVideoFeed.mirrored { transform: scaleX(-1); }
 #guideLinesCanvas { z-index: 5; }
 
-/* Feedback de Repetição Correta (Check Verde) */
 .correct-rep-feedback {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.5);
-    width: 90px; /* Menor */
-    height: 90px;
+    width: 80px;
+    height: 80px;
     background-color: var(--rep-feedback-bg);
     border-radius: 50%;
     display: flex;
@@ -141,7 +139,7 @@ body {
     z-index: 20;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s ease-out, transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), visibility 0.2s; /* Animação mais rápida */
+    transition: opacity 0.2s ease-out, transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), visibility 0.2s;
 }
 .correct-rep-feedback.visible {
     opacity: 1;
@@ -149,14 +147,10 @@ body {
     transform: translate(-50%, -50%) scale(1);
 }
 .correct-rep-feedback i {
-    font-size: 3em; /* Menor */
+    font-size: 2.8em;
     color: var(--success-rep-color);
 }
 
-.loading-indicator-camera, .rest-timer-display {
-    /* Estilos anteriores mantidos, verificar se precisam de ajuste com novo layout */
-    z-index: 15; /* Abaixo do check de repetição */
-}
 .loading-indicator-camera {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     color: var(--primary-color); background-color: rgba(0,0,0,0.7);
@@ -166,39 +160,38 @@ body {
 
 .rest-timer-display {
     position: absolute;
-    top: 15px;
+    top: 10px; /* Mais para cima */
     left: 50%;
     transform: translateX(-50%);
     background-color: var(--blue-accent);
     color: var(--text-color-light);
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 1.2em;
+    padding: 6px 12px; /* Menor */
+    border-radius: 15px;
+    font-size: 1em; /* Menor */
     font-weight: bold;
     display: none;
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    z-index: 15;
 }
 .rest-timer-display.visible { display: block; }
 
-
-/* Área para Feedback de Forma/Correção */
 .form-feedback-container {
     width: 100%;
-    max-width: 380px; /* Consistente com camera-view-container */
-    margin: 0 auto 15px auto;
-    min-height: 45px;
-    padding: 10px 12px;
+    max-width: 360px; /* Consistente com camera-view-container */
+    margin: 0 auto 12px auto; /* Espaço abaixo */
+    min-height: 40px; /* Altura mínima */
+    padding: 8px 10px;
     background-color: var(--surface-dark);
     border-radius: 8px;
-    border: 1px solid rgba(var(--primary-color-rgb), 0.25); /* Borda mais sutil */
-    display: none; /* JS controla visibilidade com classe .visible */
+    border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+    display: none;
     align-items: center;
     justify-content: center;
     text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     transition: opacity 0.3s ease-in-out, transform 0.2s ease-in-out;
     opacity: 0;
-    transform: translateY(10px); /* Efeito de entrada sutil */
+    transform: translateY(10px);
 }
 .form-feedback-container.visible {
     display: flex;
@@ -206,34 +199,37 @@ body {
     transform: translateY(0);
 }
 .feedback-message {
-    font-size: 0.9em;
+    font-size: 0.85em; /* Menor para caber mais texto de status */
     line-height: 1.4;
     width: 100%;
 }
 .feedback-message.error { color: var(--error-color); font-weight: bold; }
 .feedback-message.tip { color: var(--tip-color); }
 .feedback-message.success { color: var(--success-rep-color); font-weight: bold; }
-
+.feedback-message.action-state {
+    color: var(--text-color-light);
+    font-style: italic;
+    /* font-size: 0.8em; /* Já pequeno, mas pode ajustar */
+}
 
 .controls-and-feedback {
     width: 100%;
-    max-width: 380px;
-    margin: 0 auto; /* Agora só controla os botões e status */
-    padding: 15px 10px;
+    max-width: 360px;
+    margin: 0 auto;
+    padding: 12px 10px; /* Reduzido um pouco */
     background-color: var(--surface-dark);
     border-radius: 10px;
     text-align: center;
     display: flex;
     flex-direction: column;
-    /* margin-top: auto; */ /* Removido para fluxo mais natural */
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .workout-status {
     display: flex;
     justify-content: space-around;
-    font-size: 1.1em;
-    margin-bottom: 12px;
+    font-size: 1.05em; /* Um pouco menor */
+    margin-bottom: 10px;
     color: var(--text-color-light);
 }
 .workout-status p { margin: 0 5px; }
@@ -242,9 +238,9 @@ body {
 .set-complete-message, .workout-complete-message {
     color: var(--green-accent);
     font-weight: bold;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     display: none;
-    font-size: 1.1em;
+    font-size: 1.05em;
 }
 .set-complete-message.visible, .workout-complete-message.visible { display: block; }
 
@@ -252,21 +248,24 @@ body {
     display: flex;
     justify-content: space-around;
     align-items: center;
+    width: 100%;
+    gap: 8px; /* Espaçamento entre botões */
 }
 
 .control-button {
-    background-color: rgba(255,255,255,0.1); /* Mais sutil */
+    background-color: rgba(255,255,255,0.1);
     color: var(--text-color-light);
-    border: 1px solid rgba(var(--primary-color-rgb), 0.4);
-    width: 45px; /* Levemente maior */
-    height: 45px;
+    border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    font-size: 1.1em;
+    font-size: 1em;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background-color 0.2s, border-color 0.2s;
+    flex-shrink: 0;
 }
 .control-button:hover {
     background-color: rgba(var(--primary-color-rgb), 0.2);
@@ -274,66 +273,90 @@ body {
 }
 
 .action-button.main-action {
-    width: 65px; /* Levemente menor */
-    height: 65px;
-    font-size: 1.7em;
+    width: 58px; /* Ajustado */
+    height: 58px;
+    font-size: 1.7em; /* Ícone maior */
+    background-color: var(--primary-color); /* Mantém cor primária */
+    color: var(--secondary-color); /* Cor do ícone */
+    border-radius: 50%;
     padding: 0;
     margin-top: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    border: none; /* Remove borda padrão de action-button */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.action-button.main-action:hover {
+    background-color: #ffe033; /* Amarelo mais claro no hover */
+}
+.action-button.main-action:active {
+    transform: scale(0.95);
 }
 
-/* Responsividade */
-@media (max-width: 380px) { /* Breakpoint ajustado */
+
+@media (max-width: 360px) {
     .main-header-simplified h1 { font-size: 1.2em; }
-    .explanation-box { padding: 15px 20px; }
-    .explanation-box h2 { font-size: 1.15em; }
+    .explanation-box { padding: 15px; }
+    .explanation-box h2 { font-size: 1.1em; }
     .explanation-box p { font-size: 0.85em; }
 
-    .camera-view-container { max-width: 95%; height: 280px; }
-    .form-feedback-container { max-width: 95%; padding: 8px 10px; min-height: 40px;}
-    .feedback-message { font-size: 0.85em; }
+    .camera-view-container { max-width: calc(100% - 20px); height: 250px; } /* 100% da largura do pai menos padding */
+    .form-feedback-container { max-width: calc(100% - 20px); min-height: 38px;}
+    .feedback-message { font-size: 0.8em; }
+    .feedback-message.action-state { font-size: 0.75em; }
 
-    .controls-and-feedback { padding: 10px; max-width: 95%;}
-    .workout-status { font-size: 1em; margin-bottom: 10px; }
-    .action-button { font-size: 0.95em; padding: 10px; }
-    .control-button { width: 40px; height: 40px; font-size: 1em;}
-    .action-button.main-action { width: 60px; height: 60px; font-size: 1.6em;}
+    .controls-and-feedback { padding: 10px 8px; max-width: calc(100% - 20px);}
+    .workout-status { font-size: 0.95em; }
 
-    .correct-rep-feedback { width: 75px; height: 75px; }
-    .correct-rep-feedback i { font-size: 2.5em; }
-    .rest-timer-display { font-size: 1em; padding: 6px 12px; }
+    .action-buttons-monitoring { gap: 5px; }
+    .control-button { width: 38px; height: 38px; font-size: 0.9em; }
+    .action-button.main-action { width: 52px; height: 52px; font-size: 1.5em; }
+
+    .correct-rep-feedback { width: 70px; height: 70px; }
+    .correct-rep-feedback i { font-size: 2.4em; }
+    .rest-timer-display { font-size: 0.95em; padding: 5px 10px; }
 }
 
-/* Ajustes para telas muito pequenas ou paisagem, se necessário */
-@media (max-height: 600px) and (max-width: 800px) and (orientation: landscape) {
+@media (max-width: 320px) {
+    .control-button { width: 35px; height: 35px; font-size: 0.85em;}
+    .action-button.main-action { width: 48px; height: 48px; font-size: 1.4em;}
+    .feedback-message { font-size: 0.75em; }
+     .workout-status { font-size: 0.9em; }
+}
+
+
+@media (max-height: 650px) and (max-width: 850px) and (orientation: landscape) {
+    .app-container {overflow-y: auto;} /* Permite scroll se necessário */
     #cameraMonitoringSection {
         flex-direction: row;
-        align-items: flex-start; /* Alinha os containers no topo */
-        justify-content: center; /* Centraliza o conjunto */
-        gap: 15px; /* Espaço entre os blocos */
+        align-items: flex-start;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px;
     }
     .camera-view-container {
-        max-width: 45%; /* Ocupa menos da largura */
-        height: calc(100vh - 70px); /* Altura baseada na viewport menos header */
-        max-height: 300px; /* Limita a altura máxima */
-        margin-bottom: 0;
+        max-width: 48%;
+        height: calc(100vh - 80px); /* Ajustar para caber header e um pouco de margem */
+        max-height: 280px;
+        margin: 0;
     }
     .form-feedback-container {
-        max-width: 45%;
-        margin: 0; /* Remove margens automáticas */
-        align-self: flex-start; /* Alinha com o topo do video */
+        max-width: 48%;
+        margin: 0;
+        align-self: center; /* Tenta centralizar com a altura dos controles */
+        min-height: 60px; /* Mais espaço para texto de status */
     }
     .controls-and-feedback {
-        max-width: 45%;
-        margin:0; /* Remove margens automáticas */
-        align-self: flex-start; /* Alinha com o topo do video */
-        padding-top: 5px; /* Menos padding no topo */
+        max-width: 48%;
+        margin: 0;
+        padding-top: 5px;
+        justify-content: center; /* Centraliza conteúdo verticalmente */
     }
     .explanation-box {
         margin-top: 10px;
-        max-height: calc(100vh - 80px);
+        max-height: calc(100vh - 70px);
         overflow-y: auto;
     }
 }
