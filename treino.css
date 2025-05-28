@@ -1,0 +1,434 @@
+/* Importa as variáveis de cor do style.css se não estiverem aqui */
+/* Certifique-se de que o style.css seja linkado primeiro no HTML */
+/*
+:root {
+    --color-black: #0A0A0A;
+    --color-white: #FFFFFF;
+    --color-yellow: #FFD700;
+    --color-light-gray: #F0F0F0;
+    --color-dark-gray: #333333;
+}
+*/
+
+body {
+    background-color: var(--color-black); /* Fundo da página */
+    color: var(--color-white);
+}
+
+.main-header .back-home-btn {
+    font-size: 1.5em;
+    color: var(--color-yellow);
+    margin-right: 15px;
+    transition: color 0.3s ease;
+}
+
+.main-header .back-home-btn:hover {
+    color: var(--color-white);
+}
+
+.main-header .header-content {
+    justify-content: flex-start; /* Alinha logo e botão para a esquerda */
+}
+
+.treino-generator-section {
+    padding: 40px 20px;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    min-height: calc(100vh - 100px); /* Altura mínima para o conteúdo */
+}
+
+.generator-form-section, .training-output-section {
+    background-color: var(--color-dark-gray); /* Fundo escuro para seções */
+    padding: 30px 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    margin-bottom: 30px;
+}
+
+h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8em;
+    color: var(--color-yellow);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+p {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1em;
+}
+
+/* Formulário */
+.form-group {
+    margin-bottom: 25px;
+    text-align: left; /* Alinha labels à esquerda */
+}
+
+.form-group label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--color-white);
+    font-size: 1.1em;
+}
+
+.form-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid var(--color-dark-gray);
+    background-color: var(--color-black);
+    color: var(--color-white);
+    font-size: 1em;
+    appearance: none; /* Remove seta padrão do select */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFD700" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--color-yellow);
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+}
+
+.radio-group {
+    display: flex;
+    flex-wrap: wrap; /* Quebra em múltiplas linhas em telas menores */
+    gap: 10px;
+    justify-content: center; /* Centraliza os botões de rádio */
+}
+
+.radio-group input[type="radio"] {
+    display: none; /* Esconde o radio button padrão */
+}
+
+.radio-group label {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid var(--color-dark-gray);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    display: flex; /* Para alinhar ícone e texto */
+    align-items: center;
+    font-weight: 400;
+    font-size: 0.95em;
+    min-width: 140px; /* Garante tamanho mínimo */
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.radio-group label i {
+    margin-right: 8px;
+    color: var(--color-yellow);
+    font-size: 1.1em;
+}
+
+.radio-group input[type="radio"]:checked + label {
+    background-color: var(--color-yellow);
+    border-color: var(--color-yellow);
+    color: var(--color-black); /* Texto preto quando selecionado */
+    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+}
+
+.radio-group input[type="radio"]:hover + label {
+    background-color: var(--color-dark-gray); /* Um cinza mais escuro no hover */
+    border-color: var(--color-yellow);
+}
+
+.radio-group input[type="radio"]:checked + label i {
+    color: var(--color-black); /* Ícone preto quando selecionado */
+}
+
+
+.btn {
+    display: block; /* Ocupa a largura total */
+    width: 100%;
+    padding: 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--color-yellow);
+    color: var(--color-black);
+    border: 2px solid var(--color-yellow);
+    margin-top: 30px;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-white);
+    color: var(--color-black);
+    border-color: var(--color-white);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Seção de Saída do Treino */
+.training-output-section {
+    background-color: var(--color-black); /* Fundo preto para o treino gerado */
+    color: var(--color-white);
+    padding: 30px 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.training-output-section h2 {
+    color: var(--color-yellow);
+    margin-bottom: 15px;
+}
+
+.summary-info {
+    text-align: center;
+    font-size: 1.1em;
+    margin-bottom: 25px;
+    color: var(--color-light-gray);
+}
+
+.summary-info span {
+    font-weight: 700;
+    color: var(--color-yellow);
+}
+
+#training-plan {
+    margin-top: 20px;
+}
+
+.training-day {
+    background-color: var(--color-dark-gray); /* Fundo para cada dia de treino */
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.training-day h4 {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--color-yellow);
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--color-black);
+    padding-bottom: 10px;
+}
+
+/* Estilo para a lista ordenada de exercícios */
+.exercise-list {
+    list-style: none; /* Remove bullet points padrão */
+    padding: 0;
+    margin: 0;
+}
+
+.exercise-list li {
+    background-color: var(--color-black);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    counter-increment: exercise-counter; /* Incrementa o contador para numeração */
+}
+
+.exercise-list li::before {
+    content: counter(exercise-counter) "."; /* Exibe o número do exercício */
+    color: var(--color-yellow);
+    font-weight: bold;
+    font-size: 1.2em;
+    position: absolute;
+    left: 10px;
+    top: 15px;
+}
+
+.exercise-content {
+    margin-left: 30px; /* Espaço para o número */
+    width: calc(100% - 40px); /* Ajusta a largura */
+}
+
+.exercise-content h5 {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--color-yellow);
+    font-size: 1.1em;
+    margin-bottom: 5px;
+    display: inline-block; /* Para alinhar com o sets/reps se em linha */
+}
+
+.exercise-content .sets-reps {
+    font-weight: bold;
+    color: var(--color-white);
+    font-size: 1em;
+    margin-left: 10px;
+    display: inline-block; /* Para alinhar com o nome do exercício */
+}
+
+.exercise-content .tips {
+    margin: 5px 0 0 0;
+    font-size: 0.95em;
+    color: var(--color-light-gray);
+    text-align: left;
+}
+
+.replace-exercise-btn {
+    background: none;
+    border: none;
+    color: var(--color-light-gray);
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+    position: absolute; /* Para posicionar na lista */
+    top: 15px;
+    right: 10px;
+}
+
+.replace-exercise-btn:hover {
+    color: var(--color-yellow);
+    transform: rotate(15deg);
+}
+
+.output-actions {
+    display: flex;
+    flex-direction: column; /* Coluna no mobile */
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-secondary {
+    background-color: var(--color-white);
+    color: var(--color-black);
+    border: 2px solid var(--color-white);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-yellow);
+    color: var(--color-black);
+    border-color: var(--color-yellow);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+}
+
+.btn-tertiary {
+    background-color: var(--color-black);
+    color: var(--color-yellow);
+    border: 2px solid var(--color-yellow);
+}
+
+.btn-tertiary:hover {
+    background-color: var(--color-yellow);
+    color: var(--color-black);
+    border-color: var(--color-black);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Utilitários */
+.hidden {
+    display: none;
+}
+
+/* Notificação Toast */
+.notification-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-yellow);
+    color: var(--color-black);
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+.notification-toast.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* Responsividade */
+@media (min-width: 600px) {
+    .treino-generator-section {
+        padding: 60px 30px;
+    }
+    .generator-form-section, .training-output-section {
+        padding: 40px;
+    }
+    h2 {
+        font-size: 2.2em;
+    }
+    .radio-group label {
+        min-width: unset; /* Remove min-width para se ajustar melhor */
+        flex-grow: 1; /* Permite que os itens cresçam */
+    }
+    .btn {
+        max-width: 300px; /* Limita a largura do botão principal */
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .output-actions {
+        flex-direction: row; /* Volta para linha em telas maiores */
+        justify-content: center;
+    }
+    .output-actions .btn {
+        width: auto; /* Deixa o botão voltar ao tamanho normal */
+        max-width: 200px;
+    }
+}
+
+@media (min-width: 992px) {
+    .treino-generator-section {
+        padding: 80px 50px;
+    }
+    h2 {
+        font-size: 2.5em;
+    }
+    .radio-group {
+        justify-content: center; /* Centraliza opções em desktop também */
+    }
+    .radio-group label {
+        padding: 15px 25px;
+        font-size: 1em;
+    }
+    /* Adaptação para a lista de exercícios em desktop */
+    .exercise-list li {
+        flex-direction: row; /* Volta para linha em telas maiores */
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 50px; /* Mais espaço para o número */
+    }
+    .exercise-content {
+        margin-left: 0; /* Remove margem extra */
+        width: auto;
+        flex-grow: 1; /* Permite que o conteúdo ocupe espaço */
+        text-align: left;
+    }
+    .exercise-content h5, .exercise-content .sets-reps {
+        display: inline; /* Alinha o nome do exercício e sets/reps na mesma linha */
+    }
+    .exercise-content .sets-reps {
+        margin-left: 15px; /* Mais espaço entre nome e sets/reps */
+    }
+    .exercise-content .tips {
+        margin-top: 5px;
+        font-size: 0.9em;
+    }
+    .replace-exercise-btn {
+        position: relative; /* Volta ao fluxo normal para alinhar com flex */
+        margin-left: 20px;
+        top: auto;
+        right: auto;
+    }
+}

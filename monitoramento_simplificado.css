@@ -1,0 +1,194 @@
+/* monitoramento_simplificado.css */
+:root {
+    --primary-color: #FFD700; /* Amarelo GymRats */
+    --secondary-color: #0A0A0A; /* Preto GymRats */
+    --text-color-light: #FFFFFF;
+    --text-color-dark: #333333;
+    --background-dark: #121212;
+    --surface-dark: #1e1e1e;
+    --green-accent: #2ECC71;
+    --blue-accent: #3498DB; /* Azul para o timer de descanso */
+    --line-guide-color: rgba(255, 215, 0, 0.9); /* Amarelo mais opaco para guias */
+    --line-dumbbell-color: rgba(189, 195, 199, 0.9); /* Cinza para halteres */
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--background-dark);
+    color: var(--text-color-light);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.main-header-simplified {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    padding: 15px 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.main-header-simplified h1 { font-size: 1.5em; margin: 0; }
+
+.app-container {
+    flex-grow: 1;
+    display: flex;
+    position: relative;
+    width: 100%;
+}
+
+.phase-section {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease-in-out, visibility 0.4s linear;
+}
+.phase-section.active { display: flex; opacity: 1; visibility: visible; position: relative; }
+
+.explanation-box {
+    background-color: var(--surface-dark);
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 100%;
+    text-align: left;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.explanation-box h2 { color: var(--primary-color); text-align: center; margin-bottom: 20px; font-size: 1.4em; }
+.explanation-box p { margin-bottom: 15px; line-height: 1.6; font-size: 0.95em; }
+
+.action-button {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 25px;
+    transition: background-color 0.3s, transform 0.1s;
+}
+.action-button:hover { background-color: #ffe033; }
+.action-button:active { transform: scale(0.98); }
+
+#cameraMonitoringSection { justify-content: space-between; }
+
+.camera-view-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 3 / 4;
+    background-color: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0 auto 15px auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+#userVideoFeed, #guideLinesCanvas {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+}
+#userVideoFeed.mirrored { transform: scaleX(-1); }
+#guideLinesCanvas { z-index: 5; }
+
+.loading-indicator-camera {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    color: var(--primary-color); background-color: rgba(0,0,0,0.7);
+    padding: 10px 15px; border-radius: 5px; z-index: 10; font-size: 0.9em;
+}
+.loading-indicator-camera i { margin-right: 8px; }
+
+/* NOVO: Timer de Descanso */
+.rest-timer-display {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--blue-accent);
+    color: var(--text-color-light);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    z-index: 15; /* Acima do canvas e do vídeo */
+    display: none; /* Escondido inicialmente */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+.rest-timer-display.visible { display: block; }
+
+.controls-and-feedback {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 15px; /* Aumentar um pouco o padding */
+    background-color: var(--surface-dark);
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* NOVO: Status do Treino (Série e Reps) */
+.workout-status {
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: var(--text-color-light);
+}
+.workout-status p { margin: 0 5px; }
+.workout-status span { color: var(--primary-color); font-weight: bold; }
+
+
+.set-complete-message, .workout-complete-message {
+    color: var(--green-accent);
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: none;
+    font-size: 1.1em;
+}
+.set-complete-message.visible, .workout-complete-message.visible { display: block; }
+
+.action-buttons-monitoring { display: flex; justify-content: space-around; align-items: center; }
+
+.control-button {
+    background-color: rgba(255,255,255,0.15); color: var(--text-color-light);
+    border: 1px solid var(--primary-color); width: 48px; height: 48px;
+    border-radius: 50%; font-size: 1.2em; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background-color 0.2s;
+}
+.control-button:hover { background-color: rgba(255,255,255,0.3); }
+
+.action-button.main-action {
+    width: 70px; height: 70px; font-size: 1.8em; padding: 0; margin-top: 0;
+}
+.action-button.main-action i { line-height: 70px; } /* Aproximação para centralizar ícone */
+
+
+@media (max-width: 360px) {
+    .explanation-box h2 { font-size: 1.2em; }
+    .explanation-box p { font-size: 0.85em; }
+    .action-button { font-size: 1em; padding: 10px 15px;}
+    .main-header-simplified h1 { font-size: 1.3em; }
+    .workout-status { font-size: 1em; }
+    .rest-timer-display { font-size: 1em; padding: 6px 12px; }
+    .set-complete-message, .workout-complete-message { font-size: 1em; }
+    .control-button { width: 44px; height: 44px; font-size: 1.1em;}
+    .action-button.main-action { width: 60px; height: 60px; font-size: 1.6em;}
+    .action-button.main-action i { line-height: 60px; }
+}
