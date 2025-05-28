@@ -19,7 +19,7 @@
                 <h2>Como Fazer Elevação Lateral</h2>
                 <p>1. Segure um halter em cada mão, ao lado do corpo, com as palmas voltadas para dentro.</p>
                 <p>2. Mantenha os pés afastados na largura dos ombros, joelhos levemente flexionados e abdômen contraído.</p>
-                <p>3. Levante os braços para os lados, mantendo os cotovelos levemente dobrados, até que os halteres atinjam a altura dos ombros. Seus braços devem ficar paralelos ao chão.</p>
+                <p>3. Levante os braços para os lados, mantendo os cotovelos levemente dobrados, até que os halteres atinjam a altura dos ombros (indicada pela linha guia na tela). Seus braços devem ficar paralelos ao chão.</p>
                 <p>4. Controle o movimento na subida e na descida. Não use impulso.</p>
                 <button id="startCameraButton" class="action-button">Entendi, Iniciar Exercício!</button>
             </div>
@@ -29,12 +29,19 @@
             <div class="camera-view-container">
                 <video id="userVideoFeed" playsinline autoplay muted></video>
                 <canvas id="guideLinesCanvas"></canvas>
+                <div id="correctRepFeedback" class="correct-rep-feedback">
+                    <i class="fas fa-check"></i>
+                </div>
                 <div id="cameraLoadingIndicator" class="loading-indicator-camera">
                     <i class="fas fa-spinner fa-spin"></i> Carregando Câmera...
                 </div>
                 <div id="restTimerDisplay" class="rest-timer-display">
                     Descanso: <span id="restTimeValue">01:00</span>
                 </div>
+            </div>
+
+            <div id="formFeedbackContainer" class="form-feedback-container">
+                <p id="formFeedbackMessage" class="feedback-message"></p>
             </div>
 
             <div class="controls-and-feedback">
@@ -60,11 +67,6 @@
                         <i class="fas fa-info-circle"></i>
                     </button>
                 </div>
-
-                <div id="formFeedbackContainer" class="form-feedback-container">
-                    <p id="formFeedbackMessage" class="feedback-message"></p>
-                </div>
-
             </div>
         </section>
     </main>

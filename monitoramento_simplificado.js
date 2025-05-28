@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const restTimerDisplayEl = document.getElementById('restTimerDisplay');
     const restTimeValueEl = document.getElementById('restTimeValue');
 
-    // NOVO: Referências para feedback de forma
     const formFeedbackContainerEl = document.getElementById('formFeedbackContainer');
     const formFeedbackMessageEl = document.getElementById('formFeedbackMessage');
+    const correctRepFeedbackEl = document.getElementById('correctRepFeedback');
 
 
     let currentStream;
@@ -35,28 +35,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalSets = 4;
     let validReps = 0;
     const repsPerSet = 10;
-    const restDurationSeconds = 60; // 1 minuto
+    const restDurationSeconds = 60;
     let currentRestTimeLeft = 0;
 
     let guideArmAngle = 0;
-    const maxArmAngle = Math.PI / 2.1;
+    const maxArmAngle = Math.PI / 2.1; // Ângulo máximo para elevação (pouco abaixo de 90 graus)
     const animationSpeed = 0.025;
     let guideAnimationPhase = 'lifting';
     let holdTimer = 0;
-    const peakHoldDuration = 25;
-    const restHoldDuration = 15;
+    const peakHoldDuration = 25; // Frames no pico
+    const restHoldDuration = 15; // Frames no descanso entre reps da guia
 
     let torsoTopY, torsoBottomY, torsoX, shoulderOffsetY, armLength;
 
-    // --- Novas Configurações para Feedback ---
     let lastFeedbackTime = 0;
-    const feedbackThrottleMillis = 2500; // Não dar feedback mais rápido que X ms
+    const feedbackThrottleMillis = 2200; // Evita spam de feedback
+    let isCheckingRepCompletion = false; // Flag para controle da checagem de rep
 
 
     function switchToPhase(phaseName) {
         textExplanationSection.classList.remove('active');
         cameraMonitoringSection.classList.remove('active');
-        hideFormFeedback(); // Esconde feedback ao trocar de fase
+        hideFormFeedback();
+        correctRepFeedbackEl.classList.remove('visible');
 
         if (phaseName === 'explanation') {
             textExplanationSection.classList.add('active');
@@ -69,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             resetWorkoutState();
             updateWorkoutDisplay();
             initiateExerciseButton.innerHTML = '<i class="fas fa-play"></i> Iniciar Série';
-            speakSimpleFeedback("Instruções para elevação lateral. Leia com atenção e clique em 'Entendi' para iniciar.");
+            speakSimpleFeedback("Instruções para elevação lateral. Observe a linha guia na tela para a altura correta do movimento.");
 
         } else if (phaseName === 'monitoring') {
             cameraMonitoringSection.classList.add('active');
@@ -80,16 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     canvasElement.width = videoElement.videoWidth;
                     canvasElement.height = videoElement.videoHeight;
                     setGuideLineProportions();
-                    drawStaticGuide();
+                    drawStaticGuide(); // Redesenha a guia estática com a linha de altura
                 } else {
                     setupCamera();
                 }
             }
             if(!isResting) {
-                resetCurrentSetProgress(); // Garante que repetições sejam zeradas se voltarmos
+                resetCurrentSetProgress();
                 updateWorkoutDisplay();
-                // Pode ser muito verboso falar isso toda vez que volta para a tela
-                // showFormFeedback("Posicione-se em frente à câmera. A guia mostrará o movimento.", "tip");
             }
         }
     }
@@ -118,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     canvasElement.width = videoElement.videoWidth;
                     canvasElement.height = videoElement.videoHeight;
                     setGuideLineProportions(); 
-                    drawStaticGuide();            
+                    drawStaticGuide(); // Garante que a linha de altura apareça
                     cameraLoadingIndicator.style.display = 'none';
                 } else { cameraLoadingIndicator.textContent = 'Erro: Câmera s/ dimensões.'; }
             };
@@ -134,9 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     toggleUserCameraBtn.addEventListener('click', () => {
         if (isExerciseInProgress || isResting) {
-            // Pausa o exercício ou para o descanso antes de trocar a câmera
-            if (isExerciseInProgress) initiateExerciseButton.click(); // Simula clique para pausar
-            if (isResting) skipRest(); // Pula o descanso
+            if (isExerciseInProgress) initiateExerciseButton.click();
+            if (isResting) skipRest();
         }
         useFrontCamera = !useFrontCamera;
         if (cameraMonitoringSection.classList.contains('active')) setupCamera();
@@ -154,13 +152,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (currentSet > totalSets) {
+        if (currentSet > totalSets) { // Refazer treino
             resetWorkoutState();
-            updateWorkoutDisplay();
-            isExerciseInProgress = true; // Inicia diretamente
+            // updateWorkoutDisplay(); // Chamado dentro de resetWorkoutState
+            isExerciseInProgress = true;
             initiateExerciseButton.innerHTML = '<i class="fas fa-pause"></i> Pausar';
             speakSimpleFeedback(`Reiniciando treino. Série ${currentSet}. ${repsPerSet} repetições.`);
-            showFormFeedback("Mantenha o movimento suave e controlado.", "tip");
+            showFormFeedback("Concentre-se na forma correta!", "tip");
             startGuideAnimation();
             return;
         }
@@ -172,12 +170,12 @@ document.addEventListener('DOMContentLoaded', () => {
             setCompleteMessageEl.classList.remove('visible');
             workoutCompleteMessageEl.classList.remove('visible');
             speakSimpleFeedback(`Iniciando série ${currentSet}. ${repsPerSet} repetições.`);
-            showFormFeedback("Mantenha o movimento suave e controlado.", "tip");
+            showFormFeedback("Concentre-se na forma correta e observe a linha de altura!", "tip");
             startGuideAnimation();
         } else { // Pausou
             initiateExerciseButton.innerHTML = '<i class="fas fa-play"></i> Continuar';
             speakSimpleFeedback("Exercício pausado.");
-            hideFormFeedback(); // Limpa feedback ao pausar
+            hideFormFeedback();
             stopGuideAnimation();
         }
     });
@@ -186,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentSet = 1;
         resetCurrentSetProgress(); 
         workoutCompleteMessageEl.classList.remove('visible');
-        // hideFormFeedback(); // Já chamado em resetCurrentSetProgress
     }
 
     function resetCurrentSetProgress(){
@@ -195,13 +192,15 @@ document.addEventListener('DOMContentLoaded', () => {
         guideArmAngle = 0;
         guideAnimationPhase = 'lifting';
         holdTimer = 0;
+        isCheckingRepCompletion = false; // Reseta flag
         stopGuideAnimationAndRest(); 
         
         if (canvasElement.width > 0 && canvasElement.height > 0) {
             setGuideLineProportions();
-            drawStaticGuide();
+            drawStaticGuide(); // Redesenha guia estática com linha de altura
         }
-        hideFormFeedback(); // Limpa feedback de forma no reset da série
+        hideFormFeedback();
+        correctRepFeedbackEl.classList.remove('visible');
         updateWorkoutDisplay();
     }
     
@@ -211,12 +210,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (useFrontCamera && videoElement.classList.contains('mirrored')) {
             canvasCtx.translate(canvasElement.width, 0); canvasCtx.scale(-1, 1);
         }
-        drawGuideFigure(0, true);
+        drawGuideFigure(0, true); // true para isStatic, vai desenhar a linha de altura
         canvasCtx.restore();
     }
 
     function startGuideAnimation() {
          if (!guideLinesAnimationId && isExerciseInProgress) {
+            guideAnimationPhase = 'lifting'; // Garante que comece levantando
             guideLinesAnimationId = requestAnimationFrame(animateGuideLines);
         }
     }
@@ -236,60 +236,111 @@ document.addEventListener('DOMContentLoaded', () => {
         restTimerDisplayEl.classList.remove('visible');
     }
 
-    // --- Funções de Feedback de Forma ---
-    function showFormFeedback(message, type = 'info') { // type pode ser 'info', 'tip', 'error', 'success'
+    function showFormFeedback(message, type = 'info') {
         if (!formFeedbackMessageEl || !formFeedbackContainerEl) return;
         formFeedbackMessageEl.textContent = message;
-        formFeedbackMessageEl.className = 'feedback-message'; // Reseta classes
+        formFeedbackMessageEl.className = 'feedback-message';
         if (type) {
             formFeedbackMessageEl.classList.add(type);
         }
-        formFeedbackContainerEl.classList.add('visible'); // Usa classe para animar se quiser
+        formFeedbackContainerEl.classList.add('visible');
     }
 
     function hideFormFeedback() {
         if (!formFeedbackMessageEl || !formFeedbackContainerEl) return;
-        formFeedbackMessageEl.textContent = '';
         formFeedbackContainerEl.classList.remove('visible');
+        // Adiciona um pequeno delay para o texto sumir depois da animação de "saída" do container
+        setTimeout(() => {
+            if (!formFeedbackContainerEl.classList.contains('visible')) { // Checa se ainda está escondido
+                 formFeedbackMessageEl.textContent = '';
+            }
+        }, 300);
     }
 
-    // --- PONTO CRÍTICO: Detecção de Pose e Comparação (SIMULADO) ---
-    function analyzeUserPoseAndGiveFeedback() {
-        // ESTA FUNÇÃO É UM PLACEHOLDER.
-        // AQUI VOCÊ INTEGRARIA UMA BIBLIOTECA DE DETECÇÃO DE POSE (Ex: MediaPipe Pose, TensorFlow.js PoseNet/MoveNet)
-        // 1. Obter os keypoints da pose do usuário a partir do videoElement.
-        // 2. Comparar os ângulos relevantes (ombros, cotovelos) com a `guideArmAngle`.
-        // 3. Determinar se o movimento está correto, muito rápido, incompleto, etc.
+    function showCorrectRepAnimation() {
+        correctRepFeedbackEl.classList.add('visible');
+        speakSimpleFeedback("Boa!"); // Feedback sonoro curto e positivo
+        setTimeout(() => {
+            correctRepFeedbackEl.classList.remove('visible');
+        }, 700);
+    }
 
+    function handleRepCompletion(isCorrect) {
+        isCheckingRepCompletion = false; // Libera flag
+
+        if (isExerciseInProgress && validReps < repsPerSet) {
+            if (isCorrect) {
+                validReps++;
+                updateWorkoutDisplay();
+                showCorrectRepAnimation();
+                setTimeout(() => { // Limpa feedback de erro/dica se a rep foi boa
+                    if (!correctRepFeedbackEl.classList.contains('visible')) { // Só limpa se o check já sumiu
+                        if (formFeedbackMessageEl.classList.contains('error') || formFeedbackMessageEl.classList.contains('tip')) {
+                           hideFormFeedback();
+                        }
+                    }
+                }, 750);
+            } else {
+                 // Feedback de erro já deve ter sido dado por analyzeUserPoseAndGiveFeedback
+                 // Mas podemos reforçar ou garantir que uma mensagem de "tente novamente" apareça.
+                 speakSimpleFeedback("Ajuste o movimento.");
+                 showFormFeedback("Repetição não contada. Corrija a forma e siga a guia.", "error");
+            }
+        }
+
+        // Verifica se a série foi completada APÓS processar a repetição
+        if (validReps >= repsPerSet && isExerciseInProgress) {
+            handleSetCompletion(); // handleSetCompletion vai parar o isExerciseInProgress
+        } else if (isExerciseInProgress) { // Se a série não acabou e o exercício ainda está ativo
+            guideAnimationPhase = 'lifting'; // Prepara para a próxima animação da guia
+        }
+    }
+
+    function analyzeUserPoseAndGiveFeedback() {
+        // *** SIMULAÇÃO DA DETECÇÃO DE POSE ***
         const currentTime = Date.now();
-        if (currentTime - lastFeedbackTime < feedbackThrottleMillis) {
-            return; // Não sobrecarregar o usuário com feedback
+        // Só dá feedback contínuo se não estiver no meio de uma checagem de fim de repetição
+        // E respeita o throttle
+        if (isCheckingRepCompletion || (currentTime - lastFeedbackTime < feedbackThrottleMillis) ) {
+            return true; // Assume correto para não interromper se estiver em throttle ou checando rep
         }
 
         if (isExerciseInProgress && validReps < repsPerSet) {
-            // Simulação de erros comuns:
-            if (Math.random() < 0.08) { // 8% de chance de um erro simulado por frame (ajustar)
-                const errors = [
-                    { msg: "Eleve mais os braços, até a altura dos ombros.", tip: "Mantenha os cotovelos levemente flexionados." },
-                    { msg: "Controle a descida, não deixe os braços caírem.", tip: "Sinta o músculo trabalhando na volta." },
-                    { msg: "Evite usar impulso com o corpo.", tip: "Concentre a força nos ombros." },
-                    { msg: "Pescoço relaxado, olhe para frente.", tip: "A postura é fundamental."}
-                ];
-                const randomError = errors[Math.floor(Math.random() * errors.length)];
-                showFormFeedback(randomError.msg, "error");
-                speakSimpleFeedback(randomError.msg);
-                lastFeedbackTime = currentTime;
-            } else if (Math.random() < 0.05) { // 5% chance de uma dica geral
-                 showFormFeedback("Mantenha o abdômen contraído!", "tip");
-                 // speakSimpleFeedback("Lembre-se do abdômen!"); // Pode ser muito verboso
-                 lastFeedbackTime = currentTime;
+            let simulatedMovementCorrectDuringRep = true;
+            let feedbackMsg = "";
+
+            // Simular detecção de erro com base na fase da guia:
+            if (guideAnimationPhase === 'lifting' && guideArmAngle < maxArmAngle * 0.7) { // Subindo, mas muito baixo
+                if (Math.random() < 0.03) { // Chance baixa de erro simulado
+                    feedbackMsg = "Suba mais os braços, siga a linha alvo!";
+                    simulatedMovementCorrectDuringRep = false;
+                }
+            } else if (guideAnimationPhase === 'peak_hold') { // No pico
+                 if (Math.random() < 0.02) {
+                    feedbackMsg = "Segure um pouco no topo!";
+                    simulatedMovementCorrectDuringRep = false; // Na verdade uma dica, mas para simular
+                }
+            } else if (guideAnimationPhase === 'lowering' && guideArmAngle > maxArmAngle * 0.3) { // Descendo, mas muito alto
+                if (Math.random() < 0.03) {
+                    feedbackMsg = "Controle a descida, mais devagar.";
+                    simulatedMovementCorrectDuringRep = false;
+                }
             }
-            // Se não houver erro "detectado", poderia limpar o feedback ou mostrar "Bom movimento!"
-            // else if (formFeedbackContainerEl.classList.contains('visible') && !formFeedbackMessageEl.classList.contains('success')) {
-            //     // Limpa apenas se não for uma mensagem de sucesso de série anterior
-            //      hideFormFeedback();
-            // }
+
+            if (!simulatedMovementCorrectDuringRep && feedbackMsg) {
+                showFormFeedback(feedbackMsg, "error");
+                speakSimpleFeedback(feedbackMsg);
+                lastFeedbackTime = currentTime;
+                return false; // Para `handleRepCompletion` se chamada neste ciclo
+            } else if (!formFeedbackMessageEl.classList.contains('success')) { // Não limpa msg de sucesso da série
+                // Limpa feedback de erro/dica se o movimento parece ok agora
+                if(formFeedbackContainerEl.classList.contains('visible') && (formFeedbackMessageEl.classList.contains('error') ||formFeedbackMessageEl.classList.contains('tip'))) {
+                    hideFormFeedback();
+                }
+            }
+            return true; // Assume correto para feedback contínuo se nenhum erro simulado ocorreu
         }
+        return true; // Default para outros estados
     }
 
     function animateGuideLines() {
@@ -314,33 +365,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 guideArmAngle -= animationSpeed;
                 if (guideArmAngle <= 0) {
                     guideArmAngle = 0; guideAnimationPhase = 'rest_hold'; holdTimer = 0;
-                    if (isExerciseInProgress && validReps < repsPerSet) {
-                        validReps++;
-                        updateWorkoutDisplay();
-                        // Poderia ter um feedback sonoro sutil por repetição válida aqui, se desejado.
-                        // speakSimpleFeedback(`${validReps}`); // Ex: Contar repetições em voz alta
+                    if (isExerciseInProgress && !isCheckingRepCompletion && validReps < repsPerSet) { // Checa se reps não foram completadas
+                        isCheckingRepCompletion = true;
+                        // Para simulação, vamos assumir que a análise contínua já deu o feedback
+                        // e a decisão de "correto" para contagem é mais um placeholder aqui
+                        const movementConsideredCorrectForCounting = Math.random() > 0.15; // 85% de chance de contar (simulação)
+                        handleRepCompletion(movementConsideredCorrectForCounting);
+                    } else if (validReps >= repsPerSet && isExerciseInProgress) {
+                        // Se as repetições foram completadas mas handleSetCompletion não foi chamado ainda
+                        handleSetCompletion();
                     }
                 }
                 break;
             case 'rest_hold':
                 holdTimer++;
-                if (holdTimer >= restHoldDuration) {
-                    if (validReps >= repsPerSet) {
-                        handleSetCompletion();
-                        canvasCtx.restore();
-                        return;
-                    }
+                if (holdTimer >= restHoldDuration && validReps < repsPerSet && isExerciseInProgress && !isCheckingRepCompletion) {
                     guideAnimationPhase = 'lifting';
                 }
                 break;
         }
+
         drawGuideFigure(guideArmAngle, false);
         canvasCtx.restore();
 
-        // *** CHAMADA PARA ANÁLISE DE POSE (SIMULADA) ***
-        analyzeUserPoseAndGiveFeedback();
+        // Feedback contínuo (não apenas no final da rep)
+        if (isExerciseInProgress && validReps < repsPerSet && !isCheckingRepCompletion) {
+            analyzeUserPoseAndGiveFeedback();
+        }
 
-        if (isExerciseInProgress) guideLinesAnimationId = requestAnimationFrame(animateGuideLines);
+        if (isExerciseInProgress) { // Só continua se o exercício não foi parado por handleSetCompletion
+            guideLinesAnimationId = requestAnimationFrame(animateGuideLines);
+        }
     }
 
     function drawGuideFigure(currentAngle, isStatic) {
@@ -348,9 +403,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const shoulderY = torsoTopY + shoulderOffsetY;
         const headRadius = canvasElement.height * 0.04;
 
+        // Desenho do boneco guia (cabeça, tronco, braços, halteres)
         canvasCtx.strokeStyle = 'var(--line-guide-color)';
         canvasCtx.fillStyle = 'var(--line-guide-color)';
-        canvasCtx.lineWidth = Math.max(5, canvasElement.width / 60);
+        canvasCtx.lineWidth = Math.max(5, canvasElement.width / 70); // Linhas um pouco mais finas
         canvasCtx.lineCap = 'round';
 
         canvasCtx.beginPath(); canvasCtx.moveTo(torsoX, torsoTopY); canvasCtx.lineTo(torsoX, torsoBottomY); canvasCtx.stroke();
@@ -365,36 +421,59 @@ document.addEventListener('DOMContentLoaded', () => {
         canvasCtx.beginPath(); canvasCtx.moveTo(torsoX, shoulderY); canvasCtx.lineTo(rightArmEndX, rightArmEndY); canvasCtx.stroke();
 
         canvasCtx.fillStyle = 'var(--line-dumbbell-color)';
-        const dW = Math.max(8, canvasElement.width / 30);
-        const dH = Math.max(12, canvasElement.width / 22);
+        const dW = Math.max(7, canvasElement.width / 35); 
+        const dH = Math.max(10, canvasElement.width / 25);
+        canvasCtx.save(); canvasCtx.translate(leftArmEndX, leftArmEndY); canvasCtx.rotate(-currentAngle); canvasCtx.fillRect(-dW / 2, -dH / 2, dW, dH); canvasCtx.restore();
+        canvasCtx.save(); canvasCtx.translate(rightArmEndX, rightArmEndY); canvasCtx.rotate(currentAngle); canvasCtx.fillRect(-dW / 2, -dH / 2, dW, dH); canvasCtx.restore();
 
-        canvasCtx.save();
-        canvasCtx.translate(leftArmEndX, leftArmEndY);
-        canvasCtx.rotate(-currentAngle);
-        canvasCtx.fillRect(-dW / 2, -dH / 2, dW, dH);
-        canvasCtx.restore();
+        // Linha Guia para Altura Máxima do Braço
+        if (isStatic || isExerciseInProgress) {
+            const targetShoulderHeightY = shoulderY; // Altura do ombro
+            // Calcula a posição Y do halter no ângulo máximo (maxArmAngle)
+            // Como o ângulo é em relação à vertical para baixo no cosseno, e para o lado no seno,
+            // para a elevação lateral, o braço sobe. O ângulo de 0 é braço para baixo.
+            // maxArmAngle é o ângulo com a vertical. Queremos a altura quando o braço está a ~90 graus com o tronco.
+            // No canvas, Y aumenta para baixo.
+            // Se currentAngle = 0 (braço para baixo), Y do halter = shoulderY + armLength
+            // Se currentAngle = PI/2 (braço reto para o lado), Y do halter = shoulderY
+            
+            // A altura alvo é quando o braço está horizontal, ou seja, Y do halter = Y do ombro.
+            // No entanto, maxArmAngle é definido como Math.PI / 2.1, o que significa que o braço
+            // da *guia* não fica perfeitamente horizontal (90 graus = PI/2).
+            // A linha deve representar a altura do halter da *guia* no seu ponto mais alto.
+            const halterHighestY = shoulderY + Math.cos(maxArmAngle) * armLength;
 
-        canvasCtx.save();
-        canvasCtx.translate(rightArmEndX, rightArmEndY);
-        canvasCtx.rotate(currentAngle);
-        canvasCtx.fillRect(-dW / 2, -dH / 2, dW, dH);
-        canvasCtx.restore();
+
+            canvasCtx.strokeStyle = 'var(--line-target-height-color)';
+            canvasCtx.lineWidth = 2;
+            canvasCtx.setLineDash([4, 4]);
+
+            const lineStartX = torsoX - armLength * 1.1; // Extende um pouco além do boneco
+            const lineEndX = torsoX + armLength * 1.1;
+            
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(lineStartX, halterHighestY);
+            canvasCtx.lineTo(lineEndX, halterHighestY);
+            canvasCtx.stroke();
+            
+            canvasCtx.setLineDash([]); // Reseta o tracejado
+        }
     }
     
     function handleSetCompletion(){
-        isExerciseInProgress = false;
+        isExerciseInProgress = false; // Essencial para parar o loop de animação
         stopGuideAnimation();
         setCompleteMessageEl.classList.add('visible');
-        
+        correctRepFeedbackEl.classList.remove('visible');
+
         const successMessages = [
-            `Série ${currentSet} completa! Ótimo trabalho!`,
-            `Excelente! Série ${currentSet} finalizada com boa forma!`,
+            `Série ${currentSet} completa! Bom trabalho!`,
+            `Excelente! Série ${currentSet} finalizada!`,
             `Muito bem! Série ${currentSet} concluída.`
         ];
         const randomSuccessMsg = successMessages[Math.floor(Math.random() * successMessages.length)];
-        showFormFeedback(randomSuccessMsg, "success"); // Mostra no container de feedback
+        showFormFeedback(randomSuccessMsg, "success");
         speakSimpleFeedback(randomSuccessMsg);
-
 
         if (currentSet < totalSets) {
             isResting = true;
@@ -402,8 +481,8 @@ document.addEventListener('DOMContentLoaded', () => {
             initiateExerciseButton.innerHTML = `<i class="fas fa-forward"></i> Pular Descanso (${formatTime(restDurationSeconds)})`;
         } else {
             workoutCompleteMessageEl.classList.add('visible');
-            const finalMsg = "Treino finalizado! Você mandou muito bem! Descanse e hidrate-se.";
-            // showFormFeedback(finalMsg, "success"); // O anterior já é bom, este pode ser redundante
+            const finalMsg = "Treino finalizado! Você mandou bem! Descanse e hidrate-se.";
+            // showFormFeedback(finalMsg, "success"); // Mensagem anterior já é boa
             speakSimpleFeedback(finalMsg);
             initiateExerciseButton.innerHTML = '<i class="fas fa-redo"></i> Refazer Treino';
             currentSet++;
@@ -418,12 +497,10 @@ document.addEventListener('DOMContentLoaded', () => {
         speakSimpleFeedback(`Descanso de ${restDurationSeconds} segundos.`);
         showFormFeedback(`Tempo de descanso. Próxima série: ${currentSet + 1}.`, "tip");
 
-
         restTimerIntervalId = setInterval(() => {
             currentRestTimeLeft--;
             updateRestTimerDisplay();
             initiateExerciseButton.innerHTML = `<i class="fas fa-forward"></i> Pular (${formatTime(currentRestTimeLeft)})`;
-
             if (currentRestTimeLeft <= 0) {
                 skipRest();
             }
@@ -434,12 +511,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if(restTimerIntervalId) clearInterval(restTimerIntervalId);
         restTimerIntervalId = null;
         
-        if (isResting) { // Só fala e muda feedback se estava realmente descansando
-            speakSimpleFeedback("Descanso pulado.");
+        if (isResting) {
+            speakSimpleFeedback("Descanso interrompido.");
         }
         isResting = false;
         restTimerDisplayEl.classList.remove('visible');
-        setCompleteMessageEl.classList.remove('visible');
+        setCompleteMessageEl.classList.remove('visible'); // Esconde msg de série completa anterior
+        hideFormFeedback(); // Limpa feedback de descanso
 
         currentSet++;
         if (currentSet <= totalSets) {
@@ -449,7 +527,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
              workoutCompleteMessageEl.classList.add('visible');
              initiateExerciseButton.innerHTML = '<i class="fas fa-redo"></i> Refazer Treino';
-             // A mensagem de treino completo já foi dada em handleSetCompletion
         }
         updateWorkoutDisplay();
     }
@@ -469,28 +546,30 @@ document.addEventListener('DOMContentLoaded', () => {
         validRepsCounterEl.textContent = validReps;
         
         if(isResting){
-             initiateExerciseButton.innerHTML = `<i class="fas fa-forward"></i> Pular (${formatTime(currentRestTimeLeft)})`;
-        } else if (currentSet > totalSets){
+             initiateExerciseButton.innerHTML = `<i class="fas fa-forward"></i> Pular Descanso (${formatTime(currentRestTimeLeft)})`;
+        } else if (currentSet > totalSets){ // Estado pós-treino completo, pronto para refazer
              initiateExerciseButton.innerHTML = '<i class="fas fa-redo"></i> Refazer Treino';
         } else if (isExerciseInProgress){
             initiateExerciseButton.innerHTML = '<i class="fas fa-pause"></i> Pausar';
         }
-        else {
+        else { // Pronto para iniciar uma nova série
             initiateExerciseButton.innerHTML = `<i class="fas fa-play"></i> Iniciar Série (${currentSet}/${totalSets})`;
         }
     }
 
     function clearCanvas() { canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height); }
+
     function speakSimpleFeedback(message) { 
          try {
             if ('speechSynthesis' in window && window.speechSynthesis) {
-                window.speechSynthesis.cancel(); // Cancela falas anteriores para não acumular
+                window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(message);
-                utterance.lang = 'pt-BR'; utterance.rate = 1.1; // Um pouco mais rápido
+                utterance.lang = 'pt-BR'; utterance.rate = 1.15; utterance.pitch = 1.0;
                 window.speechSynthesis.speak(utterance);
             }
         } catch (e) { console.error("Erro na síntese de voz:", e); }
     }
     
+    // Inicializa na tela de explicação
     switchToPhase('explanation');
 });
