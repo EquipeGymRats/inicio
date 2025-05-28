@@ -1,4 +1,3 @@
-/* monitoramento_simplificado.css */
 :root {
     --primary-color: #FFD700; /* Amarelo GymRats */
     --secondary-color: #0A0A0A; /* Preto GymRats */
@@ -8,8 +7,10 @@
     --surface-dark: #1e1e1e;
     --green-accent: #2ECC71;
     --blue-accent: #3498DB; /* Azul para o timer de descanso */
-    --line-guide-color: rgba(255, 215, 0, 0.9); /* Amarelo mais opaco para guias */
-    --line-dumbbell-color: rgba(189, 195, 199, 0.9); /* Cinza para halteres */
+    --line-guide-color: rgba(255, 215, 0, 0.9);
+    --line-dumbbell-color: rgba(189, 195, 199, 0.9);
+    --error-color: #E74C3C; /* Vermelho para erros */
+    --tip-color: #3498DB; /* Azul para dicas (igual ao timer, mas pode mudar) */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -114,7 +115,6 @@ body {
 }
 .loading-indicator-camera i { margin-right: 8px; }
 
-/* NOVO: Timer de Descanso */
 .rest-timer-display {
     position: absolute;
     top: 15px;
@@ -126,8 +126,8 @@ body {
     border-radius: 20px;
     font-size: 1.2em;
     font-weight: bold;
-    z-index: 15; /* Acima do canvas e do vídeo */
-    display: none; /* Escondido inicialmente */
+    z-index: 15;
+    display: none;
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
 }
 .rest-timer-display.visible { display: block; }
@@ -136,18 +136,19 @@ body {
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
-    padding: 15px; /* Aumentar um pouco o padding */
+    padding: 15px;
     background-color: var(--surface-dark);
     border-radius: 10px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
 }
 
-/* NOVO: Status do Treino (Série e Reps) */
 .workout-status {
     display: flex;
     justify-content: space-around;
     font-size: 1.1em;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     color: var(--text-color-light);
 }
 .workout-status p { margin: 0 5px; }
@@ -157,13 +158,18 @@ body {
 .set-complete-message, .workout-complete-message {
     color: var(--green-accent);
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     display: none;
     font-size: 1.1em;
 }
 .set-complete-message.visible, .workout-complete-message.visible { display: block; }
 
-.action-buttons-monitoring { display: flex; justify-content: space-around; align-items: center; }
+.action-buttons-monitoring {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 15px; /* Adiciona espaço antes do feedback de forma */
+}
 
 .control-button {
     background-color: rgba(255,255,255,0.15); color: var(--text-color-light);
@@ -176,8 +182,50 @@ body {
 
 .action-button.main-action {
     width: 70px; height: 70px; font-size: 1.8em; padding: 0; margin-top: 0;
+    display: flex; /* Para centralizar o ícone */
+    align-items: center;
+    justify-content: center;
 }
-.action-button.main-action i { line-height: 70px; } /* Aproximação para centralizar ícone */
+/* .action-button.main-action i { line-height: 70px; } /* Removido para melhor centralização com flex */
+
+/* NOVO: Estilo para Feedback de Forma/Correção */
+.form-feedback-container {
+    min-height: 40px;
+    padding: 8px;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    margin-top: 10px; /* Já estava, mas ajustado para garantir */
+    border: 1px dashed var(--primary-color);
+    display: none; /* Inicia escondido, JS controla visibilidade */
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-in-out;
+}
+.form-feedback-container.visible {
+    display: flex;
+}
+
+
+.feedback-message {
+    font-size: 0.9em;
+    color: var(--text-color-light);
+    text-align: center;
+    width: 100%; /* Para ocupar o espaço e centralizar texto */
+}
+
+.feedback-message.error {
+    color: var(--error-color);
+    font-weight: bold;
+}
+
+.feedback-message.tip {
+    color: var(--tip-color);
+}
+
+.feedback-message.success {
+    color: var(--green-accent);
+    font-weight: bold;
+}
 
 
 @media (max-width: 360px) {
@@ -190,5 +238,7 @@ body {
     .set-complete-message, .workout-complete-message { font-size: 1em; }
     .control-button { width: 44px; height: 44px; font-size: 1.1em;}
     .action-button.main-action { width: 60px; height: 60px; font-size: 1.6em;}
-    .action-button.main-action i { line-height: 60px; }
+    /* .action-button.main-action i { line-height: 60px; } */
+    .form-feedback-container { min-height: 30px; margin-top: 8px;}
+    .feedback-message { font-size: 0.8em; }
 }
