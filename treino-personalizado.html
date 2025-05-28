@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Rats: Geração de Treino</title>
+    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="treino.css"> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo-area">
+                <a href="index.html" class="back-home-btn" title="Voltar para a Página Inicial">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1 class="logo">Gym Rats</h1>
+            </div>
+        </div>
+    </header>
+
+    <main class="treino-generator-section">
+        <div class="container">
+            <section class="generator-form-section" id="form-section">
+                <h2>Crie Seu Treino Ideal</h2>
+                <p>Responda algumas perguntas e nós montaremos um treino personalizado para você.</p>
+
+                <form id="training-form">
+                    <div class="form-group">
+                        <label for="experience-level">Seu Nível de Experiência:</label>
+                        <select id="experience-level" class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option value="iniciante">Iniciante</option>
+                            <option value="intermediario">Intermediário</option>
+                            <option value="avancado">Avançado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Qual seu Objetivo Principal?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="hypertrophy" name="objective" value="hipertrofia" required>
+                            <label for="hypertrophy"><i class="fas fa-muscle"></i> Hipertrofia</label>
+                            
+                            <input type="radio" id="strength" name="objective" value="forca">
+                            <label for="strength"><i class="fas fa-fist-raised"></i> Força</label>
+                            
+                            <input type="radio" id="resistance" name="objective" value="resistencia">
+                            <label for="resistance"><i class="fas fa-running"></i> Resistência Muscular</label>
+                            
+                            <input type="radio" id="weight-loss" name="objective" value="perda-peso">
+                            <label for="weight-loss"><i class="fas fa-weight-scale"></i> Perda de Peso</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="frequency">Quantos dias por semana você pretende treinar?</label>
+                        <select id="frequency" class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option value="2">2 dias</option>
+                            <option value="3">3 dias</option>
+                            <option value="4">4 dias</option>
+                            <option value="5">5 dias</option>
+                            <option value="6">6 dias</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Onde você costuma treinar?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="gym" name="equipment" value="academia" required>
+                            <label for="gym"><i class="fas fa-building"></i> Academia Completa</label>
+                            
+                            <input type="radio" id="free-weights" name="equipment" value="halteres">
+                            <label for="free-weights"><i class="fas fa-hand-holding-box"></i> Halteres/Elásticos</label>
+                            
+                            <input type="radio" id="bodyweight" name="equipment" value="peso-corporal">
+                            <label for="bodyweight"><i class="fas fa-child"></i> Peso Corporal</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time-per-session">Tempo disponível por sessão de treino:</label>
+                        <select id="time-per-session" class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option value="30-45">30-45 min</option>
+                            <option value="45-60">45-60 min</option>
+                            <option value="60-90">60-90 min</option>
+                            <option value="90+">90+ min</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Gerar Meu Treino</button>
+                </form>
+            </section>
+
+            <section class="training-output-section hidden" id="output-section">
+                <h2>Seu Treino Personalizado</h2>
+                <div class="summary-info">
+                    <p>Nível: <span id="summary-level"></span> | Objetivo: <span id="summary-objective"></span> | Frequência: <span id="summary-frequency"></span></p>
+                </div>
+                <div id="training-plan">
+                    </div>
+                <div class="output-actions">
+                    <button id="save-training-btn" class="btn btn-secondary">Salvar Meu Treino</button>
+                    <button id="new-training-btn" class="btn btn-tertiary">Gerar Novo Treino</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 Projeto Gym Rats. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <div id="notification-toast" class="notification-toast"></div>
+
+    <script src="treino.js"></script>
+</body>
+</html>
