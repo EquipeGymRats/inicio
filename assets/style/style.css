@@ -379,15 +379,6 @@
     resize: vertical;
   }
   
-  /* Footer */
-  .main-footer {
-   background-color: var(--color-black);
-   color: var(--color-dark-gray);
-   text-align: center;
-   padding: 25px 0;
-   font-size: 0.9em;
-   border-top: 2px solid var(--color-dark-gray);
-  }
   
   /* ==================================== */
   /* ANIMAÇÕES CSS PURO */

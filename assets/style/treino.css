@@ -1,6 +1,6 @@
 /* Importa as variáveis de cor do style.css se não estiverem aqui */
 /* Certifique-se de que o style.css seja linkado primeiro no HTML */
-/*
+
 :root {
     --color-black: #0A0A0A;
     --color-white: #FFFFFF;
@@ -8,28 +8,12 @@
     --color-light-gray: #F0F0F0;
     --color-dark-gray: #333333;
 }
-*/
+
 
 body {
     background-color: var(--color-black); /* Fundo da página */
     color: var(--color-white);
 }
-
-.main-header .back-home-btn {
-    font-size: 1.5em;
-    color: var(--color-yellow);
-    margin-right: 15px;
-    transition: color 0.3s ease;
-}
-
-.main-header .back-home-btn:hover {
-    color: var(--color-white);
-}
-
-.main-header .header-content {
-    justify-content: flex-start; /* Alinha logo e botão para a esquerda */
-}
-
 .treino-generator-section {
     padding: 40px 20px;
     background-color: var(--color-black);

@@ -1,0 +1,237 @@
+/* Definição de Variáveis de Cores (coloque isso no topo do seu arquivo CSS principal) */
+:root {
+    --color-black: #0A0A0A; /* Preto quase puro, levemente suave */
+    --color-dark-gray: #1A1A1A; /* Cinza muito escuro para divisores, etc. */
+    --color-medium-gray: #777777; /* Cinza médio para textos secundários */
+    --color-light-gray: #CCCCCC; /* Cinza claro para a maioria dos textos */
+    --color-white: #F8F8F8; /* Branco suave para títulos */
+    --color-yellow: #FFD700; /* Amarelo vibrante para destaque */
+}
+
+/* Base do Footer */
+.main-footer {
+    background-color: var(--color-black);
+    color: var(--color-light-gray);
+    padding: 60px 0 20px;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0 25px;
+}
+
+/* Seção da Marca (Brand) */
+.footer-brand {
+    flex: 1;
+    min-width: 250px;
+    margin-right: 40px;
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.footer-brand .brand-name {
+    font-size: 2.2em;
+    color: var(--color-yellow);
+    margin-bottom: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.footer-brand .brand-tagline {
+    font-size: 1.1em;
+    color: var(--color-medium-gray);
+    margin-bottom: 25px;
+}
+
+.social-links {
+    margin-top: 20px;
+}
+
+.social-links a {
+    color: var(--color-light-gray);
+    font-size: 1.6em;
+    margin-right: 20px;
+    transition: color 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+}
+
+.social-links a:hover {
+    color: var(--color-yellow);
+    transform: translateY(-3px);
+}
+
+/* Seção de Links (Navegação) - Sem alterar muito aqui para desktop */
+.footer-links-single {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end; /* Alinha à direita no desktop */
+    min-width: 200px;
+}
+
+.link-group {
+    min-width: 150px;
+    margin-bottom: 30px;
+    text-align: left; /* Mantém à esquerda no desktop */
+}
+
+.link-group h4 {
+    font-size: 1.2em;
+    color: var(--color-white);
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.link-group h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 35px;
+    height: 2px;
+    background-color: var(--color-yellow);
+}
+
+.link-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.link-group ul li {
+    margin-bottom: 12px;
+}
+
+.link-group ul li a {
+    color: var(--color-light-gray);
+    text-decoration: none;
+    font-size: 1em;
+    transition: color 0.3s ease;
+    position: relative; /* Pai para o ::before */
+    padding-left: 20px; /* Espaço para o bullet */
+    display: flex; /* Para alinhar verticalmente texto e pseudo-elemento */
+    align-items: center;
+}
+
+.link-group ul li a::before {
+    content: '•';
+    color: var(--color-yellow);
+    position: absolute; /* Posiciona a bolinha absolutamente */
+    left: 0; /* Alinha à esquerda do padding-left */
+    font-size: 1.2em;
+    line-height: 1;
+    /* top: 50%; */ /* Você pode experimentar com top e transform caso o flex não seja suficiente em todos os casos */
+    /* transform: translateY(-50%); */
+}
+
+.link-group ul li a:hover {
+    color: var(--color-yellow);
+}
+
+/* Barra Inferior (Copyright) */
+.footer-bottom-bar {
+    width: 100%;
+    text-align: center;
+    padding-top: 30px;
+    margin-top: 40px;
+    border-top: 1px solid var(--color-dark-gray);
+    font-size: 0.9em;
+    color: var(--color-medium-gray);
+}
+
+/* ==================================== */
+/* MEDIA QUERIES (Responsividade) */
+/* ==================================== */
+
+@media (max-width: 992px) {
+    .footer-container {
+        flex-direction: column;
+        align-items: center; /* Centraliza tudo */
+        text-align: center; /* Garante que texto da marca esteja centralizado */
+    }
+
+    .footer-brand {
+        margin-right: 0;
+        margin-bottom: 50px;
+        text-align: center;
+    }
+
+    .social-links {
+        justify-content: center;
+        display: flex;
+    }
+
+    .footer-links-single {
+        justify-content: center; /* Centraliza a coluna de navegação */
+        width: 100%;
+        margin-bottom: 40px; /* Adiciona espaçamento após a navegação */
+    }
+
+    .link-group {
+        /* NÃO adicione text-align: center aqui! Deixaremos isso para o `ul` */
+        min-width: unset; /* Remove min-width para maior flexibilidade */
+        width: 100%; /* Ocupa a largura total para ajudar na centralização do ul */
+        margin-bottom: 0; /* Ajuste se necessário */
+    }
+
+    .link-group h4 {
+        text-align: center; /* Centraliza o título "Navegação" */
+    }
+
+    .link-group h4::after {
+        left: 50%;
+        transform: translateX(-50%); /* Centraliza a linha do título */
+    }
+
+    .link-group ul {
+        text-align: left; /* **CRUCIAL**: Alinha os itens da lista à esquerda */
+        display: inline-block; /* Faz o ul se comportar como bloco, mas permite centralização */
+        /* ou width: fit-content; margin: 0 auto; */
+    }
+
+    .link-group ul li a {
+        padding-left: 20px; /* Mantém o padding para a bolinha */
+        justify-content: flex-start; /* Alinha o conteúdo (bolinha + texto) à esquerda do link */
+        display: flex; /* Garante que o flex ainda funcione */
+        align-items: center;
+    }
+
+    .link-group ul li a::before {
+        position: absolute; /* **CRUCIAL**: Volta a ser absoluto para manter a bolinha à esquerda */
+        left: 0;
+        /* Não precisa de margin-right aqui se for absolute e tiver padding-left no pai */
+    }
+}
+
+@media (max-width: 576px) {
+    .main-footer {
+        padding: 40px 0 15px;
+    }
+    .footer-brand .brand-name {
+        font-size: 1.8em;
+    }
+    .footer-brand .brand-tagline {
+        font-size: 1em;
+    }
+    .social-links a {
+        font-size: 1.4em;
+        margin: 0 10px;
+    }
+    .link-group h4 {
+        font-size: 1.1em;
+    }
+    .link-group ul li a {
+        font-size: 0.95em;
+    }
+    .footer-bottom-bar {
+        font-size: 0.8em;
+    }
+}
