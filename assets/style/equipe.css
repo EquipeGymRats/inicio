@@ -80,7 +80,7 @@
         align-items: center;
         justify-content: flex-start;
         position: relative;
-        padding-bottom: 70px; /* Aumenta o padding inferior para a tag e social-links */
+        padding-bottom: 70px; /* Aumenta o padding inferior para a tag e social-links-perfil */
         min-height: 350px;
     }
     
@@ -164,7 +164,7 @@
     }
     
     /* Estilo para os links sociais - REPOSICIONADO */
-    .social-links {
+    .social-links-perfil {
         position: absolute;
         bottom: 20px;
         left: 50%;
@@ -178,7 +178,7 @@
         z-index: 5; /* Garante que esteja acima do conteúdo principal */
     }
     
-    .social-links a {
+    .social-links-perfil a {
         color: var(--color-yellow);
         font-size: 1.4em;
         transition: color 0.3s ease, transform 0.2s ease;
@@ -187,20 +187,20 @@
     
     /* Estilo para o professor tag e social links dentro do card do professor */
     /* Como o professor-card não tem mais estilo de fundo diferente,
-       o social-links dele terá o mesmo estilo dos outros cards, o que é consistente. */
-    /* Se quiser diferenciar as cores dos social-links do professor, pode reintroduzir uma classe específica no HTML do professor, ou algo como: */
+       o social-links-perfil dele terá o mesmo estilo dos outros cards, o que é consistente. */
+    /* Se quiser diferenciar as cores dos social-links-perfil do professor, pode reintroduzir uma classe específica no HTML do professor, ou algo como: */
     /*
-    .team-member-card:has(.professor-tag) .social-links a {
+    .team-member-card:has(.professor-tag) .social-links-perfil a {
         color: var(--color-black);
     }
-    .team-member-card:has(.professor-tag) .social-links a:hover {
+    .team-member-card:has(.professor-tag) .social-links-perfil a:hover {
         color: var(--color-yellow);
     }
     */
-    /* Para este exemplo, manteremos os social-links do professor com a mesma cor dos alunos para consistência. */
+    /* Para este exemplo, manteremos os social-links-perfil do professor com a mesma cor dos alunos para consistência. */
     
     
-    .social-links a:hover {
+    .social-links-perfil a:hover {
         transform: translateY(-3px);
         color: var(--color-white);
     }
@@ -345,7 +345,7 @@
         .dropcap {
             font-size: 3em;
         }
-        .social-links {
+        .social-links-perfil {
             padding: 6px 12px;
             font-size: 1.2em;
         }

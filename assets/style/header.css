@@ -1,17 +1,17 @@
 /* Definição de Variáveis de Cores (coloque isso no topo do seu arquivo CSS principal) */
 :root {
-    --color-black: #0A0A0A; /* Preto quase puro, levemente suave */
-    --color-dark-gray: #1A1A1A; /* Cinza muito escuro para divisores, etc. */
-    --color-medium-gray: #777777; /* Cinza médio para textos secundários */
-    --color-light-gray: #CCCCCC; /* Cinza claro para a maioria dos textos */
-    --color-white: #F8F8F8; /* Branco suave para títulos */
-    --color-yellow: #FFD700; /* Amarelo vibrante para destaque */
+    --color-black-footer: #0A0A0A; /* Preto quase puro, levemente suave */
+    --color-dark-gray-footer: #1A1A1A; /* Cinza muito escuro para divisores, etc. */
+    --color-medium-gray-footer: #777777; /* Cinza médio para textos secundários */
+    --color-light-gray-footer: #CCCCCC; /* Cinza claro para a maioria dos textos */
+    --color-white-footer: #F8F8F8; /* Branco suave para títulos */
+    --color-yellow-footer: #FFD700; /* Amarelo vibrante para destaque */
 }
 
 /* Base do Footer */
 .main-footer {
-    background-color: var(--color-black);
-    color: var(--color-light-gray);
+    background-color: var(--color-black-footer);
+    color: var(--color-light-gray-footer);
     padding: 60px 0 20px;
     font-family: 'Arial', sans-serif;
     overflow: hidden;
@@ -40,7 +40,7 @@
 
 .footer-brand .brand-name {
     font-size: 2.2em;
-    color: var(--color-yellow);
+    color: var(--color-yellow-footer);
     margin-bottom: 10px;
     font-weight: bold;
     letter-spacing: 1px;
@@ -48,7 +48,7 @@
 
 .footer-brand .brand-tagline {
     font-size: 1.1em;
-    color: var(--color-medium-gray);
+    color: var(--color-medium-gray-footer);
     margin-bottom: 25px;
 }
 
@@ -57,7 +57,7 @@
 }
 
 .social-links a {
-    color: var(--color-light-gray);
+    color: var(--color-light-gray-footer);
     font-size: 1.6em;
     margin-right: 20px;
     transition: color 0.3s ease, transform 0.3s ease;
@@ -65,7 +65,7 @@
 }
 
 .social-links a:hover {
-    color: var(--color-yellow);
+    color: var(--color-yellow-footer);
     transform: translateY(-3px);
 }
 
@@ -85,7 +85,7 @@
 
 .link-group h4 {
     font-size: 1.2em;
-    color: var(--color-white);
+    color: var(--color-white-footer);
     margin-bottom: 20px;
     position: relative;
 }
@@ -97,7 +97,7 @@
     bottom: -5px;
     width: 35px;
     height: 2px;
-    background-color: var(--color-yellow);
+    background-color: var(--color-yellow-footer);
 }
 
 .link-group ul {
@@ -111,7 +111,7 @@
 }
 
 .link-group ul li a {
-    color: var(--color-light-gray);
+    color: var(--color-light-gray-footer);
     text-decoration: none;
     font-size: 1em;
     transition: color 0.3s ease;
@@ -123,7 +123,7 @@
 
 .link-group ul li a::before {
     content: '•';
-    color: var(--color-yellow);
+    color: var(--color-yellow-footer);
     position: absolute; /* Posiciona a bolinha absolutamente */
     left: 0; /* Alinha à esquerda do padding-left */
     font-size: 1.2em;
@@ -133,7 +133,7 @@
 }
 
 .link-group ul li a:hover {
-    color: var(--color-yellow);
+    color: var(--color-yellow-footer);
 }
 
 /* Barra Inferior (Copyright) */
@@ -142,9 +142,9 @@
     text-align: center;
     padding-top: 30px;
     margin-top: 40px;
-    border-top: 1px solid var(--color-dark-gray);
+    border-top: 1px solid var(--color-dark-gray-footer-footer);
     font-size: 0.9em;
-    color: var(--color-medium-gray);
+    color: var(--color-medium-gray-footer);
 }
 
 /* ==================================== */
