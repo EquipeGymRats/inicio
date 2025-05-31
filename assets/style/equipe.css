@@ -24,7 +24,7 @@
     
     /* Hero Section para a página da equipe */
     .team-hero {
-        background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('assets/team-bg.jpg') no-repeat center center/cover;
+        background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('../logo.png') no-repeat center center/cover;
         background-position: center top;
         padding: 80px 20px;
         text-align: center;

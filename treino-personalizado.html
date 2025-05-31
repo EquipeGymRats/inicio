@@ -4,22 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Rats: Geração de Treino</title>
-    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="treino.css"> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="assets/style/style.css"> <link rel="stylesheet" href="assets/style/treino.css"> <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <header class="main-header">
-        <div class="container header-content">
-            <div class="logo-area">
-                <a href="index.html" class="back-home-btn" title="Voltar para a Página Inicial">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-                <h1 class="logo">Gym Rats</h1>
-            </div>
-        </div>
-    </header>
+     <header class="main-header">
+    <div class="container header-content">
+      <div class="logo-area">
+        <h1 class="logo"><a href="index.html">GYM RATS</a></h1>
+      </div>
+            <input type="checkbox" id="menu-toggle" class="menu-toggle">
+            <label for="menu-toggle" class="hamburger-icon">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </label>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="index.html#features-buttons">Funcionalidades</a></li>
+          <li><a href="equipe.html">Equipe</a></li>
+          <li><a href="index.html#about-us">Sobre Nós</a></li>
+          <li><a href="index.html#contact">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
     <main class="treino-generator-section">
         <div class="container">
@@ -119,6 +130,6 @@
 
     <div id="notification-toast" class="notification-toast"></div>
 
-    <script src="treino.js"></script>
+    <script src="assets/js/treino.js"></script>
 </body>
 </html>
