@@ -25,6 +25,79 @@ document.addEventListener('DOMContentLoaded', () => {
     const formFeedbackMessageEl = document.getElementById('formFeedbackMessage');
     const correctRepFeedbackEl = document.getElementById('correctRepFeedback');
 
+    // Criar elementos para efeito de explosão
+    const explosionEffectEl = document.createElement('div');
+    explosionEffectEl.className = 'explosion-effect';
+    
+    // Criar linhas de explosão
+    const numLines = 8; // Número de linhas para o efeito
+    for (let i = 0; i < numLines; i++) {
+        // Linhas horizontais e verticais
+        if (i < 2) {
+            const horizontalLine = document.createElement('div');
+            horizontalLine.className = 'explosion-line horizontal';
+            horizontalLine.style.top = `${i === 0 ? '30%' : '70%'}`;
+            explosionEffectEl.appendChild(horizontalLine);
+            
+            const verticalLine = document.createElement('div');
+            verticalLine.className = 'explosion-line vertical';
+            verticalLine.style.left = `${i === 0 ? '30%' : '70%'}`;
+            explosionEffectEl.appendChild(verticalLine);
+        }
+        
+        // Linhas diagonais
+        const diagonalLine = document.createElement('div');
+        diagonalLine.className = 'explosion-line diagonal';
+        diagonalLine.style.top = '50%';
+        diagonalLine.style.transform = `rotate(${45 * i}deg)`;
+        explosionEffectEl.appendChild(diagonalLine);
+    }
+    
+    // Adicionar ao container da câmera quando o DOM estiver pronto
+    document.querySelector('.camera-view-container').appendChild(explosionEffectEl);
+
+    // Criar elemento para o boneco de exemplo
+    const exampleFigureContainer = document.createElement('div');
+    exampleFigureContainer.className = 'example-figure-container';
+    exampleFigureContainer.innerHTML = `
+        <div class="example-figure">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Cabeça -->
+                <circle cx="50" cy="20" r="8" fill="#FFD700" />
+                
+                <!-- Corpo -->
+                <line x1="50" y1="28" x2="50" y2="60" stroke="#FFD700" stroke-width="4" />
+                
+                <!-- Braços - posição inicial -->
+                <g class="arms" data-position="down">
+                    <line x1="50" y1="35" x2="30" y2="45" stroke="#FFD700" stroke-width="4" class="left-arm" />
+                    <line x1="50" y1="35" x2="70" y2="45" stroke="#FFD700" stroke-width="4" class="right-arm" />
+                </g>
+                
+                <!-- Pernas -->
+                <line x1="50" y1="60" x2="40" y2="85" stroke="#FFD700" stroke-width="4" />
+                <line x1="50" y1="60" x2="60" y2="85" stroke="#FFD700" stroke-width="4" />
+            </svg>
+        </div>
+    `;
+    document.querySelector('.camera-view-container').appendChild(exampleFigureContainer);
+
+    // Criar elementos para guias visuais
+    const shoulderGuideLine = document.createElement('div');
+    shoulderGuideLine.className = 'shoulder-guide-line';
+    shoulderGuideLine.style.display = 'none';
+    document.querySelector('.camera-view-container').appendChild(shoulderGuideLine);
+
+    const leftAngleGuide = document.createElement('div');
+    leftAngleGuide.className = 'target-angle-guide left';
+    leftAngleGuide.style.display = 'none';
+    document.querySelector('.camera-view-container').appendChild(leftAngleGuide);
+
+    const rightAngleGuide = document.createElement('div');
+    rightAngleGuide.className = 'target-angle-guide right';
+    rightAngleGuide.style.display = 'none';
+    document.querySelector('.camera-view-container').appendChild(rightAngleGuide);
+
     let currentStream;
     let useFrontCamera = true;
     let isExerciseInProgress = false;
@@ -62,11 +135,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const tipThrottleMillis = 5000; // Tempo mínimo entre dicas
 
     // Variáveis para controle de gesto
-    let lastThumbsUpTime = 0;
-    const thumbsUpThrottleMillis = 1500; // Evita múltiplas detecções em sequência
-    let thumbsUpDetected = false;
-    let thumbsUpFeedbackShown = false;
-
+    let lastHandGestureTime = 0;
+    const handGestureThrottleMillis = 1500; // Evita múltiplas detecções em sequência
+    let handGestureDetected = false;
+    let handGestureFeedbackShown = false;
+    
+    // Variáveis para o boneco de exemplo
+    let showingExampleFigure = false;
+    let exampleFigureTimer = null;
+    let noProgressCounter = 0;
+    const MAX_NO_PROGRESS = 5; // Número de verificações sem progresso antes de mostrar o exemplo
+    
     // Dimensões do canvas baseadas no vídeo
     let videoWidth, videoHeight;
 
@@ -76,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cameraMonitoringSection.classList.remove('active');
         hideFormFeedback();
         correctRepFeedbackEl.classList.remove('visible');
+        hideExampleFigure();
 
         if (phaseName === 'explanation') {
             textExplanationSection.classList.add('active');
@@ -152,7 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
         videoElement.classList.toggle('mirrored', useFrontCamera);
 
         const constraints = {
-            video: { facingMode: useFrontCamera ? 'user' : 'environment', width: { ideal: 640 }, height: { ideal: 480 } },
+            video: { 
+                facingMode: useFrontCamera ? 'user' : 'environment', 
+                width: { ideal: 640 }, 
+                height: { ideal: 480 },
+                // Reduzir zoom
+                zoom: 1.0
+            },
             audio: false
         };
         try {
@@ -244,9 +330,12 @@ document.addEventListener('DOMContentLoaded', () => {
             repPhase = 'down';
             repCountedForThisCycle = false;
             formCorrectAtPeak = false; // Reseta flag da forma no pico
+            hideExampleFigure();
+            noProgressCounter = 0;
         } else { // Pausou
             speakSimpleFeedback("Exercício pausado.");
             showFormFeedback("Exercício pausado.", "action-state");
+            hideExampleFigure();
         }
         updateWorkoutDisplay();
         updateInitiateButtonIcon();
@@ -266,8 +355,10 @@ document.addEventListener('DOMContentLoaded', () => {
         isUserFormCorrect = true;
         formCorrectAtPeak = false;
         lastFeedbackTime = 0;
-        thumbsUpDetected = false;
-        thumbsUpFeedbackShown = false;
+        handGestureDetected = false;
+        handGestureFeedbackShown = false;
+        noProgressCounter = 0;
+        hideExampleFigure();
 
         stopAnimationAndRest();
         clearCanvas();
@@ -286,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isResting = false;
         restTimerDisplayEl.classList.remove('visible');
         videoElement.classList.remove('resting-blur');
+        document.querySelector('.camera-view-container').classList.remove('resting-progress');
     }
 
     function showFormFeedback(message, type = 'info') {
@@ -312,10 +404,107 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showCorrectRepAnimation() {
         correctRepFeedbackEl.classList.add('visible');
-        // speakSimpleFeedback("Boa!"); // Feedback sonoro pode ser repetitivo
+        // Mostrar efeito de explosão
+        explosionEffectEl.classList.add('visible');
+        setTimeout(() => {
+            explosionEffectEl.classList.remove('visible');
+        }, 800);
+        
         setTimeout(() => {
             correctRepFeedbackEl.classList.remove('visible');
         }, 700);
+    }
+
+    // --- FUNÇÕES PARA BONECO DE EXEMPLO ---
+    function showExampleFigure() {
+        if (showingExampleFigure) return;
+        
+        showingExampleFigure = true;
+        exampleFigureContainer.classList.add('visible');
+        
+        // Iniciar animação do boneco
+        animateExampleFigure();
+        
+        // Mostrar feedback
+        showFormFeedback("Observe o exemplo de como fazer o exercício corretamente.", "tip");
+        
+        // Definir timer para esconder o exemplo após um tempo
+        if (exampleFigureTimer) clearTimeout(exampleFigureTimer);
+        exampleFigureTimer = setTimeout(() => {
+            hideExampleFigure();
+        }, 10000); // 10 segundos de exemplo
+    }
+    
+    function hideExampleFigure() {
+        if (!showingExampleFigure) return;
+        
+        showingExampleFigure = false;
+        exampleFigureContainer.classList.remove('visible');
+        
+        if (exampleFigureTimer) {
+            clearTimeout(exampleFigureTimer);
+            exampleFigureTimer = null;
+        }
+    }
+    
+    function animateExampleFigure() {
+        if (!showingExampleFigure) return;
+        
+        const arms = exampleFigureContainer.querySelector('.arms');
+        const leftArm = exampleFigureContainer.querySelector('.left-arm');
+        const rightArm = exampleFigureContainer.querySelector('.right-arm');
+        const currentPosition = arms.getAttribute('data-position');
+        
+        // Alternar entre posições
+        if (currentPosition === 'down') {
+            // Animar para cima
+            animateArm(leftArm, 'x2', 30, 10, 1000);
+            animateArm(rightArm, 'x2', 70, 90, 1000);
+            arms.setAttribute('data-position', 'up');
+            
+            setTimeout(() => {
+                if (showingExampleFigure) {
+                    // Manter no topo por um momento
+                    setTimeout(() => {
+                        if (showingExampleFigure) {
+                            // Animar para baixo
+                            animateArm(leftArm, 'x2', 10, 30, 1000);
+                            animateArm(rightArm, 'x2', 90, 70, 1000);
+                            arms.setAttribute('data-position', 'down');
+                            
+                            // Continuar o ciclo
+                            setTimeout(() => {
+                                if (showingExampleFigure) {
+                                    animateExampleFigure();
+                                }
+                            }, 1500);
+                        }
+                    }, 1000);
+                }
+            }, 1000);
+        }
+    }
+    
+    function animateArm(element, attribute, startValue, endValue, duration) {
+        const startTime = Date.now();
+        
+        function update() {
+            const currentTime = Date.now();
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function para movimento mais natural
+            const easeProgress = 0.5 - 0.5 * Math.cos(progress * Math.PI);
+            
+            const currentValue = startValue + (endValue - startValue) * easeProgress;
+            element.setAttribute(attribute, currentValue);
+            
+            if (progress < 1 && showingExampleFigure) {
+                requestAnimationFrame(update);
+            }
+        }
+        
+        update();
     }
 
     // --- LÓGICA DE DETECÇÃO DE POSE (MediaPipe) ---
@@ -410,6 +599,64 @@ document.addEventListener('DOMContentLoaded', () => {
         return radians === null ? null : radians * 180 / Math.PI;
     }
 
+    function updateGuideLines(landmarks) {
+        if (!landmarks || !shoulderGuideLine) return;
+
+        const leftShoulder = landmarks[POSE_LANDMARKS.LEFT_SHOULDER];
+        const rightShoulder = landmarks[POSE_LANDMARKS.RIGHT_SHOULDER];
+        const leftElbow = landmarks[POSE_LANDMARKS.LEFT_ELBOW];
+        const rightElbow = landmarks[POSE_LANDMARKS.RIGHT_ELBOW];
+        const leftHip = landmarks[POSE_LANDMARKS.LEFT_HIP];
+        const rightHip = landmarks[POSE_LANDMARKS.RIGHT_HIP];
+
+        if (!leftShoulder || !rightShoulder || leftShoulder.visibility < 0.5 || rightShoulder.visibility < 0.5) {
+            shoulderGuideLine.style.display = 'none';
+            leftAngleGuide.style.display = 'none';
+            rightAngleGuide.style.display = 'none';
+            return;
+        }
+
+        // Posicionar linha do ombro
+        const shoulderY = (leftShoulder.y + rightShoulder.y) / 2 * canvasElement.height;
+        shoulderGuideLine.style.top = `${shoulderY}px`;
+        shoulderGuideLine.style.display = 'block';
+
+        // Posicionar guias de ângulo para os braços
+        if (leftElbow && leftShoulder && leftHip && leftElbow.visibility > 0.5 && leftShoulder.visibility > 0.5 && leftHip.visibility > 0.5) {
+            const shoulderXLeft = leftShoulder.x * canvasElement.width;
+            const armLength = Math.hypot(
+                shoulderXLeft - leftElbow.x * canvasElement.width,
+                shoulderY - leftElbow.y * canvasElement.height
+            );
+            
+            leftAngleGuide.style.height = `${armLength}px`;
+            leftAngleGuide.style.left = `${shoulderXLeft}px`;
+            leftAngleGuide.style.top = `${shoulderY}px`;
+            leftAngleGuide.style.transformOrigin = 'top center';
+            leftAngleGuide.style.transform = `rotate(${90}deg)`;
+            leftAngleGuide.style.display = 'block';
+        } else {
+            leftAngleGuide.style.display = 'none';
+        }
+
+        if (rightElbow && rightShoulder && rightHip && rightElbow.visibility > 0.5 && rightShoulder.visibility > 0.5 && rightHip.visibility > 0.5) {
+            const shoulderXRight = rightShoulder.x * canvasElement.width;
+            const armLength = Math.hypot(
+                shoulderXRight - rightElbow.x * canvasElement.width,
+                shoulderY - rightElbow.y * canvasElement.height
+            );
+            
+            rightAngleGuide.style.height = `${armLength}px`;
+            rightAngleGuide.style.left = `${shoulderXRight}px`;
+            rightAngleGuide.style.top = `${shoulderY}px`;
+            rightAngleGuide.style.transformOrigin = 'top center';
+            rightAngleGuide.style.transform = `rotate(${90}deg)`;
+            rightAngleGuide.style.display = 'block';
+        } else {
+            rightAngleGuide.style.display = 'none';
+        }
+    }
+
     function drawTargetGuideLines(landmarks) {
         if (!landmarks || !canvasCtx || !canvasElement) return;
 
@@ -435,6 +682,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         canvasCtx.save();
+        
+        // Linha horizontal na altura dos ombros (mais destacada)
+        canvasCtx.strokeStyle = '#3498DB'; // Azul mais vibrante
+        canvasCtx.lineWidth = 4;
+        canvasCtx.setLineDash([]);
+        
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(0, shoulderY);
+        canvasCtx.lineTo(canvasElement.width, shoulderY);
+        canvasCtx.stroke();
+        
+        // Adicionar sombra para destacar
+        canvasCtx.shadowColor = '#3498DB';
+        canvasCtx.shadowBlur = 10;
+        
+        // Linhas guia para os braços (tracejadas)
         canvasCtx.strokeStyle = 'rgba(52, 152, 219, 0.7)'; // Azul
         canvasCtx.lineWidth = 3;
         canvasCtx.setLineDash([5, 5]);
@@ -528,6 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentArmAngle > REPETITION_THRESHOLD_LIFT && repPhase === 'up') {
             repPhase = 'peak';
             formCorrectAtPeak = isUserFormCorrect; // Armazena se a forma estava correta ao atingir o pico
+            noProgressCounter = 0; // Resetar contador de não progresso
         } else if (currentArmAngle < REPETITION_THRESHOLD_LOWER && (repPhase === 'peak' || repPhase === 'lowering')) {
             if (repPhase === 'peak' || repPhase === 'lowering') { // Garante que veio de cima
                  if (!repCountedForThisCycle && formCorrectAtPeak) { // Só conta se atingiu o pico com forma correta
@@ -535,6 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     repCountedForThisCycle = true;
                     showCorrectRepAnimation();
                     updateWorkoutDisplay();
+                    noProgressCounter = 0; // Resetar contador de não progresso
 
                     if (validReps >= repsPerSet) {
                         completeSet();
@@ -557,12 +822,23 @@ document.addEventListener('DOMContentLoaded', () => {
             repPhase = 'up';
             repCountedForThisCycle = false; // Prepara para a próxima contagem
             formCorrectAtPeak = false; // Reseta
+            noProgressCounter = 0; // Resetar contador de não progresso
             // Limpa feedback de erro ao iniciar nova subida
             if (formFeedbackContainerEl.classList.contains('visible') && formFeedbackMessageEl.classList.contains('error')) {
                  hideFormFeedback();
             }
         } else if (currentArmAngle < REPETITION_THRESHOLD_LIFT && currentArmAngle > REPETITION_THRESHOLD_LOWER && repPhase === 'peak') {
             repPhase = 'lowering';
+            noProgressCounter = 0; // Resetar contador de não progresso
+        } else {
+            // Se não houve mudança de fase, incrementar contador de não progresso
+            noProgressCounter++;
+            
+            // Verificar se o usuário está parado sem progresso
+            if (noProgressCounter > MAX_NO_PROGRESS && !showingExampleFigure) {
+                showExampleFigure();
+                noProgressCounter = 0;
+            }
         }
 
         // Mostrar dicas se a forma estiver correta e sem erros recentes
@@ -578,69 +854,62 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- FUNÇÕES DE ANÁLISE DE GESTOS DE MÃO ---
-    // function isThumbsUpGesture(landmarks) {
-    //     if (!landmarks || landmarks.length === 0) return false;
+    function isOpenHandGesture(landmarks) {
+        if (!landmarks || landmarks.length === 0) return false;
         
-    //     // Índices dos landmarks da mão no MediaPipe Hands
-    //     const THUMB_TIP = 4;
-    //     const THUMB_IP = 3;
-    //     const THUMB_MCP = 2;
-    //     const INDEX_FINGER_MCP = 5;
-    //     const MIDDLE_FINGER_MCP = 9;
-    //     const RING_FINGER_MCP = 13;
-    //     const PINKY_MCP = 17;
+        // Verificar se todos os dedos estão estendidos
+        // Índices dos landmarks da mão no MediaPipe Hands
+        const THUMB_TIP = 4;
+        const INDEX_FINGER_TIP = 8;
+        const MIDDLE_FINGER_TIP = 12;
+        const RING_FINGER_TIP = 16;
+        const PINKY_TIP = 20;
         
-    //     // Verificar se o polegar está estendido para cima
-    //     const thumbTip = landmarks[THUMB_TIP];
-    //     const thumbIp = landmarks[THUMB_IP];
-    //     const thumbMcp = landmarks[THUMB_MCP];
+        const WRIST = 0;
+        const PALM_CENTER = 9; // Aproximadamente o centro da palma
         
-    //     // Verificar se os outros dedos estão dobrados (usando os MCPs como referência)
-    //     const indexMcp = landmarks[INDEX_FINGER_MCP];
-    //     const middleMcp = landmarks[MIDDLE_FINGER_MCP];
-    //     const ringMcp = landmarks[RING_FINGER_MCP];
-    //     const pinkyMcp = landmarks[PINKY_MCP];
+        // Verificar se as pontas dos dedos estão acima da palma (dedos estendidos)
+        const thumbExtended = landmarks[THUMB_TIP].y < landmarks[WRIST].y;
+        const indexExtended = landmarks[INDEX_FINGER_TIP].y < landmarks[PALM_CENTER].y;
+        const middleExtended = landmarks[MIDDLE_FINGER_TIP].y < landmarks[PALM_CENTER].y;
+        const ringExtended = landmarks[RING_FINGER_TIP].y < landmarks[PALM_CENTER].y;
+        const pinkyExtended = landmarks[PINKY_TIP].y < landmarks[PALM_CENTER].y;
         
-    //     // Calcular a direção do polegar (deve estar apontando para cima)
-    //     const thumbDirection = thumbTip.y < thumbIp.y && thumbIp.y < thumbMcp.y;
-        
-    //     // Verificar se o polegar está mais alto que os outros dedos
-    //     const thumbHighest = thumbTip.y < indexMcp.y && 
-    //                         thumbTip.y < middleMcp.y && 
-    //                         thumbTip.y < ringMcp.y && 
-    //                         thumbTip.y < pinkyMcp.y;
-        
-    //     return thumbDirection && thumbHighest;
-    // }
+        // Considerar mão aberta se pelo menos 4 dedos estiverem estendidos
+        const extendedFingers = [thumbExtended, indexExtended, middleExtended, ringExtended, pinkyExtended]
+            .filter(extended => extended).length;
+            
+        return extendedFingers >= 4;
+    }
 
     function processHandGestures(multiHandLandmarks) {
         if (!multiHandLandmarks || multiHandLandmarks.length === 0) {
-            thumbsUpDetected = false;
+            handGestureDetected = false;
             return;
         }
         
         const now = Date.now();
         
-        // Verifica se alguma das mãos está fazendo o gesto de joia
+        // Verifica se alguma das mãos está aberta (5 dedos)
         for (const landmarks of multiHandLandmarks) {
-            if (isThumbsUpGesture(landmarks)) {
+            if (isOpenHandGesture(landmarks)) {
                 // Evita múltiplas detecções em sequência
-                if (now - lastThumbsUpTime > thumbsUpThrottleMillis) {
-                    thumbsUpDetected = true;
-                    lastThumbsUpTime = now;
+                if (now - lastHandGestureTime > handGestureThrottleMillis) {
+                    handGestureDetected = true;
+                    lastHandGestureTime = now;
                     
                     // Alterna o estado do exercício (pausa/despausa)
                     if (!isResting) {
                         initiateExerciseButton.click();
                         
                         // Mostra feedback visual do gesto detectado
-                        if (!thumbsUpFeedbackShown) {
-                            showFormFeedback("Gesto de joia detectado! " + 
+                        if (!handGestureFeedbackShown) {
+                            showFormFeedback("Gesto de mão aberta detectado! " + 
                                             (isExerciseInProgress ? "Exercício iniciado." : "Exercício pausado."), 
                                             isExerciseInProgress ? "success" : "action-state");
-                            thumbsUpFeedbackShown = true;
+                            handGestureFeedbackShown = true;
                             setTimeout(() => {
-                                thumbsUpFeedbackShown = false;
+                                handGestureFeedbackShown = false;
                             }, 2000);
                         }
                     }
@@ -650,7 +919,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Se chegou aqui, não detectou o gesto
-        thumbsUpDetected = false;
+        handGestureDetected = false;
     }
 
     // --- FUNÇÕES DE DESENHO NO CANVAS ---
@@ -679,6 +948,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Desenha as linhas guia de altura alvo ANTES do usuário, para ficarem por baixo
             drawTargetGuideLines(results.poseLandmarks);
+            
+            // Atualiza as guias visuais HTML
+            updateGuideLines(results.poseLandmarks);
 
             // Desenha os landmarks do usuário com estilo melhorado
             drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, 
@@ -773,6 +1045,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentRestTimeLeft = restDurationSeconds;
         restTimerDisplayEl.classList.add('visible');
         videoElement.classList.add('resting-blur'); // Aplica blur SÓ ao vídeo
+        document.querySelector('.camera-view-container').classList.add('resting-progress');
         updateRestTimerDisplay();
 
         restTimerIntervalId = setInterval(() => {
@@ -793,6 +1066,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isResting = false;
         restTimerDisplayEl.classList.remove('visible');
         videoElement.classList.remove('resting-blur'); // Remove blur do vídeo
+        document.querySelector('.camera-view-container').classList.remove('resting-progress');
         setCompleteMessageEl.classList.remove('visible');
 
         if (currentSet <= totalSets) {
@@ -857,7 +1131,7 @@ document.addEventListener('DOMContentLoaded', () => {
              if (isResting) {
                  showFormFeedback(`Descansando... Próxima série: ${currentSet}`, "action-state");
              } else if (!isExerciseInProgress && currentSet <= totalSets && validReps === 0) {
-                 showFormFeedback(`Pronto para Série ${currentSet}. Clique em Iniciar ou faça um gesto de joia 👍`, "action-state");
+                 showFormFeedback(`Pronto para Série ${currentSet}. Clique em Iniciar ou faça um gesto de mão aberta ✋`, "action-state");
              } else if (!isExerciseInProgress && currentSet <= totalSets && validReps > 0) {
                  showFormFeedback(`Série ${currentSet} pausada. ${validReps}/${repsPerSet} reps.`, "action-state");
              } else if (isExerciseInProgress) {
