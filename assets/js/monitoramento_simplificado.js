@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const currentSetDisplayEl = document.getElementById('currentSetDisplay');
     const validRepsCounterEl = document.getElementById('validRepsCounter');
-    const totalSetsDisplayEl = document.getElementById('totalSetsDisplay'); // Adicionado
-    const repsPerSetDisplayEl = document.getElementById('repsPerSetDisplay'); // Adicionado
+    const totalSetsDisplayEl = document.getElementById('totalSetsDisplay');
+    const repsPerSetDisplayEl = document.getElementById('repsPerSetDisplay');
     const setCompleteMessageEl = document.getElementById('setCompleteMessage');
     const workoutCompleteMessageEl = document.getElementById('workoutCompleteMessage');
     const restTimerDisplayEl = document.getElementById('restTimerDisplay');
@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentStream;
     let useFrontCamera = true;
-    let animationFrameId; 
     let isExerciseInProgress = false;
     let isResting = false;
     let restTimerIntervalId = null;
@@ -41,23 +40,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // MediaPipe Pose setup
     let pose; // O objeto Pose do MediaPipe
+    let hands; // O objeto Hands do MediaPipe
     let camera; // O objeto Camera do MediaPipe
     let lastUserLandmarks = null; // Últimos pontos de referência detectados do usuário
+    let lastHandLandmarks = null; // Últimos pontos de referência das mãos
 
     // Parâmetros para detecção de pose (Elevação Lateral)
-    const MIN_ARM_ANGLE_RAD = 10 * Math.PI / 180; // Braço baixo (quase reto para baixo)
+    const MIN_ARM_ANGLE_RAD = 15 * Math.PI / 180; // Braço baixo (aumentado um pouco)
     const MAX_ARM_ANGLE_RAD = 90 * Math.PI / 180; // Braço na altura do ombro (90 graus com o corpo)
-    const FLEXION_TOLERANCE_DEG = 20; // Tolerância para flexão do cotovelo (em graus)
-    const REPETITION_THRESHOLD_LIFT = MAX_ARM_ANGLE_RAD * 0.9; // 90% da altura máxima para considerar "pico"
-    const REPETITION_THRESHOLD_LOWER = MIN_ARM_ANGLE_RAD * 1.5; // 150% do ângulo mínimo para considerar "base"
+    const FLEXION_TOLERANCE_DEG = 35; // Tolerância MAIOR para flexão do cotovelo (em graus) - permite mais dobra
+    const REPETITION_THRESHOLD_LIFT = MAX_ARM_ANGLE_RAD * 0.85; // 85% da altura máxima para considerar "pico"
+    const REPETITION_THRESHOLD_LOWER = MIN_ARM_ANGLE_RAD * 1.8; // 180% do ângulo mínimo para considerar "base"
 
     // Variáveis de estado da repetição
-    let repPhase = 'down'; // 'down' (braços abaixados), 'up' (levantando), 'peak' (no topo), 'lowering' (abaixando)
-    let repCountedForThisCycle = false; // Garante que a repetição seja contada uma vez por ciclo completo
-    let isUserFormCorrect = true; // Feedback de forma geral
+    let repPhase = 'down'; // 'down', 'up', 'peak', 'lowering'
+    let repCountedForThisCycle = false;
+    let isUserFormCorrect = true;
+    let formCorrectAtPeak = false; // Flag para verificar forma no pico
     let lastFeedbackTime = 0;
-    const feedbackThrottleMillis = 2500; // Tempo mínimo entre feedbacks de erro de voz
+    const feedbackThrottleMillis = 3000; // Tempo mínimo entre feedbacks de erro (aumentado)
+    const tipThrottleMillis = 5000; // Tempo mínimo entre dicas
 
+    // Variáveis para controle de gesto
+    let lastThumbsUpTime = 0;
+    const thumbsUpThrottleMillis = 1500; // Evita múltiplas detecções em sequência
+    let thumbsUpDetected = false;
+    let thumbsUpFeedbackShown = false;
 
     // Dimensões do canvas baseadas no vídeo
     let videoWidth, videoHeight;
@@ -77,41 +85,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentStream = null;
                 videoElement.srcObject = null;
             }
-            if (pose) { // Limpa o MediaPipe
+            if (pose) {
                 pose.close();
                 pose = null;
+            }
+            if (hands) {
+                hands.close();
+                hands = null;
             }
             if (camera) {
                 camera.stop();
                 camera = null;
             }
-            resetWorkoutState(); 
-            speakSimpleFeedback("Instruções para elevação lateral. Mantenha a forma correta seguindo o boneco guia.");
+            resetWorkoutState();
+            speakSimpleFeedback("Instruções para elevação lateral. Siga as dicas na tela.");
 
         } else if (phaseName === 'monitoring') {
             cameraMonitoringSection.classList.add('active');
-            cameraMonitoringSection.classList.remove('resting-blur');
-            videoElement.classList.remove('resting-blur');
+            videoElement.classList.remove('resting-blur'); // Garante que não comece com blur
 
-            if (!pose) { // Inicializa MediaPipe Pose
+            if (!pose) {
                 initializePoseDetection();
+            }
+            if (!hands) {
+                initializeHandsDetection();
             }
             if (!currentStream || !currentStream.active) {
                 setupCamera();
             } else {
+                // Se stream já existe, garante que o tamanho do canvas está correto
                 if (videoElement.readyState >= 2 && videoElement.videoWidth > 0) {
-                    videoWidth = videoElement.videoWidth;
-                    videoHeight = videoElement.videoHeight;
-                    canvasElement.width = videoWidth;
-                    canvasElement.height = videoHeight;
-                    // O desenho agora depende dos landmarks, que virão do MediaPipe
+                    setCanvasDimensions();
+                    if (camera && !camera.isStarted) camera.start(); // Reinicia se parou
                 } else {
+                    // Se metadados não carregaram ainda, setupCamera tratará disso
                     setupCamera();
                 }
             }
-            if(!isResting) { 
+            if (!isResting) {
                 resetCurrentSetProgress();
-            } else { 
+            } else {
                 updateWorkoutDisplay();
             }
         }
@@ -120,8 +133,17 @@ document.addEventListener('DOMContentLoaded', () => {
     startCameraButton.addEventListener('click', () => switchToPhase('monitoring'));
     showExplanationAgainButton.addEventListener('click', () => switchToPhase('explanation'));
 
-    async function setupCamera() { 
+    function setCanvasDimensions() {
+        videoWidth = videoElement.videoWidth;
+        videoHeight = videoElement.videoHeight;
+        canvasElement.width = videoWidth;
+        canvasElement.height = videoHeight;
+        console.log(`Canvas dimensions set: ${videoWidth}x${videoHeight}`);
+    }
+
+    async function setupCamera() {
         cameraLoadingIndicator.style.display = 'flex';
+        console.log("setupCamera: Iniciando...");
         cameraLoadingIndicator.textContent = 'Carregando Câmera...';
 
         if (currentStream) {
@@ -130,34 +152,63 @@ document.addEventListener('DOMContentLoaded', () => {
         videoElement.classList.toggle('mirrored', useFrontCamera);
 
         const constraints = {
-            video: { facingMode: useFrontCamera ? 'user' : 'environment', width: { ideal: 640 }, height: { ideal: 480 }},
+            video: { facingMode: useFrontCamera ? 'user' : 'environment', width: { ideal: 640 }, height: { ideal: 480 } },
             audio: false
         };
         try {
             currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+            console.log("setupCamera: Câmera obtida.");
             videoElement.srcObject = currentStream;
-            videoElement.onloadedmetadata = () => {
-                videoWidth = videoElement.videoWidth;
-                videoHeight = videoElement.videoHeight;
-                canvasElement.width = videoWidth;
-                canvasElement.height = videoHeight;
+
+            // Usar 'loadeddata' pode ser mais confiável que 'loadedmetadata' para dimensões
+            videoElement.onloadeddata = () => {
+                console.log("setupCamera: Dados do vídeo carregados.");
+                setCanvasDimensions();
                 cameraLoadingIndicator.style.display = 'none';
 
-                if (camera) camera.start(); // Reinicia o MediaPipe Camera
-                else initializePoseDetection(); // Inicializa se não estiver
+                if (!pose) {
+                    initializePoseDetection(); // Inicializa se não existir
+                }
+                if (!hands) {
+                    initializeHandsDetection(); // Inicializa detecção de mãos
+                }
+                if (camera && !camera.isStarted) {
+                    camera.start(); // Reinicia o MediaPipe Camera se já existir mas parado
+                } else if (!camera) {
+                    startCameraFeed(); // Cria e inicia o MediaPipe Camera
+                }
             };
-            videoElement.onerror = (e) => { cameraLoadingIndicator.textContent = `Erro: ${e.name}`; currentStream = null; };
-        } catch (error) { cameraLoadingIndicator.textContent = `Erro: ${error.name}`; currentStream = null;}
+            videoElement.onerror = (e) => { console.error("setupCamera: Erro no elemento de vídeo:", e); cameraLoadingIndicator.textContent = `Erro: ${e.message || e.name}`; currentStream = null; };
+        } catch (error) {
+            console.error("setupCamera: Erro ao obter câmera -", error.name, error.message);
+            cameraLoadingIndicator.textContent = `Erro: ${error.name}`;
+            if (error.name === "NotAllowedError") {
+                 cameraLoadingIndicator.textContent = 'Permissão da câmera negada.';
+                 alert('Você precisa permitir o acesso à câmera para usar esta funcionalidade.');
+            } else {
+                 cameraLoadingIndicator.textContent = `Erro (${error.name}). Tente outra câmera.`;
+            }
+            currentStream = null;
+        }
     }
 
     // --- FUNÇÕES DE CONTROLE DO TREINO ---
     toggleUserCameraBtn.addEventListener('click', () => {
-        if (isExerciseInProgress || isResting) {
-            if (isExerciseInProgress) initiateExerciseButton.click(); 
-            if (isResting) skipRest(); 
-        }
+        // Pausa o exercício ou descanso antes de trocar
+        const wasInProgress = isExerciseInProgress;
+        const wasResting = isResting;
+        if (wasInProgress) initiateExerciseButton.click(); // Pausa
+        if (wasResting) skipRest(); // Termina descanso
+
         useFrontCamera = !useFrontCamera;
-        if (cameraMonitoringSection.classList.contains('active')) setupCamera();
+        if (cameraMonitoringSection.classList.contains('active')) {
+            // Para a câmera antiga antes de iniciar a nova
+            if (camera) camera.stop();
+            if (currentStream) currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
+            videoElement.srcObject = null;
+            setupCamera(); // Configura a nova câmera
+        }
     });
 
     initiateExerciseButton.addEventListener('click', () => {
@@ -169,69 +220,78 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (isResting) {
-            skipRest(); 
+            skipRest();
             return;
         }
 
-        if (currentSet > totalSets) { 
-            resetWorkoutState(); 
-            isExerciseInProgress = true;
-            speakSimpleFeedback(`Reiniciando treino. Série ${currentSet}. ${repsPerSet} repetições.`);
-            return; // A animação será iniciada pelo MediaPipe callbacks
+        if (currentSet > totalSets) {
+            resetWorkoutState();
+            speakSimpleFeedback(`Treino completo! Clique em Iniciar para recomeçar.`);
+            isExerciseInProgress = false;
+            updateWorkoutDisplay();
+            updateInitiateButtonIcon();
+            return;
         }
-        
+
         isExerciseInProgress = !isExerciseInProgress;
 
         if (isExerciseInProgress) {
             setCompleteMessageEl.classList.remove('visible');
             workoutCompleteMessageEl.classList.remove('visible');
             speakSimpleFeedback(`Iniciando série ${currentSet}. ${repsPerSet} repetições.`);
+            hideFormFeedback();
+            lastFeedbackTime = 0;
+            repPhase = 'down';
+            repCountedForThisCycle = false;
+            formCorrectAtPeak = false; // Reseta flag da forma no pico
         } else { // Pausou
             speakSimpleFeedback("Exercício pausado.");
-            hideFormFeedback(); 
+            showFormFeedback("Exercício pausado.", "action-state");
         }
-        updateWorkoutDisplay(); 
+        updateWorkoutDisplay();
+        updateInitiateButtonIcon();
     });
 
-    function resetWorkoutState() { 
+    function resetWorkoutState() {
         currentSet = 1;
         resetCurrentSetProgress();
         workoutCompleteMessageEl.classList.remove('visible');
     }
 
-    function resetCurrentSetProgress(){ 
+    function resetCurrentSetProgress() {
         validReps = 0;
-        isExerciseInProgress = false; 
-        repPhase = 'down'; // Reseta a fase da repetição
+        isExerciseInProgress = false;
+        repPhase = 'down';
         repCountedForThisCycle = false;
-        isUserFormCorrect = true; 
+        isUserFormCorrect = true;
+        formCorrectAtPeak = false;
         lastFeedbackTime = 0;
+        thumbsUpDetected = false;
+        thumbsUpFeedbackShown = false;
 
-        stopAnimationAndRest(); 
-        clearCanvas(); // Limpa o canvas
+        stopAnimationAndRest();
+        clearCanvas();
 
         hideFormFeedback();
         correctRepFeedbackEl.classList.remove('visible');
-        updateWorkoutDisplay(); 
+        updateWorkoutDisplay();
+        updateInitiateButtonIcon();
     }
-    
-    function stopAnimationAndRest(){
-        // Não precisamos de animationFrameId para o MediaPipe loop
-        // O loop do MediaPipe para quando a câmera é parada ou o pose.close() é chamado.
-        if(restTimerIntervalId){
+
+    function stopAnimationAndRest() {
+        if (restTimerIntervalId) {
             clearInterval(restTimerIntervalId);
             restTimerIntervalId = null;
         }
         isResting = false;
         restTimerDisplayEl.classList.remove('visible');
-        cameraMonitoringSection.classList.remove('resting-blur');
         videoElement.classList.remove('resting-blur');
     }
 
     function showFormFeedback(message, type = 'info') {
         if (!formFeedbackMessageEl || !formFeedbackContainerEl) return;
         formFeedbackMessageEl.textContent = message;
-        formFeedbackMessageEl.className = 'feedback-message';
+        formFeedbackMessageEl.className = 'feedback-message'; // Reseta classes
         if (type) {
             formFeedbackMessageEl.classList.add(type);
         }
@@ -241,16 +301,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function hideFormFeedback() {
         if (!formFeedbackMessageEl || !formFeedbackContainerEl) return;
         formFeedbackContainerEl.classList.remove('visible');
+        // Pequeno delay para limpar o texto após a animação de fade out
         setTimeout(() => {
             if (!formFeedbackContainerEl.classList.contains('visible')) {
-                 formFeedbackMessageEl.textContent = '';
+                formFeedbackMessageEl.textContent = '';
+                formFeedbackMessageEl.className = 'feedback-message'; // Limpa classes de tipo
             }
         }, 300);
     }
 
     function showCorrectRepAnimation() {
         correctRepFeedbackEl.classList.add('visible');
-        speakSimpleFeedback("Boa!");
+        // speakSimpleFeedback("Boa!"); // Feedback sonoro pode ser repetitivo
         setTimeout(() => {
             correctRepFeedbackEl.classList.remove('visible');
         }, 700);
@@ -258,457 +320,561 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- LÓGICA DE DETECÇÃO DE POSE (MediaPipe) ---
     function initializePoseDetection() {
+        console.log("initializePoseDetection: Iniciando...");
         pose = new Pose({locateFile: (file) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
         }});
+        console.log("initializePoseDetection: Objeto Pose instanciado.");
 
         pose.setOptions({
-            modelComplexity: 1, // 0, 1, ou 2 (quanto maior, mais preciso, mas mais lento)
+            modelComplexity: 1,
             smoothLandmarks: true,
-            enableSegmentation: false,
+            enableSegmentation: false, // Desabilitado para performance
             smoothSegmentation: false,
             minDetectionConfidence: 0.5,
             minTrackingConfidence: 0.5
         });
 
-        pose.onResults(onResults);
+        pose.onResults(onPoseResults);
+        console.log("initializePoseDetection: Opções e onResults configurados.");
 
-        // Se a câmera já estiver ligada, inicie o feed para o MediaPipe
         if (currentStream && currentStream.active) {
+            console.log("initializePoseDetection: Stream já ativo, iniciando camera feed.");
             startCameraFeed();
         }
     }
 
+    // --- LÓGICA DE DETECÇÃO DE MÃOS (MediaPipe) ---
+    function initializeHandsDetection() {
+        console.log("initializeHandsDetection: Iniciando...");
+        hands = new Hands({locateFile: (file) => {
+            return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+        }});
+        console.log("initializeHandsDetection: Objeto Hands instanciado.");
+
+        hands.setOptions({
+            maxNumHands: 2,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+        });
+
+        hands.onResults(onHandsResults);
+        console.log("initializeHandsDetection: Opções e onResults configurados.");
+    }
+
     function startCameraFeed() {
+        console.log("startCameraFeed: Iniciando...");
         if (camera) camera.stop(); // Garante que uma câmera antiga não esteja rodando
 
         camera = new Camera(videoElement, {
             onFrame: async () => {
-                if (videoElement.videoWidth > 0 && videoElement.videoHeight > 0) {
-                    await pose.send({image: videoElement});
+                // Garante que o vídeo e o pose estão prontos
+                if (videoElement.readyState >= 2 && videoElement.videoWidth > 0) {
+                    try {
+                        if (pose) {
+                            await pose.send({image: videoElement});
+                        }
+                        if (hands) {
+                            await hands.send({image: videoElement});
+                        }
+                    } catch (error) {
+                         console.error("Erro ao enviar frame para o MediaPipe:", error);
+                    }
                 }
             },
-            width: videoWidth,
+            width: videoWidth, // Usa as dimensões já definidas
             height: videoHeight
         });
-        camera.start();
-    }
-
-    // Callback quando o MediaPipe encontra resultados de pose
-    function onResults(results) {
-        if (!isExerciseInProgress && !isResting) { // Se não estiver treinando, só mostra o vídeo com o boneco estático
-            clearCanvas();
-            canvasCtx.save();
-            if (useFrontCamera && videoElement.classList.contains('mirrored')) {
-                canvasCtx.translate(canvasElement.width, 0);
-                canvasCtx.scale(-1, 1);
-            }
-            canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
-            
-            // Desenha os landmarks detectados mesmo fora do treino para o usuário se posicionar
-            if (results.poseLandmarks) {
-                 drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-                                {color: '#00FF00', lineWidth: 4});
-                 drawLandmarks(canvasCtx, results.poseLandmarks,
-                                {color: '#FF0000', lineWidth: 2});
-            }
-            canvasCtx.restore();
-            // Mostra o boneco guia na posição inicial para o usuário entender
-            drawGuideFigure(MIN_ARM_ANGLE_RAD, true); 
-            return;
-        }
-
-        clearCanvas();
-        canvasCtx.save();
-        if (useFrontCamera && videoElement.classList.contains('mirrored')) {
-            canvasCtx.translate(canvasElement.width, 0);
-            canvasCtx.scale(-1, 1);
-        }
-        canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
-
-        if (results.poseLandmarks) {
-            lastUserLandmarks = results.poseLandmarks; // Armazena os landmarks
-
-            // Desenha os landmarks do usuário para visualização
-            drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS,
-                           {color: 'var(--line-user-correct-color)', lineWidth: 4});
-            drawLandmarks(canvasCtx, results.poseLandmarks,
-                          {color: 'var(--line-user-incorrect-color)', lineWidth: 2});
-
-            // Lógica principal de análise de pose e contagem de repetições
-            processUserPose(results.poseLandmarks);
-        } else {
-            lastUserLandmarks = null;
-            showFormFeedback("Não detectamos você. Posicione-se melhor na frente da câmera.", "tip");
-            isUserFormCorrect = false; // Não há pose, então a forma não está correta
-        }
-
-        canvasCtx.restore();
+        camera.start().then(() => {
+             console.log("startCameraFeed: Câmera MediaPipe iniciada.");
+             camera.isStarted = true; // Flag para controle
+        }).catch(err => {
+             console.error("Erro ao iniciar câmera MediaPipe:", err);
+             camera.isStarted = false;
+        });
     }
 
     // --- FUNÇÕES DE ANÁLISE DE POSE ---
     function getAngle(p1, p2, p3) {
-        // Retorna o ângulo em radianos entre 3 pontos (p2 é o vértice)
-        const angle = Math.atan2(p3.y - p2.y, p3.x - p2.x) - 
+        if (!p1 || !p2 || !p3 || p1.visibility < 0.5 || p2.visibility < 0.5 || p3.visibility < 0.5) {
+            return null;
+        }
+        const angle = Math.atan2(p3.y - p2.y, p3.x - p2.x) -
                       Math.atan2(p1.y - p2.y, p1.x - p2.x);
-        return Math.abs(angle); // Ângulo absoluto
+        return Math.abs(angle);
     }
 
-    function processUserPose(landmarks) {
-        if (!landmarks[POSE_LANDMARKS.LEFT_SHOULDER] ||
-            !landmarks[POSE_LANDMARKS.LEFT_ELBOW] ||
-            !landmarks[POSE_LANDMARKS.LEFT_WRIST] ||
-            !landmarks[POSE_LANDMARKS.RIGHT_SHOULDER] ||
-            !landmarks[POSE_LANDMARKS.RIGHT_ELBOW] ||
-            !landmarks[POSE_LANDMARKS.RIGHT_WRIST]) {
-            showFormFeedback("Certifique-se de que seus ombros, cotovelos e pulsos estejam visíveis.", "tip");
-            isUserFormCorrect = false;
+    function getAngleDegrees(p1, p2, p3) {
+        const radians = getAngle(p1, p2, p3);
+        return radians === null ? null : radians * 180 / Math.PI;
+    }
+
+    function drawTargetGuideLines(landmarks) {
+        if (!landmarks || !canvasCtx || !canvasElement) return;
+
+        const leftShoulder = landmarks[POSE_LANDMARKS.LEFT_SHOULDER];
+        const rightShoulder = landmarks[POSE_LANDMARKS.RIGHT_SHOULDER];
+
+        if (!leftShoulder || !rightShoulder || leftShoulder.visibility < 0.5 || rightShoulder.visibility < 0.5) {
             return;
         }
 
-        // Calcula o ângulo do ombro (simulando a elevação lateral)
-        // Usamos o ângulo entre o quadril, ombro e cotovelo para inferir a elevação lateral.
-        // Ou, mais diretamente, o ângulo entre o ombro, o cotovelo e um ponto abaixo do ombro (vertical).
+        const shoulderY = (leftShoulder.y + rightShoulder.y) / 2 * canvasElement.height;
+        const shoulderXLeft = leftShoulder.x * canvasElement.width;
+        const shoulderXRight = rightShoulder.x * canvasElement.width;
         
-        // Para elevação lateral, queremos o ângulo entre o ombro, o cotovelo e um ponto vertical abaixo do ombro.
-        // Ou, o ângulo entre o ombro, o cotovelo e o pulso para verificar a flexão do cotovelo.
-        // E o ângulo geral do braço em relação ao tronco.
+        // Estimativa do comprimento do braço baseado na distância ombro-cotovelo, se visível
+        const leftElbow = landmarks[POSE_LANDMARKS.LEFT_ELBOW];
+        const rightElbow = landmarks[POSE_LANDMARKS.RIGHT_ELBOW];
+        let armLengthEstimate = Math.abs(shoulderXLeft - shoulderXRight) * 0.8; // Fallback
+        if(leftElbow && leftElbow.visibility > 0.5) {
+            armLengthEstimate = Math.hypot(shoulderXLeft - leftElbow.x * canvasElement.width, shoulderY - leftElbow.y * canvasElement.height) * 1.8; // Estimativa total
+        } else if (rightElbow && rightElbow.visibility > 0.5) {
+             armLengthEstimate = Math.hypot(shoulderXRight - rightElbow.x * canvasElement.width, shoulderY - rightElbow.y * canvasElement.height) * 1.8;
+        }
+
+        canvasCtx.save();
+        canvasCtx.strokeStyle = 'rgba(52, 152, 219, 0.7)'; // Azul
+        canvasCtx.lineWidth = 3;
+        canvasCtx.setLineDash([5, 5]);
+
+        // Linha guia esquerda (para fora do ombro)
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(shoulderXLeft, shoulderY);
+        canvasCtx.lineTo(shoulderXLeft - armLengthEstimate, shoulderY);
+        canvasCtx.stroke();
+
+        // Linha guia direita
+        canvasCtx.beginPath();
+        canvasCtx.moveTo(shoulderXRight, shoulderY);
+        canvasCtx.lineTo(shoulderXRight + armLengthEstimate, shoulderY);
+        canvasCtx.stroke();
+
+        canvasCtx.restore();
+    }
+
+    function processUserPose(landmarks) {
+        if (!isExerciseInProgress) return;
 
         const leftShoulder = landmarks[POSE_LANDMARKS.LEFT_SHOULDER];
         const leftElbow = landmarks[POSE_LANDMARKS.LEFT_ELBOW];
         const leftWrist = landmarks[POSE_LANDMARKS.LEFT_WRIST];
+        const leftHip = landmarks[POSE_LANDMARKS.LEFT_HIP];
+
         const rightShoulder = landmarks[POSE_LANDMARKS.RIGHT_SHOULDER];
         const rightElbow = landmarks[POSE_LANDMARKS.RIGHT_ELBOW];
         const rightWrist = landmarks[POSE_LANDMARKS.RIGHT_WRIST];
-        const leftHip = landmarks[POSE_LANDMARKS.LEFT_HIP];
         const rightHip = landmarks[POSE_LANDMARKS.RIGHT_HIP];
 
-        // Calcular o ângulo do braço em relação ao tronco (aproximado para elevação lateral)
-        // Usaremos o ângulo entre quadril, ombro e cotovelo.
-        const leftArmAngle = getAngle(leftHip, leftShoulder, leftElbow);
-        const rightArmAngle = getAngle(rightHip, rightShoulder, rightElbow);
-        
-        // Queremos o braço afastando do corpo.
-        // Um ângulo menor significa braço mais para baixo (perto do corpo)
-        // Um ângulo maior (próximo a 90 graus) significa braço para fora (elevação lateral)
-        const userCurrentArmAngle = (leftArmAngle + rightArmAngle) / 2; // Média dos dois braços
-        
-        // Verificar flexão do cotovelo
-        const leftElbowFlexion = getAngle(leftShoulder, leftElbow, leftWrist) * 180 / Math.PI;
-        const rightElbowFlexion = getAngle(rightShoulder, rightElbow, rightWrist) * 180 / Math.PI;
+        const leftArmAbductionAngle = getAngle(leftHip, leftShoulder, leftElbow);
+        const rightArmAbductionAngle = getAngle(rightHip, rightShoulder, rightElbow);
+        const leftElbowAngleDeg = getAngleDegrees(leftShoulder, leftElbow, leftWrist);
+        const rightElbowAngleDeg = getAngleDegrees(rightShoulder, rightElbow, rightWrist);
 
-        const isElbowsStraightEnough = (leftElbowFlexion > (180 - FLEXION_TOLERANCE_DEG) || leftElbowFlexion < (180 + FLEXION_TOLERANCE_DEG)) &&
-                                       (rightElbowFlexion > (180 - FLEXION_TOLERANCE_DEG) || rightElbowFlexion < (180 + FLEXION_TOLERANCE_DEG));
-
-        isUserFormCorrect = true; // Assume correto no início da análise de forma
-
-        // Feedback de forma do cotovelo
-        if (!isElbowsStraightEnough) {
-            showFormFeedback("Mantenha os cotovelos quase esticados!", "error");
-            speakSimpleFeedback("Cotovelos muito flexionados!");
+        let currentArmAngle = null;
+        if (leftArmAbductionAngle !== null && rightArmAbductionAngle !== null) {
+            currentArmAngle = (leftArmAbductionAngle + rightArmAbductionAngle) / 2;
+        } else if (leftArmAbductionAngle !== null) {
+            currentArmAngle = leftArmAbductionAngle;
+        } else if (rightArmAbductionAngle !== null) {
+            currentArmAngle = rightArmAbductionAngle;
+        } else {
+            showFormFeedback("Não consigo ver seus braços claramente.", "error");
             isUserFormCorrect = false;
+            return;
         }
 
-        // Lógica de contagem de repetições e feedback de altura
-        if (isExerciseInProgress) {
-            // Desenha a linha guia da altura correta
-            drawGuideLine(MAX_ARM_ANGLE_RAD);
+        // --- Verificação de Forma e Feedback ---
+        let formFeedback = "";
+        let currentFormCorrect = true; // Verifica a forma neste frame
 
-            // Transição para fase de levantamento
-            if (repPhase === 'down' && userCurrentArmAngle > MIN_ARM_ANGLE_RAD + (MAX_ARM_ANGLE_RAD - MIN_ARM_ANGLE_RAD) * 0.1) { // Começou a levantar
-                repPhase = 'up';
-                repCountedForThisCycle = false; // Reseta a contagem para este novo ciclo
-                hideFormFeedback(); // Limpa feedback anterior se estava incorreto
-            }
+        // 1. Verificar flexão excessiva do cotovelo (ângulo interno muito pequeno)
+        const minElbowAngleAllowed = 180 - FLEXION_TOLERANCE_DEG; // Ex: 180 - 35 = 145 graus
+        if ((leftElbowAngleDeg !== null && leftElbowAngleDeg < minElbowAngleAllowed) ||
+            (rightElbowAngleDeg !== null && rightElbowAngleDeg < minElbowAngleAllowed)) {
+            formFeedback = "Mantenha os cotovelos mais esticados (levemente dobrados).";
+            currentFormCorrect = false;
+        }
 
-            // Atingiu o pico
-            if (repPhase === 'up' && userCurrentArmAngle >= REPETITION_THRESHOLD_LIFT) {
-                repPhase = 'peak';
-                showFormFeedback("Mantenha no topo por um instante!", "info"); // Feedback temporário
-                // Se o usuário subiu demais, também é um erro
-                if (userCurrentArmAngle > MAX_ARM_ANGLE_RAD * 1.1 && (Date.now() - lastFeedbackTime > feedbackThrottleMillis)) {
-                    showFormFeedback("Não suba os braços tão alto!", "error");
-                    speakSimpleFeedback("Não suba os braços tão alto.");
-                    lastFeedbackTime = Date.now();
-                    isUserFormCorrect = false;
-                }
-            }
+        // 2. Verificar se braços não sobem o suficiente (apenas se cotovelos ok)
+        //    Só dá feedback se estiver na fase 'up' ou 'peak' por um tempo sem atingir
+        if (currentFormCorrect && (repPhase === 'up' || repPhase === 'peak') && currentArmAngle < REPETITION_THRESHOLD_LIFT * 0.9) {
+             // Poderia adicionar um timer aqui para só dar feedback se ficar muito tempo baixo
+             // formFeedback = "Levante os braços até a altura dos ombros (linha guia).";
+             // currentFormCorrect = false; // Considera erro se persistentemente baixo
+        }
 
-            // Descendo (a partir do pico)
-            if (repPhase === 'peak' && userCurrentArmAngle < REPETITION_THRESHOLD_LIFT) {
-                repPhase = 'lowering';
-            }
+        // 3. Verificar se braços sobem demais (acima da linha dos ombros)
+        if (currentFormCorrect && currentArmAngle > MAX_ARM_ANGLE_RAD * 1.15) { // 15% acima do alvo
+             formFeedback = "Não levante os braços acima da linha dos ombros.";
+             currentFormCorrect = false;
+        }
 
-            // Retornou à posição inicial e completa a repetição
-            if (repPhase === 'lowering' && userCurrentArmAngle <= REPETITION_THRESHOLD_LOWER) {
-                repPhase = 'down'; // Voltou à posição inicial
-                if (!repCountedForThisCycle) { // Se a repetição ainda não foi contada neste ciclo
-                    // Considera que a repetição só é válida se a forma esteve correta durante o movimento
-                    if (isUserFormCorrect) { // A forma geral do movimento foi boa
-                        validReps++;
-                        showCorrectRepAnimation();
-                        hideFormFeedback(); // Esconde feedback de erro
-                    } else {
-                        // Se chegou aqui e a forma não estava correta, já houve feedback de erro.
-                        // Poderíamos dar um feedback de "Repetição Inválida" aqui se quisermos.
-                        // showFormFeedback("Repetição inválida. Corrija sua forma!", "error");
+        // Atualiza a flag geral de correção da forma
+        isUserFormCorrect = currentFormCorrect;
+
+        // Exibir feedback de forma
+        const now = Date.now();
+        if (!isUserFormCorrect && formFeedback && (now - lastFeedbackTime > feedbackThrottleMillis)) {
+            showFormFeedback(formFeedback, "error");
+            speakSimpleFeedback(formFeedback);
+            lastFeedbackTime = now;
+        } else if (isUserFormCorrect && formFeedbackContainerEl.classList.contains('visible') && formFeedbackMessageEl.classList.contains('error')) {
+            hideFormFeedback();
+        }
+
+        // --- Lógica de Contagem de Repetições --- 
+        if (currentArmAngle > REPETITION_THRESHOLD_LIFT && repPhase === 'up') {
+            repPhase = 'peak';
+            formCorrectAtPeak = isUserFormCorrect; // Armazena se a forma estava correta ao atingir o pico
+        } else if (currentArmAngle < REPETITION_THRESHOLD_LOWER && (repPhase === 'peak' || repPhase === 'lowering')) {
+            if (repPhase === 'peak' || repPhase === 'lowering') { // Garante que veio de cima
+                 if (!repCountedForThisCycle && formCorrectAtPeak) { // Só conta se atingiu o pico com forma correta
+                    validReps++;
+                    repCountedForThisCycle = true;
+                    showCorrectRepAnimation();
+                    updateWorkoutDisplay();
+
+                    if (validReps >= repsPerSet) {
+                        completeSet();
+                        return;
                     }
-                    repCountedForThisCycle = true; // Marca que a repetição foi contada
-                }
+                 } else if (!repCountedForThisCycle && !formCorrectAtPeak && repPhase === 'peak') {
+                     // Atingiu a base vindo do pico, mas a forma estava errada no pico
+                     // Dar um feedback? Ex: "Repetição inválida, corrija a forma."
+                     if (now - lastFeedbackTime > feedbackThrottleMillis) {
+                         showFormFeedback("Forma incorreta no pico, repetição não contada.", "error");
+                         // speakSimpleFeedback("Forma incorreta no pico.");
+                         lastFeedbackTime = now;
+                     }
+                 }
+                 // Independentemente de contar ou não, a fase muda para 'down'
+                 repPhase = 'down';
+                 formCorrectAtPeak = false; // Reseta para o próximo ciclo
             }
-
-            // Feedback de altura durante o levantamento
-            if (repPhase === 'up' && userCurrentArmAngle < REPETITION_THRESHOLD_LIFT && 
-                (Date.now() - lastFeedbackTime > feedbackThrottleMillis)) {
-                if (!isUserFormCorrect) { // Só dá feedback se já não está correto
-                    showFormFeedback("Suba mais os braços!", "error");
-                    speakSimpleFeedback("Suba mais os braços.");
-                    lastFeedbackTime = Date.now();
-                }
+        } else if (currentArmAngle > REPETITION_THRESHOLD_LOWER && currentArmAngle < REPETITION_THRESHOLD_LIFT && repPhase === 'down') {
+            repPhase = 'up';
+            repCountedForThisCycle = false; // Prepara para a próxima contagem
+            formCorrectAtPeak = false; // Reseta
+            // Limpa feedback de erro ao iniciar nova subida
+            if (formFeedbackContainerEl.classList.contains('visible') && formFeedbackMessageEl.classList.contains('error')) {
+                 hideFormFeedback();
             }
+        } else if (currentArmAngle < REPETITION_THRESHOLD_LIFT && currentArmAngle > REPETITION_THRESHOLD_LOWER && repPhase === 'peak') {
+            repPhase = 'lowering';
+        }
 
-            // Feedback de profundidade durante a descida
-            if (repPhase === 'lowering' && userCurrentArmAngle > REPETITION_THRESHOLD_LOWER && 
-                (Date.now() - lastFeedbackTime > feedbackThrottleMillis)) {
-                if (!isUserFormCorrect) {
-                    showFormFeedback("Abaixe mais os braços!", "error");
-                    speakSimpleFeedback("Abaixe mais os braços.");
-                    lastFeedbackTime = Date.now();
-                }
-            }
-
-            // Se a forma geral estiver correta e não houver feedback ativo de erro
-            if (isUserFormCorrect && formFeedbackContainerEl.classList.contains('visible') && 
-                (formFeedbackMessageEl.classList.contains('error') || formFeedbackMessageEl.classList.contains('tip'))) {
-                hideFormFeedback();
-            }
-
-            updateWorkoutDisplay();
-            if (validReps >= repsPerSet && isExerciseInProgress) {
-                handleSetCompletion();
+        // Mostrar dicas se a forma estiver correta e sem erros recentes
+        if (isUserFormCorrect && !formFeedbackContainerEl.classList.contains('visible') && (now - lastFeedbackTime > tipThrottleMillis)) {
+            if (repPhase === 'up') {
+                showFormFeedback("Suba até a linha guia.", "tip");
+                lastFeedbackTime = now; // Atualiza tempo para não repetir dica logo
+            } else if (repPhase === 'lowering') {
+                showFormFeedback("Desça controladamente.", "tip");
+                lastFeedbackTime = now;
             }
         }
+    }
+
+    // --- FUNÇÕES DE ANÁLISE DE GESTOS DE MÃO ---
+    // function isThumbsUpGesture(landmarks) {
+    //     if (!landmarks || landmarks.length === 0) return false;
+        
+    //     // Índices dos landmarks da mão no MediaPipe Hands
+    //     const THUMB_TIP = 4;
+    //     const THUMB_IP = 3;
+    //     const THUMB_MCP = 2;
+    //     const INDEX_FINGER_MCP = 5;
+    //     const MIDDLE_FINGER_MCP = 9;
+    //     const RING_FINGER_MCP = 13;
+    //     const PINKY_MCP = 17;
+        
+    //     // Verificar se o polegar está estendido para cima
+    //     const thumbTip = landmarks[THUMB_TIP];
+    //     const thumbIp = landmarks[THUMB_IP];
+    //     const thumbMcp = landmarks[THUMB_MCP];
+        
+    //     // Verificar se os outros dedos estão dobrados (usando os MCPs como referência)
+    //     const indexMcp = landmarks[INDEX_FINGER_MCP];
+    //     const middleMcp = landmarks[MIDDLE_FINGER_MCP];
+    //     const ringMcp = landmarks[RING_FINGER_MCP];
+    //     const pinkyMcp = landmarks[PINKY_MCP];
+        
+    //     // Calcular a direção do polegar (deve estar apontando para cima)
+    //     const thumbDirection = thumbTip.y < thumbIp.y && thumbIp.y < thumbMcp.y;
+        
+    //     // Verificar se o polegar está mais alto que os outros dedos
+    //     const thumbHighest = thumbTip.y < indexMcp.y && 
+    //                         thumbTip.y < middleMcp.y && 
+    //                         thumbTip.y < ringMcp.y && 
+    //                         thumbTip.y < pinkyMcp.y;
+        
+    //     return thumbDirection && thumbHighest;
+    // }
+
+    function processHandGestures(multiHandLandmarks) {
+        if (!multiHandLandmarks || multiHandLandmarks.length === 0) {
+            thumbsUpDetected = false;
+            return;
+        }
+        
+        const now = Date.now();
+        
+        // Verifica se alguma das mãos está fazendo o gesto de joia
+        for (const landmarks of multiHandLandmarks) {
+            if (isThumbsUpGesture(landmarks)) {
+                // Evita múltiplas detecções em sequência
+                if (now - lastThumbsUpTime > thumbsUpThrottleMillis) {
+                    thumbsUpDetected = true;
+                    lastThumbsUpTime = now;
+                    
+                    // Alterna o estado do exercício (pausa/despausa)
+                    if (!isResting) {
+                        initiateExerciseButton.click();
+                        
+                        // Mostra feedback visual do gesto detectado
+                        if (!thumbsUpFeedbackShown) {
+                            showFormFeedback("Gesto de joia detectado! " + 
+                                            (isExerciseInProgress ? "Exercício iniciado." : "Exercício pausado."), 
+                                            isExerciseInProgress ? "success" : "action-state");
+                            thumbsUpFeedbackShown = true;
+                            setTimeout(() => {
+                                thumbsUpFeedbackShown = false;
+                            }, 2000);
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+        
+        // Se chegou aqui, não detectou o gesto
+        thumbsUpDetected = false;
     }
 
     // --- FUNÇÕES DE DESENHO NO CANVAS ---
-
-    // Função auxiliar para obter coordenadas normalizadas para o canvas
-    function normalizePoint(landmark) {
-        return {
-            x: landmark.x * canvasElement.width,
-            y: landmark.y * canvasElement.height,
-            z: landmark.z,
-            visibility: landmark.visibility
-        };
+    function clearCanvas() {
+        if (canvasCtx && canvasElement) {
+             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        }
     }
 
-    // Função para desenhar o boneco guia
-    function drawGuideFigure(guideAngle, isStatic = false) {
-        if (!canvasElement.width || !canvasElement.height) return;
-        const canvasH = canvasElement.height;
-        const canvasW = canvasElement.width;
+    // --- Callbacks onResults Atualizados ---
+    function onPoseResults(results) {
+        if (!canvasCtx || !canvasElement) return; // Sai se o canvas não estiver pronto
 
-        // Posição central do boneco guia (pode ser ajustada para lateral se necessário)
-        const guideTorsoX = canvasW / 2; // Centralizado por padrão
-        const guideTorsoTopY = canvasH * 0.25;
-        const guideShoulderY = guideTorsoTopY + (canvasH * 0.05); // Ombro um pouco abaixo do topo do tronco
-        const armLength = canvasH * 0.28;
-        const headRadius = canvasH * 0.04;
+        clearCanvas();
+        canvasCtx.save();
 
-        // Desenha o boneco guia em cinza
-        canvasCtx.strokeStyle = 'var(--line-guide-color)';
-        canvasCtx.fillStyle = 'var(--line-guide-color)';
-        canvasCtx.lineWidth = Math.max(5, canvasW / 70);
-        canvasCtx.lineCap = 'round';
+        if (useFrontCamera && videoElement.classList.contains('mirrored')) {
+            canvasCtx.translate(canvasElement.width, 0);
+            canvasCtx.scale(-1, 1);
+        }
 
-        // Tronco e cabeça
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(guideTorsoX, guideTorsoTopY);
-        canvasCtx.lineTo(guideTorsoX, canvasH * 0.60); // Tronco até ~60% da altura do canvas
-        canvasCtx.stroke();
-        canvasCtx.beginPath();
-        canvasCtx.arc(guideTorsoX, guideTorsoTopY - headRadius * 0.7, headRadius, 0, Math.PI * 2);
-        canvasCtx.fill();
+        canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
 
-        // Braços (simulando a elevação lateral)
-        // Braços estendidos horizontalmente
-        const leftArmEndX = guideTorsoX - Math.sin(guideAngle) * armLength;
-        const leftArmEndY = guideShoulderY + Math.cos(guideAngle) * armLength;
-        const rightArmEndX = guideTorsoX + Math.sin(guideAngle) * armLength;
-        const rightArmEndY = guideShoulderY + Math.cos(guideAngle) * armLength;
+        if (results.poseLandmarks) {
+            lastUserLandmarks = results.poseLandmarks;
 
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(guideTorsoX, guideShoulderY);
-        canvasCtx.lineTo(leftArmEndX, leftArmEndY);
-        canvasCtx.stroke();
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(guideTorsoX, guideShoulderY);
-        canvasCtx.lineTo(rightArmEndX, rightArmEndY);
-        canvasCtx.stroke();
+            // Desenha as linhas guia de altura alvo ANTES do usuário, para ficarem por baixo
+            drawTargetGuideLines(results.poseLandmarks);
 
-        // Desenha halteres para o guia
-        canvasCtx.fillStyle = 'var(--line-dumbbell-color)';
-        const dW = Math.max(7, canvasW / 35); 
-        const dH = Math.max(10, canvasW / 25);
-        canvasCtx.save(); canvasCtx.translate(leftArmEndX, leftArmEndY); canvasCtx.rotate(-guideAngle); canvasCtx.fillRect(-dW / 2, -dH / 2, dW, dH); canvasCtx.restore();
-        canvasCtx.save(); canvasCtx.translate(rightArmEndX, rightArmEndY); canvasCtx.rotate(guideAngle); canvasCtx.fillRect(-dW / 2, -dH / 2, dW, dH); canvasCtx.restore();
+            // Desenha os landmarks do usuário com estilo melhorado
+            drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, 
+                          {color: 'rgba(255, 215, 0, 0.8)', lineWidth: 3});
+            drawLandmarks(canvasCtx, results.poseLandmarks, 
+                          {color: 'rgba(255, 215, 0, 0.9)', fillColor: 'rgba(255, 215, 0, 0.2)', 
+                           lineWidth: 1, radius: 3});
+
+            // Processa a pose para feedback e contagem se estiver em exercício
+            if (isExerciseInProgress) {
+                processUserPose(results.poseLandmarks);
+            } else if (!isResting && !textExplanationSection.classList.contains('active')) {
+                if (!formFeedbackContainerEl.classList.contains('visible')) {
+                    showFormFeedback("Posicione-se e prepare-se para iniciar.", "action-state");
+                }
+            }
+
+        } else {
+            lastUserLandmarks = null;
+            if (isExerciseInProgress) {
+                showFormFeedback("Não detectamos você. Posicione-se melhor.", "error");
+                isUserFormCorrect = false;
+            } else if (!isResting && !textExplanationSection.classList.contains('active')) {
+                 showFormFeedback("Aguardando detecção...", "action-state");
+                 // Limpa guias se não detectar
+                 clearCanvas();
+                 canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+            }
+        }
+
+        canvasCtx.restore();
+        updateInitiateButtonIcon();
     }
 
-    // Função para desenhar a linha guia de altura no ponto ideal
-    function drawGuideLine(guideAngle) {
-        if (!canvasElement.width || !canvasElement.height || !lastUserLandmarks) return;
+    function onHandsResults(results) {
+        // Armazena os landmarks das mãos
+        lastHandLandmarks = results.multiHandLandmarks;
         
-        const canvasH = canvasElement.height;
-        const canvasW = canvasElement.width;
-
-        // Calcule a posição Y da linha guia baseada na posição do ombro do usuário
-        // Isso fará com que a linha guia se adapte ao tamanho do usuário no vídeo
-        const userLeftShoulder = normalizePoint(lastUserLandmarks[POSE_LANDMARKS.LEFT_SHOULDER]);
-        const userRightShoulder = normalizePoint(lastUserLandmarks[POSE_LANDMARKS.RIGHT_SHOULDER]);
-        const userShoulderY = (userLeftShoulder.y + userRightShoulder.y) / 2;
+        // Processa gestos se não estiver em descanso
+        if (!isResting && results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+            processHandGestures(results.multiHandLandmarks);
+        }
         
-        // A altura da linha guia deve estar no nível do ombro (para elevação lateral)
-        // Ajuste conforme necessário para o exercício. Para elevação lateral, o halter sobe até o ombro.
-        const targetLineY = userShoulderY; 
-
-        canvasCtx.strokeStyle = 'var(--line-target-height-color)';
-        canvasCtx.lineWidth = 4;
-        canvasCtx.setLineDash([8, 8]); // Linha tracejada
-        
-        // Desenha a linha horizontal que o usuário deve atingir
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(0, targetLineY); // Vai de um lado ao outro do canvas
-        canvasCtx.lineTo(canvasW, targetLineY);
-        canvasCtx.stroke();
-        canvasCtx.setLineDash([]); // Reseta para outras linhas
+        // Não precisamos desenhar os landmarks das mãos, apenas detectar o gesto
     }
 
-    // --- FUNÇÕES DE STATUS E FEEDBACK ---
-    function handleSetCompletion(){
+    // --- FUNÇÕES DE CONTROLE DO TREINO (Atualizações) ---
+    function updateInitiateButtonIcon() {
+        const icon = initiateExerciseButton.querySelector('i');
+        if (!icon) return;
+        icon.className = 'fas'; // Reseta classes do ícone
+
+        if (isExerciseInProgress) {
+            icon.classList.add('fa-pause');
+            initiateExerciseButton.setAttribute('aria-label', 'Pausar Exercício');
+        } else if (isResting) {
+             icon.classList.add('fa-forward'); // Ícone para pular descanso
+             initiateExerciseButton.setAttribute('aria-label', 'Pular Descanso');
+        } else {
+            icon.classList.add('fa-play');
+            initiateExerciseButton.setAttribute('aria-label', 'Iniciar Exercício');
+        }
+    }
+
+    function completeSet() {
         isExerciseInProgress = false;
+        speakSimpleFeedback(`Série ${currentSet} completa! Descansando.`);
         setCompleteMessageEl.classList.add('visible');
-        correctRepFeedbackEl.classList.remove('visible');
-        
-        const successMessages = [
-            `Série ${currentSet} completa! Bom trabalho!`,
-            `Excelente! Série ${currentSet} finalizada!`,
-            `Muito bem! Série ${currentSet} concluída.`
-        ];
-        const randomSuccessMsg = successMessages[Math.floor(Math.random() * successMessages.length)];
-        showFormFeedback(randomSuccessMsg, "success");
-        speakSimpleFeedback(randomSuccessMsg);
+        currentSet++;
+        updateWorkoutDisplay();
 
-        if (currentSet < totalSets) {
-            isResting = true;
+        if (currentSet <= totalSets) {
             startRestTimer();
         } else {
-            workoutCompleteMessageEl.classList.add('visible');
-            const finalMsg = "Treino finalizado! Você mandou muito bem! Descanse e hidrate-se.";
-            speakSimpleFeedback(finalMsg);
-            currentSet++; 
-            cameraMonitoringSection.classList.add('resting-blur'); 
-            videoElement.classList.add('resting-blur');
+            completeWorkout();
         }
-        updateWorkoutDisplay(); 
+        updateInitiateButtonIcon();
     }
 
-    function startRestTimer(){
+    function completeWorkout() {
+        isExerciseInProgress = false;
+        isResting = false;
+        speakSimpleFeedback("Treino completo! Parabéns!");
+        workoutCompleteMessageEl.classList.add('visible');
+        setCompleteMessageEl.classList.remove('visible');
+        updateWorkoutDisplay();
+        updateInitiateButtonIcon();
+    }
+
+    function startRestTimer() {
+        isResting = true;
         currentRestTimeLeft = restDurationSeconds;
         restTimerDisplayEl.classList.add('visible');
-        cameraMonitoringSection.classList.add('resting-blur'); 
-        videoElement.classList.add('resting-blur');
-        updateRestTimerDisplay(); 
-        speakSimpleFeedback(`Descanso de ${restDurationSeconds} segundos.`);
+        videoElement.classList.add('resting-blur'); // Aplica blur SÓ ao vídeo
+        updateRestTimerDisplay();
 
         restTimerIntervalId = setInterval(() => {
             currentRestTimeLeft--;
-            updateRestTimerDisplay(); 
-            updateWorkoutDisplay(); 
+            updateRestTimerDisplay();
             if (currentRestTimeLeft <= 0) {
                 skipRest();
             }
         }, 1000);
+        updateInitiateButtonIcon();
     }
 
-    function skipRest(){
-        if(restTimerIntervalId) clearInterval(restTimerIntervalId);
-        restTimerIntervalId = null;
-        
-        if (isResting) { 
-            speakSimpleFeedback("Descanso interrompido.");
+    function skipRest() {
+        if (restTimerIntervalId) {
+            clearInterval(restTimerIntervalId);
+            restTimerIntervalId = null;
         }
         isResting = false;
         restTimerDisplayEl.classList.remove('visible');
+        videoElement.classList.remove('resting-blur'); // Remove blur do vídeo
         setCompleteMessageEl.classList.remove('visible');
-        hideFormFeedback();
-        cameraMonitoringSection.classList.remove('resting-blur'); 
-        videoElement.classList.remove('resting-blur');
 
-        currentSet++;
         if (currentSet <= totalSets) {
-            resetCurrentSetProgress(); 
-        } 
-        updateWorkoutDisplay(); 
-    }
-
-    function formatTime(seconds) {
-        const min = Math.floor(seconds / 60);
-        const sec = seconds % 60;
-        return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-    }
-    
-    function updateRestTimerDisplay(){
-        restTimeValueEl.textContent = formatTime(currentRestTimeLeft);
-    }
-
-    function updateWorkoutDisplay(){
-        currentSetDisplayEl.textContent = Math.min(currentSet, totalSets);
-        validRepsCounterEl.textContent = validReps;
-        totalSetsDisplayEl.textContent = totalSets; // Atualiza o total de séries
-        repsPerSetDisplayEl.textContent = repsPerSet; // Atualiza o total de repetições por série
-        
-        let actionText = "";
-        let iconClass = "fa-play";
-
-        if(isResting){
-            iconClass = "fa-forward";
-            actionText = `Descansando. Toque para pular (${formatTime(currentRestTimeLeft)})`;
-        } else if (currentSet > totalSets){
-            iconClass = "fa-redo";
-            actionText = "Treino completo! Toque para refazer.";
-        } else if (isExerciseInProgress){
-            iconClass = "fa-pause";
-            actionText = `Série ${currentSet}/${totalSets} em andamento. Toque para pausar.`;
-        } else { 
-            iconClass = "fa-play";
-            if (validReps > 0 && validReps < repsPerSet) {
-                actionText = `Série ${currentSet}/${totalSets} pausada (${validReps}/${repsPerSet}). Toque para continuar.`;
-            } else {
-                actionText = `Toque para Iniciar Série ${currentSet}/${totalSets}.`;
-            }
+            resetCurrentSetProgress();
+            speakSimpleFeedback(`Prepare-se para a série ${currentSet}.`);
+            isExerciseInProgress = false; // Espera o play
+        } else {
+            completeWorkout();
         }
-        initiateExerciseButton.innerHTML = `<i class="fas ${iconClass}"></i>`;
-        
-        if (!setCompleteMessageEl.classList.contains('visible') && !workoutCompleteMessageEl.classList.contains('visible')) {
-            showFormFeedback(actionText, "action-state");
-        } else if (setCompleteMessageEl.classList.contains('visible') && currentSet <= totalSets && !isResting){
-             showFormFeedback(`Toque para Iniciar Série ${currentSet}/${totalSets}.`, "action-state");
-        }
+        updateWorkoutDisplay();
+        updateInitiateButtonIcon();
     }
 
-    function clearCanvas() { canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height); }
+    function updateRestTimerDisplay() {
+        const minutes = Math.floor(currentRestTimeLeft / 60).toString().padStart(2, '0');
+        const seconds = (currentRestTimeLeft % 60).toString().padStart(2, '0');
+        restTimeValueEl.textContent = `${minutes}:${seconds}`;
+    }
 
-    function speakSimpleFeedback(message) { 
+    // --- FUNÇÕES DE FEEDBACK SONORO (Simplificado) ---
+    function speakSimpleFeedback(text) {
         try {
-            if ('speechSynthesis' in window && window.speechSynthesis) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(message);
-                utterance.lang = 'pt-BR'; utterance.rate = 1.15; utterance.pitch = 1.0;
-                window.speechSynthesis.speak(utterance);
+            if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+                 window.speechSynthesis.cancel(); // Cancela fala anterior se estiver falando
             }
-        } catch (e) { console.error("Erro na síntese de voz:", e); }
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'pt-BR';
+                utterance.rate = 1.1;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn("API de Síntese de Voz não suportada.");
+            }
+        } catch (error) {
+            console.error("Erro ao tentar usar a síntese de voz:", error);
+        }
     }
-    
-    // Inicializa o processo
+
+    // --- INICIALIZAÇÃO ---
+    function updateWorkoutDisplay() {
+        currentSetDisplayEl.textContent = Math.min(currentSet, totalSets);
+        totalSetsDisplayEl.textContent = totalSets;
+        validRepsCounterEl.textContent = validReps;
+        repsPerSetDisplayEl.textContent = repsPerSet;
+
+        initiateExerciseButton.disabled = false;
+
+        if (currentSet > totalSets && !isExerciseInProgress && !isResting) {
+            workoutCompleteMessageEl.classList.add('visible');
+            setCompleteMessageEl.classList.remove('visible');
+            showFormFeedback("Treino Concluído!", "success");
+        } else if (validReps >= repsPerSet && !isResting && !isExerciseInProgress) {
+            setCompleteMessageEl.classList.add('visible');
+             // Feedback já foi dado em completeSet
+        } else {
+            setCompleteMessageEl.classList.remove('visible');
+            workoutCompleteMessageEl.classList.remove('visible');
+        }
+
+        // Atualiza feedback de estado geral (se não houver erro/dica ativa)
+        if (!formFeedbackContainerEl.classList.contains('visible') || formFeedbackMessageEl.classList.contains('action-state') || formFeedbackMessageEl.classList.contains('tip')) {
+             if (isResting) {
+                 showFormFeedback(`Descansando... Próxima série: ${currentSet}`, "action-state");
+             } else if (!isExerciseInProgress && currentSet <= totalSets && validReps === 0) {
+                 showFormFeedback(`Pronto para Série ${currentSet}. Clique em Iniciar ou faça um gesto de joia 👍`, "action-state");
+             } else if (!isExerciseInProgress && currentSet <= totalSets && validReps > 0) {
+                 showFormFeedback(`Série ${currentSet} pausada. ${validReps}/${repsPerSet} reps.`, "action-state");
+             } else if (isExerciseInProgress) {
+                 // Limpa o feedback de estado se o exercício está ativo e sem erros/dicas
+                 if (!formFeedbackContainerEl.classList.contains('visible')) {
+                      // Não mostra nada, espera dica ou erro
+                 } else if (formFeedbackMessageEl.classList.contains('action-state')) {
+                      hideFormFeedback();
+                 }
+             } else if (currentSet > totalSets) {
+                 showFormFeedback("Treino Concluído!", "success");
+             }
+        }
+    }
+
+    // Inicializa a aplicação mostrando a explicação
     switchToPhase('explanation');
-});
+    updateWorkoutDisplay();
+
+}); // Fim do DOMContentLoaded

@@ -6,6 +6,7 @@
     --text-color-dark: #333333;
     --background-dark: #121212;
     --surface-dark: #1e1e1e; /* Usado para cards e controles */
+    --surface-dark-transparent: rgba(30, 30, 30, 0.85); /* Para ilha dinâmica */
     --green-accent: #2ECC71; /* Verde para sucesso geral */
     --blue-accent: #3498DB; /* Azul para o timer de descanso e dicas */
     --error-color: #E74C3C; /* Vermelho para erros */
@@ -15,6 +16,9 @@
     --line-dumbbell-color: rgba(189, 195, 199, 0.9); /* Cinza para halteres */
     --success-rep-color: var(--green-accent); /* Verde para o check de repetição */
     --rep-feedback-bg: rgba(46, 204, 113, 0.15); /* Fundo sutil para o check */
+    --glass-effect-bg: rgba(30, 30, 30, 0.7); /* Fundo para efeito de vidro */
+    --glass-effect-border: rgba(255, 255, 255, 0.1); /* Borda para efeito de vidro */
+    --glass-effect-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* Sombra para efeito de vidro */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -73,64 +77,145 @@ body {
 .explanation-box {
     background-color: var(--surface-dark);
     padding: 20px 25px;
-    border-radius: 10px;
+    border-radius: 16px; /* Cantos mais arredondados */
     max-width: 600px;
     width: 100%;
     text-align: left;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     margin-top: 20px;
+    border: 1px solid var(--glass-effect-border);
 }
-.explanation-box h2 { color: var(--primary-color); text-align: center; margin-bottom: 20px; font-size: 1.3em; }
-.explanation-box p { margin-bottom: 15px; line-height: 1.6; font-size: 0.9em; }
+.explanation-box h2 { 
+    color: var(--primary-color); 
+    text-align: center; 
+    margin-bottom: 20px; 
+    font-size: 1.4em; 
+    font-weight: 600;
+}
+.explanation-box p { 
+    margin-bottom: 15px; 
+    line-height: 1.6; 
+    font-size: 1em;
+}
 
 .action-button {
     display: block;
     width: 100%;
-    padding: 12px 20px;
+    padding: 14px 20px;
     background-color: var(--primary-color);
     color: var(--secondary-color);
     border: none;
-    border-radius: 8px;
-    font-size: 1.05em;
+    border-radius: 12px; /* Cantos mais arredondados */
+    font-size: 1.1em;
     font-weight: bold;
     cursor: pointer;
     text-align: center;
     margin-top: 25px;
-    transition: background-color 0.3s, transform 0.1s;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
-.action-button:hover { background-color: #ffe033; }
-.action-button:active { transform: scale(0.98); }
+.action-button:hover { 
+    background-color: #ffe033; 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+}
+.action-button:active { 
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
 
 #cameraMonitoringSection {
-    justify-content: flex-start;
-    padding-top: 10px;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Layout para desktop - câmera centralizada com espaço nas laterais */
+.camera-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
 }
 
 .camera-view-container {
     position: relative;
     width: 100%;
-    max-width: 360px; /* Reduzido para melhor encaixe geral */
-    aspect-ratio: 3 / 4;
+    max-width: 640px; /* Tamanho mais adequado para desktop */
+    aspect-ratio: 4/3; /* Proporção mais natural */
     background-color: #000;
-    border-radius: 10px;
+    border-radius: 16px;
     overflow: hidden;
-    margin: 0 auto 10px auto;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    margin: 0 auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 1;
+}
+
+.camera-view-container.resting-progress::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 16px;
+    border: 4px solid transparent;
+    animation: restProgressAnimation linear forwards;
+    animation-duration: var(--rest-duration-css, 60s);
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes restProgressAnimation {
+    0% { border-image: conic-gradient(var(--primary-color) 0%, transparent 0%) 1; }
+    25% { border-image: conic-gradient(var(--primary-color) 25%, transparent 25%) 1;}
+    50% { border-image: conic-gradient(var(--primary-color) 50%, transparent 50%) 1; }
+    75% { border-image: conic-gradient(var(--primary-color) 75%, transparent 75%) 1; }
+    100% { border-image: conic-gradient(var(--primary-color) 100%, transparent 100%) 1; }
 }
 
 #userVideoFeed, #guideLinesCanvas {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain; /* Evita o zoom excessivo */
 }
 #userVideoFeed.mirrored { transform: scaleX(-1); }
 #guideLinesCanvas { z-index: 5; }
+
+/* Ilha dinâmica para controles */
+.floating-controls {
+    position: relative;
+    width: 100%;
+    max-width: 640px; /* Mesmo tamanho da câmera */
+    padding: 15px 20px;
+    background-color: var(--glass-effect-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid var(--glass-effect-border);
+    box-shadow: var(--glass-effect-shadow);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
 
 .correct-rep-feedback {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.5);
-    width: 80px;
-    height: 80px;
+    width: 100px; /* Maior */
+    height: 100px; /* Maior */
     background-color: var(--rep-feedback-bg);
     border-radius: 50%;
     display: flex;
@@ -147,48 +232,70 @@ body {
     transform: translate(-50%, -50%) scale(1);
 }
 .correct-rep-feedback i {
-    font-size: 2.8em;
+    font-size: 3.5em; /* Maior */
     color: var(--success-rep-color);
 }
 
 .loading-indicator-camera {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    color: var(--primary-color); background-color: rgba(0,0,0,0.7);
-    padding: 10px 15px; border-radius: 5px; z-index: 10; font-size: 0.9em;
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    color: var(--primary-color); 
+    background-color: rgba(0,0,0,0.7);
+    padding: 15px 20px; 
+    border-radius: 12px; 
+    z-index: 10; 
+    font-size: 1em;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
-.loading-indicator-camera i { margin-right: 8px; }
+.loading-indicator-camera i { margin-right: 10px; }
 
+/* Timer centralizado */
 .rest-timer-display {
     position: absolute;
-    top: 10px; /* Mais para cima */
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    background-color: var(--blue-accent);
+    transform: translate(-50%, -50%);
+    background-color: var(--glass-effect-bg);
     color: var(--text-color-light);
-    padding: 6px 12px; /* Menor */
-    border-radius: 15px;
-    font-size: 1em; /* Menor */
+    padding: 20px 30px;
+    border-radius: 20px;
+    font-size: 2em;
     font-weight: bold;
     display: none;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-    z-index: 15;
+    box-shadow: var(--glass-effect-shadow);
+    z-index: 30;
+    border: 1px solid var(--glass-effect-border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    text-align: center;
 }
-.rest-timer-display.visible { display: block; }
+.resting-blur {
+    filter: blur(8px);
+    transition: filter 0.5s ease-out;
+}
+.rest-timer-display.visible { 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.rest-timer-display i {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
 
 .form-feedback-container {
     width: 100%;
-    max-width: 360px; /* Consistente com camera-view-container */
-    margin: 0 auto 12px auto; /* Espaço abaixo */
-    min-height: 40px; /* Altura mínima */
-    padding: 8px 10px;
-    background-color: var(--surface-dark);
-    border-radius: 8px;
-    border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+    padding: 10px 15px;
+    background-color: transparent;
+    border-radius: 12px;
     display: none;
     align-items: center;
     justify-content: center;
     text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     transition: opacity 0.3s ease-in-out, transform 0.2s ease-in-out;
     opacity: 0;
     transform: translateY(10px);
@@ -199,164 +306,252 @@ body {
     transform: translateY(0);
 }
 .feedback-message {
-    font-size: 0.85em; /* Menor para caber mais texto de status */
+    font-size: 0.95em;
     line-height: 1.4;
     width: 100%;
 }
-.feedback-message.error { color: var(--error-color); font-weight: bold; }
-.feedback-message.tip { color: var(--tip-color); }
-.feedback-message.success { color: var(--success-rep-color); font-weight: bold; }
+.feedback-message.error { 
+    color: var(--error-color); 
+    font-weight: bold; 
+}
+.feedback-message.tip { 
+    color: var(--tip-color);
+}
+.feedback-message.success { 
+    color: var(--success-rep-color); 
+    font-weight: bold;
+}
 .feedback-message.action-state {
     color: var(--text-color-light);
     font-style: italic;
-    /* font-size: 0.8em; /* Já pequeno, mas pode ajustar */
-}
-
-.controls-and-feedback {
-    width: 100%;
-    max-width: 360px;
-    margin: 0 auto;
-    padding: 12px 10px; /* Reduzido um pouco */
-    background-color: var(--surface-dark);
-    border-radius: 10px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .workout-status {
     display: flex;
     justify-content: space-around;
-    font-size: 1.05em; /* Um pouco menor */
-    margin-bottom: 10px;
+    font-size: 1.05em;
     color: var(--text-color-light);
+    width: 100%;
+    gap: 15px;
 }
-.workout-status p { margin: 0 5px; }
-.workout-status span { color: var(--primary-color); font-weight: bold; }
+.workout-status p { margin: 0; }
+.workout-status span { 
+    color: var(--primary-color); 
+    font-weight: bold;
+}
 
 .set-complete-message, .workout-complete-message {
     color: var(--green-accent);
     font-weight: bold;
-    margin-bottom: 10px;
     display: none;
-    font-size: 1.05em;
+    font-size: 1.1em;
+    text-align: center;
+    width: 100%;
 }
-.set-complete-message.visible, .workout-complete-message.visible { display: block; }
+.set-complete-message.visible, .workout-complete-message.visible { 
+    display: block; 
+}
 
 .action-buttons-monitoring {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     width: 100%;
-    gap: 8px; /* Espaçamento entre botões */
+    gap: 15px;
+    margin-top: 5px;
 }
 
 .control-button {
     background-color: rgba(255,255,255,0.1);
     color: var(--text-color-light);
     border: 1px solid rgba(var(--primary-color-rgb), 0.3);
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    font-size: 1em;
+    font-size: 1.2em;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s, border-color 0.2s;
+    transition: all 0.2s ease;
     flex-shrink: 0;
 }
 .control-button:hover {
     background-color: rgba(var(--primary-color-rgb), 0.2);
     border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+.control-button:active {
+    transform: translateY(1px);
 }
 
 .action-button.main-action {
-    width: 58px; /* Ajustado */
-    height: 58px;
-    font-size: 1.7em; /* Ícone maior */
-    background-color: var(--primary-color); /* Mantém cor primária */
-    color: var(--secondary-color); /* Cor do ícone */
+    width: 64px;
+    height: 64px;
+    font-size: 1.8em;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
     border-radius: 50%;
     padding: 0;
-    margin-top: 0;
+    margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: none; /* Remove borda padrão de action-button */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 .action-button.main-action:hover {
-    background-color: #ffe033; /* Amarelo mais claro no hover */
+    background-color: #ffe033;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.35);
 }
 .action-button.main-action:active {
-    transform: scale(0.95);
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
-
-@media (max-width: 360px) {
-    .main-header-simplified h1 { font-size: 1.2em; }
-    .explanation-box { padding: 15px; }
-    .explanation-box h2 { font-size: 1.1em; }
-    .explanation-box p { font-size: 0.85em; }
-
-    .camera-view-container { max-width: calc(100% - 20px); height: 250px; } /* 100% da largura do pai menos padding */
-    .form-feedback-container { max-width: calc(100% - 20px); min-height: 38px;}
-    .feedback-message { font-size: 0.8em; }
-    .feedback-message.action-state { font-size: 0.75em; }
-
-    .controls-and-feedback { padding: 10px 8px; max-width: calc(100% - 20px);}
-    .workout-status { font-size: 0.95em; }
-
-    .action-buttons-monitoring { gap: 5px; }
-    .control-button { width: 38px; height: 38px; font-size: 0.9em; }
-    .action-button.main-action { width: 52px; height: 52px; font-size: 1.5em; }
-
-    .correct-rep-feedback { width: 70px; height: 70px; }
-    .correct-rep-feedback i { font-size: 2.4em; }
-    .rest-timer-display { font-size: 0.95em; padding: 5px 10px; }
+/* Estilos para o personagem (landmarks) */
+.landmark-style {
+    color: var(--primary-color);
+    fill: var(--primary-color);
+    stroke-width: 3px;
+}
+.connector-style {
+    stroke: var(--primary-color);
+    stroke-width: 3px;
 }
 
-@media (max-width: 320px) {
-    .control-button { width: 35px; height: 35px; font-size: 0.85em;}
-    .action-button.main-action { width: 48px; height: 48px; font-size: 1.4em;}
-    .feedback-message { font-size: 0.75em; }
-     .workout-status { font-size: 0.9em; }
+/* Espaços laterais para logos (apenas desktop) */
+.side-space {
+    display: none; /* Oculto por padrão */
 }
 
+/* Responsividade */
+@media (min-width: 1024px) {
+    .camera-container {
+        display: grid;
+        grid-template-columns: 1fr 640px 1fr;
+        gap: 20px;
+    }
+    
+    .side-space {
+        display: block;
+        height: 100%;
+        min-height: 400px;
+    }
+    
+    .side-space.left {
+        grid-column: 1;
+    }
+    
+    .side-space.right {
+        grid-column: 3;
+    }
+    
+    .camera-view-container {
+        grid-column: 2;
+    }
+    
+    .floating-controls {
+        margin-top: 20px;
+    }
+}
 
-@media (max-height: 650px) and (max-width: 850px) and (orientation: landscape) {
-    .app-container {overflow-y: auto;} /* Permite scroll se necessário */
+/* Tablets */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .camera-view-container {
+        max-width: 80%;
+    }
+    
+    .floating-controls {
+        max-width: 80%;
+    }
+}
+
+/* Mobile - tela cheia */
+@media (max-width: 767px) {
     #cameraMonitoringSection {
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 10px;
+        padding: 0;
+    }
+    
+    .camera-container {
+        width: 100%;
+        height: 100vh;
+    }
+    
+    .camera-view-container {
+        width: 100%;
+        max-width: 100%;
+        height: 100vh;
+        aspect-ratio: auto;
+        border-radius: 0;
+    }
+    
+    #userVideoFeed, #guideLinesCanvas {
+        object-fit: cover; /* Cobre a tela em mobile */
+    }
+    
+    .floating-controls {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 90%;
+        margin-top: 0;
+    }
+    
+    .rest-timer-display {
+        width: 80%;
+        max-width: 300px;
+    }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 360px) {
+    .control-button {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9em;
+    }
+    
+    .action-button.main-action {
+        width: 48px;
+        height: 48px;
+        font-size: 1.4em;
+    }
+    
+    .workout-status {
+        font-size: 0.85em;
+        gap: 8px;
+    }
+    
+    .floating-controls {
         padding: 10px;
     }
+}
+
+/* Orientação paisagem em dispositivos móveis */
+@media (max-height: 500px) and (orientation: landscape) {
+    .camera-container {
+        flex-direction: row;
+        height: calc(100vh - 40px);
+    }
+    
     .camera-view-container {
-        max-width: 48%;
-        height: calc(100vh - 80px); /* Ajustar para caber header e um pouco de margem */
-        max-height: 280px;
-        margin: 0;
+        height: 100%;
+        width: 60%;
+        max-width: none;
     }
-    .form-feedback-container {
-        max-width: 48%;
-        margin: 0;
-        align-self: center; /* Tenta centralizar com a altura dos controles */
-        min-height: 60px; /* Mais espaço para texto de status */
-    }
-    .controls-and-feedback {
-        max-width: 48%;
-        margin: 0;
-        padding-top: 5px;
-        justify-content: center; /* Centraliza conteúdo verticalmente */
-    }
-    .explanation-box {
-        margin-top: 10px;
-        max-height: calc(100vh - 70px);
-        overflow-y: auto;
+    
+    .floating-controls {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 35%;
+        height: auto;
+        max-width: 300px;
     }
 }

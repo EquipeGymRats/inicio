@@ -5,31 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Gym Rats: Elevação Lateral Guiada</title>
     <link rel="stylesheet" href="assets/style/monitoramento_simplificado.css">
-    <link rel="stylesheet" href="assets/style/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
-    <header class="main-header">
-    <div class="container header-content">
-      <div class="logo-area">
-        <h1 class="logo"><a href="index.html">GYM RATS</a></h1>
-      </div>
-            <input type="checkbox" id="menu-toggle" class="menu-toggle">
-            <label for="menu-toggle" class="hamburger-icon">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </label>
-      <nav class="main-nav">
-        <ul>
-          <li><a href="index.html#features-buttons">Funcionalidades</a></li>
-          <li><a href="equipe.html">Equipe</a></li>
-          <li><a href="index.html#about-us">Sobre Nós</a></li>
-          <li><a href="index.html#contact">Contato</a></li>
-        </ul>
-      </nav>
-    </div>
-    </header>
+
 
     <main class="app-container">
 
@@ -40,34 +25,47 @@
                 <p>2. Mantenha os pés afastados na largura dos ombros, joelhos levemente flexionados e abdômen contraído.</p>
                 <p>3. Levante os braços para os lados, mantendo os cotovelos levemente dobrados, até que os halteres atinjam a altura dos ombros (indicada pela linha guia na tela). Seus braços devem ficar paralelos ao chão.</p>
                 <p>4. Controle o movimento na subida e na descida. Não use impulso.</p>
+                <p>5. <strong>Dica:</strong> Faça um gesto de mão aberta ✋ com os cinco dedos para pausar ou retomar o exercício.</p>
                 <button id="startCameraButton" class="action-button">Entendi, Iniciar Exercício!</button>
             </div>
         </section>
 
         <section id="cameraMonitoringSection" class="phase-section">
-            <div class="camera-view-container">
-                <video id="userVideoFeed" playsinline autoplay muted></video>
-                <canvas id="guideLinesCanvas"></canvas>
-                <div id="correctRepFeedback" class="correct-rep-feedback">
-                    <i class="fas fa-check"></i>
+            <div class="camera-container">
+                <!-- Espaço lateral esquerdo para logos ou outros elementos -->
+                <div class="side-space left"></div>
+                
+                <!-- Container da câmera -->
+                <div class="camera-view-container">
+                    <video id="userVideoFeed" playsinline autoplay muted></video>
+                    <canvas id="guideLinesCanvas"></canvas>
+                    <div id="correctRepFeedback" class="correct-rep-feedback">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div id="cameraLoadingIndicator" class="loading-indicator-camera">
+                        <i class="fas fa-spinner fa-spin"></i> Carregando Câmera...
+                    </div>
+                    <div id="restTimerDisplay" class="rest-timer-display">
+                        <i class="fas fa-hourglass-half"></i>
+                        <span id="restTimeValue">01:00</span>
+                        <span>Descanso</span>
+                    </div>
                 </div>
-                <div id="cameraLoadingIndicator" class="loading-indicator-camera">
-                    <i class="fas fa-spinner fa-spin"></i> Carregando Câmera...
-                </div>
-                <div id="restTimerDisplay" class="rest-timer-display">
-                    Descanso: <span id="restTimeValue">01:00</span>
-                </div>
+                
+                <!-- Espaço lateral direito para logos ou outros elementos -->
+                <div class="side-space right"></div>
             </div>
 
-            <div id="formFeedbackContainer" class="form-feedback-container">
-                <p id="formFeedbackMessage" class="feedback-message"></p>
-            </div>
+            <div class="floating-controls">
+                <div id="formFeedbackContainer" class="form-feedback-container">
+                    <p id="formFeedbackMessage" class="feedback-message"></p>
+                </div>
 
-            <div class="controls-and-feedback">
                 <div class="workout-status">
-                    <p>Série: <span id="currentSetDisplay">1</span> / 4</p>
-                    <p>Repetições: <span id="validRepsCounter">0</span> / 10</p>
+                    <p>Série: <span id="currentSetDisplay">1</span> / <span id="totalSetsDisplay">4</span></p>
+                    <p>Repetições: <span id="validRepsCounter">0</span> / <span id="repsPerSetDisplay">10</span></p>
                 </div>
+                
                 <div id="setCompleteMessage" class="set-complete-message">
                     Série completa! Ótimo trabalho!
                 </div>
@@ -82,7 +80,7 @@
                     <button id="initiateExerciseButton" class="action-button main-action" aria-label="Iniciar ou Pausar Exercício">
                         <i class="fas fa-play"></i>
                     </button>
-                     <button id="showExplanationAgainButton" class="control-button" aria-label="Ver Explicação">
+                    <button id="showExplanationAgainButton" class="control-button" aria-label="Ver Explicação">
                         <i class="fas fa-info-circle"></i>
                     </button>
                 </div>
