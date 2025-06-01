@@ -4,9 +4,11 @@
 :root {
     --color-black: #0A0A0A;
     --color-white: #FFFFFF;
-    --color-yellow: #FFD700;
+    --color-yellow: #FFD700; /* Dourado vibrante */
     --color-light-gray: #F0F0F0;
     --color-dark-gray: #333333;
+    --color-medium-gray: #1a1a1a; /* Novo tom de cinza para fundos mais claros */
+    --color-lighter-black: #121212; /* Um preto um pouco mais claro para fundos */
 }
 
 
@@ -22,11 +24,12 @@ body {
 }
 
 .generator-form-section, .training-output-section {
-    background-color: var(--color-dark-gray); /* Fundo escuro para seções */
+    background-color: var(--color-medium-gray); /* Fundo um pouco mais claro para seções */
     padding: 30px 20px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7); /* Sombra mais intensa */
     margin-bottom: 30px;
+    border: 1px solid rgba(255, 215, 0, 0.1); /* Borda sutil amarela */
 }
 
 h2 {
@@ -35,12 +38,16 @@ h2 {
     color: var(--color-yellow);
     text-align: center;
     margin-bottom: 20px;
+    text-transform: uppercase; /* Deixa o título em maiúsculas */
+    letter-spacing: 1.5px;
 }
 
 p {
     text-align: center;
     margin-bottom: 30px;
     font-size: 1em;
+    line-height: 1.6;
+    color: var(--color-light-gray);
 }
 
 /* Formulário */
@@ -55,12 +62,13 @@ p {
     margin-bottom: 10px;
     color: var(--color-white);
     font-size: 1.1em;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3); /* Sombra sutil no texto da label */
 }
 
 .form-select {
     width: 100%;
     padding: 12px;
-    border-radius: 5px;
+    border-radius: 8px; /* Cantos mais arredondados */
     border: 1px solid var(--color-dark-gray);
     background-color: var(--color-black);
     color: var(--color-white);
@@ -70,219 +78,257 @@ p {
     background-repeat: no-repeat;
     background-position: right 10px center;
     background-size: 20px;
+    transition: all 0.3s ease; /* Transição para foco */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5); /* Sombra interna sutil */
 }
 
 .form-select:focus {
     outline: none;
     border-color: var(--color-yellow);
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.4), inset 0 1px 3px rgba(0,0,0,0.5); /* Sombra mais pronunciada ao focar */
 }
 
 .radio-group {
     display: flex;
-    flex-wrap: wrap; /* Quebra em múltiplas linhas em telas menores */
-    gap: 10px;
-    justify-content: center; /* Centraliza os botões de rádio */
+    flex-wrap: wrap;
+    gap: 12px; /* Aumenta um pouco o espaçamento */
+    justify-content: center;
 }
 
 .radio-group input[type="radio"] {
-    display: none; /* Esconde o radio button padrão */
+    display: none;
 }
 
 .radio-group label {
-    background-color: var(--color-black);
+    background-color: var(--color-black); /* Fundo padrão dos labels */
     color: var(--color-white);
-    padding: 12px 18px;
-    border-radius: 8px;
+    padding: 14px 20px; /* Aumenta o padding */
+    border-radius: 10px; /* Cantos mais arredondados */
     cursor: pointer;
     border: 2px solid var(--color-dark-gray);
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-    display: flex; /* Para alinhar ícone e texto */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Adiciona transição para transform e box-shadow */
+    display: flex;
     align-items: center;
-    font-weight: 400;
-    font-size: 0.95em;
-    min-width: 140px; /* Garante tamanho mínimo */
+    font-weight: 500; /* Ajusta o peso da fonte */
+    font-size: 1em; /* Tamanho da fonte ligeiramente maior */
+    min-width: 150px;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); /* Sombra mais suave */
 }
 
 .radio-group label i {
-    margin-right: 8px;
+    margin-right: 10px; /* Aumenta o espaçamento do ícone */
     color: var(--color-yellow);
-    font-size: 1.1em;
+    font-size: 1.2em; /* Ícone um pouco maior */
 }
 
+/* Estado quando o radio button está selecionado */
 .radio-group input[type="radio"]:checked + label {
     background-color: var(--color-yellow);
     border-color: var(--color-yellow);
-    color: var(--color-black); /* Texto preto quando selecionado */
-    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
-}
-
-.radio-group input[type="radio"]:hover + label {
-    background-color: var(--color-dark-gray); /* Um cinza mais escuro no hover */
-    border-color: var(--color-yellow);
+    color: var(--color-black); /* Texto preto quando selecionado - OK */
+    box-shadow: 0 6px 15px rgba(255, 215, 0, 0.5); /* Sombra mais vibrante */
+    transform: translateY(-3px); /* Efeito de "levantar" ao selecionar */
 }
 
 .radio-group input[type="radio"]:checked + label i {
-    color: var(--color-black); /* Ícone preto quando selecionado */
+    color: var(--color-black); /* Ícone preto quando selecionado - OK */
+}
+
+/* Estado de hover para ITENS NÃO SELECIONADOS */
+.radio-group input[type="radio"]:not(:checked) + label:hover {
+    background-color: var(--color-dark-gray); /* Fundo um pouco mais escuro no hover */
+    border-color: var(--color-yellow); /* Borda amarela no hover */
+    color: var(--color-white); /* Texto branco no hover para garantir legibilidade */
+    transform: translateY(-2px); /* Efeito suave de levantar no hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6); /* Sombra no hover */
+}
+
+/* ESTADO DE HOVER PARA ITENS JÁ SELECIONADOS */
+.radio-group input[type="radio"]:checked + label:hover {
+    background-color: var(--color-yellow); /* Mantém o fundo amarelo */
+    border-color: var(--color-yellow); /* Mantém a borda amarela */
+    color: var(--color-black); /* Mantém o texto preto */
+    transform: translateY(-4px); /* Apenas um pequeno "salto" para indicar hover, mais pronunciado que o checked normal */
+    box-shadow: 0 8px 18px rgba(255, 215, 0, 0.6); /* Sombra ligeiramente mais intensa */
+    cursor: default; /* Pode mudar o cursor para não confundir que é clicável novamente */
 }
 
 
 .btn {
-    display: block; /* Ocupa a largura total */
+    display: block;
     width: 100%;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 16px; /* Padding um pouco maior */
+    border-radius: 10px; /* Mais arredondado */
     text-decoration: none;
     font-weight: 700;
-    font-size: 1.1em;
+    font-size: 1.15em; /* Fonte um pouco maior */
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, color 0.3s ease;
+    text-transform: uppercase; /* Texto dos botões em maiúsculas */
+    letter-spacing: 1px;
 }
 
 .btn-primary {
     background-color: var(--color-yellow);
     color: var(--color-black);
     border: 2px solid var(--color-yellow);
-    margin-top: 30px;
+    margin-top: 35px; /* Mais espaçamento */
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); /* Sombra para o botão principal */
 }
 
 .btn-primary:hover {
     background-color: var(--color-white);
     color: var(--color-black);
     border-color: var(--color-white);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+    transform: translateY(-5px); /* Efeito mais pronunciado no hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
 }
 
 /* Seção de Saída do Treino */
 .training-output-section {
     background-color: var(--color-black); /* Fundo preto para o treino gerado */
     color: var(--color-white);
-    padding: 30px 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    padding: 35px 25px; /* Padding um pouco maior */
+    border-radius: 12px; /* Mais arredondado */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8); /* Sombra mais forte */
+    border: 1px solid rgba(255, 215, 0, 0.2); /* Borda sutil */
 }
 
 .training-output-section h2 {
     color: var(--color-yellow);
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .summary-info {
     text-align: center;
-    font-size: 1.1em;
-    margin-bottom: 25px;
+    font-size: 1.15em; /* Texto do resumo um pouco maior */
+    margin-bottom: 30px;
     color: var(--color-light-gray);
+    padding: 10px;
+    background-color: var(--color-lighter-black); /* Um preto um pouco mais claro para o resumo */
+    border-radius: 8px;
+    box-shadow: inset 0 1px 5px rgba(0,0,0,0.5);
 }
 
 .summary-info span {
     font-weight: 700;
     color: var(--color-yellow);
+    text-transform: capitalize; /* Capitaliza as primeiras letras das informações */
 }
 
 #training-plan {
-    margin-top: 20px;
+    margin-top: 25px;
 }
 
 .training-day {
-    background-color: var(--color-dark-gray); /* Fundo para cada dia de treino */
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    background-color: var(--color-medium-gray); /* Fundo para cada dia de treino */
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.1);
 }
 
 .training-day h4 {
     font-family: 'Montserrat', sans-serif;
     color: var(--color-yellow);
-    font-size: 1.4em;
-    margin-bottom: 15px;
+    font-size: 1.5em; /* Título do dia maior */
+    margin-bottom: 18px;
     border-bottom: 2px solid var(--color-black);
     padding-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* Estilo para a lista ordenada de exercícios */
 .exercise-list {
-    list-style: none; /* Remove bullet points padrão */
+    list-style: none;
     padding: 0;
     margin: 0;
 }
 
 .exercise-list li {
-    background-color: var(--color-black);
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    background-color: var(--color-lighter-black); /* Fundo mais claro para os exercícios */
+    padding: 18px; /* Mais padding */
+    border-radius: 8px;
+    margin-bottom: 12px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
     position: relative;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-    counter-increment: exercise-counter; /* Incrementa o contador para numeração */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Sombra mais definida */
+    counter-increment: exercise-counter;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.exercise-list li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
 }
 
 .exercise-list li::before {
-    content: counter(exercise-counter) "."; /* Exibe o número do exercício */
+    content: counter(exercise-counter) ".";
     color: var(--color-yellow);
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 1.3em; /* Número maior */
     position: absolute;
-    left: 10px;
-    top: 15px;
+    left: 15px; /* Ajusta a posição */
+    top: 18px;
 }
 
 .exercise-content {
-    margin-left: 30px; /* Espaço para o número */
-    width: calc(100% - 40px); /* Ajusta a largura */
+    margin-left: 35px; /* Mais espaço para o número */
+    width: calc(100% - 45px);
 }
 
 .exercise-content h5 {
     font-family: 'Montserrat', sans-serif;
     color: var(--color-yellow);
-    font-size: 1.1em;
+    font-size: 1.15em; /* Título do exercício maior */
     margin-bottom: 5px;
-    display: inline-block; /* Para alinhar com o sets/reps se em linha */
+    display: inline-block;
 }
 
 .exercise-content .sets-reps {
     font-weight: bold;
     color: var(--color-white);
-    font-size: 1em;
-    margin-left: 10px;
-    display: inline-block; /* Para alinhar com o nome do exercício */
+    font-size: 1.05em; /* Sets/Reps um pouco maior */
+    margin-left: 12px;
+    display: inline-block;
 }
 
 .exercise-content .tips {
-    margin: 5px 0 0 0;
-    font-size: 0.95em;
+    margin: 8px 0 0 0; /* Mais espaçamento para as dicas */
+    font-size: 0.9em;
     color: var(--color-light-gray);
     text-align: left;
+    line-height: 1.5;
+    font-style: italic; /* Dicas em itálico */
 }
 
 .replace-exercise-btn {
     background: none;
     border: none;
     color: var(--color-light-gray);
-    font-size: 1.1em;
+    font-size: 1.2em; /* Ícone de substituição maior */
     cursor: pointer;
     transition: color 0.3s ease, transform 0.3s ease;
-    position: absolute; /* Para posicionar na lista */
-    top: 15px;
-    right: 10px;
+    position: absolute;
+    top: 18px;
+    right: 15px;
 }
 
 .replace-exercise-btn:hover {
     color: var(--color-yellow);
-    transform: rotate(15deg);
+    transform: scale(1.2) rotate(15deg); /* Efeito de escala e rotação no hover */
 }
 
 .output-actions {
     display: flex;
-    flex-direction: column; /* Coluna no mobile */
-    gap: 15px;
-    margin-top: 30px;
+    flex-direction: column;
+    gap: 20px; /* Mais espaçamento entre os botões */
+    margin-top: 40px; /* Mais espaçamento superior */
 }
 
 .btn-secondary {
@@ -326,10 +372,10 @@ p {
     transform: translateX(-50%);
     background-color: var(--color-yellow);
     color: var(--color-black);
-    padding: 12px 25px;
-    border-radius: 8px;
+    padding: 14px 30px; /* Padding maior */
+    border-radius: 10px; /* Mais arredondado */
     font-weight: 700;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Sombra mais suave */
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
@@ -354,21 +400,29 @@ p {
         font-size: 2.2em;
     }
     .radio-group label {
-        min-width: unset; /* Remove min-width para se ajustar melhor */
-        flex-grow: 1; /* Permite que os itens cresçam */
+        min-width: unset;
+        flex-grow: 1;
+        padding: 15px 25px; /* Ajuste para desktop */
     }
     .btn {
-        max-width: 300px; /* Limita a largura do botão principal */
+        max-width: 350px; /* Limita a largura do botão principal */
         margin-left: auto;
         margin-right: auto;
     }
     .output-actions {
-        flex-direction: row; /* Volta para linha em telas maiores */
+        flex-direction: row;
         justify-content: center;
+        gap: 25px; /* Mais espaçamento entre botões em desktop */
     }
     .output-actions .btn {
-        width: auto; /* Deixa o botão voltar ao tamanho normal */
-        max-width: 200px;
+        width: auto;
+        max-width: 220px; /* Ajuste para os botões de ação */
+    }
+    .training-day h4 {
+        font-size: 1.6em;
+    }
+    .exercise-list li {
+        padding: 20px;
     }
 }
 
@@ -380,38 +434,41 @@ p {
         font-size: 2.5em;
     }
     .radio-group {
-        justify-content: center; /* Centraliza opções em desktop também */
+        justify-content: center;
     }
     .radio-group label {
-        padding: 15px 25px;
-        font-size: 1em;
+        padding: 18px 30px; /* Mais padding para opções maiores */
+        font-size: 1.05em;
     }
     /* Adaptação para a lista de exercícios em desktop */
     .exercise-list li {
-        flex-direction: row; /* Volta para linha em telas maiores */
+        flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        padding-left: 50px; /* Mais espaço para o número */
+        padding-left: 60px; /* Mais espaço para o número */
+    }
+    .exercise-list li::before {
+        left: 20px;
     }
     .exercise-content {
-        margin-left: 0; /* Remove margem extra */
+        margin-left: 0;
         width: auto;
-        flex-grow: 1; /* Permite que o conteúdo ocupe espaço */
+        flex-grow: 1;
         text-align: left;
     }
     .exercise-content h5, .exercise-content .sets-reps {
-        display: inline; /* Alinha o nome do exercício e sets/reps na mesma linha */
+        display: inline;
     }
     .exercise-content .sets-reps {
-        margin-left: 15px; /* Mais espaço entre nome e sets/reps */
+        margin-left: 20px;
     }
     .exercise-content .tips {
         margin-top: 5px;
         font-size: 0.9em;
     }
     .replace-exercise-btn {
-        position: relative; /* Volta ao fluxo normal para alinhar com flex */
-        margin-left: 20px;
+        position: relative;
+        margin-left: 25px; /* Mais espaço para o botão de substituição */
         top: auto;
         right: auto;
     }
