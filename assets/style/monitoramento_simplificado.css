@@ -133,7 +133,7 @@ body {
     display: none;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center; /* Centraliza verticalmente */
     padding: 30px 20px; /* Padding maior para desktop */
     position: absolute;
     top: 0;
@@ -157,7 +157,7 @@ body {
     width: 100%;
     text-align: left;
     box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-    margin-top: 40px;
+    margin: 0 auto; /* Centraliza horizontalmente */
     border: 1px solid var(--glass-effect-border);
     position: relative;
     overflow: hidden;
@@ -257,8 +257,8 @@ body {
 .camera-view-container {
     position: relative;
     width: 100%;
-    max-width: 560px; /* Reduzido para menos zoom */
-    aspect-ratio: 4/3; /* Proporção mais natural */
+    max-width: 640px; /* Ajustado para proporção mais quadrada */
+    aspect-ratio: 1/1; /* Proporção quadrada */
     background-color: #000;
     border-radius: 20px;
     overflow: hidden;
@@ -315,82 +315,13 @@ body {
 #userVideoFeed.mirrored { transform: scaleX(-1); }
 #guideLinesCanvas { z-index: 5; }
 
-/* Efeito de explosão para repetição correta */
-.explosion-effect {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 15;
-    opacity: 0;
-    visibility: hidden;
-}
-
-.explosion-effect.visible {
-    opacity: 1;
-    visibility: visible;
-    animation: explosionAnimation 0.8s ease-out forwards;
-}
-
-.explosion-line {
-    position: absolute;
-    background-color: var(--success-rep-color);
-    transform-origin: center;
-}
-
-/* Linhas horizontais */
-.explosion-line.horizontal {
-    height: 3px;
-    width: 0;
-    left: 50%;
-    animation: horizontalLineAnimation 0.5s ease-out forwards;
-}
-
-/* Linhas verticais */
-.explosion-line.vertical {
-    width: 3px;
-    height: 0;
-    top: 50%;
-    animation: verticalLineAnimation 0.5s ease-out forwards;
-}
-
-/* Linhas diagonais */
-.explosion-line.diagonal {
-    height: 3px;
-    width: 0;
-    left: 50%;
-    transform-origin: left center;
-    animation: diagonalLineAnimation 0.5s ease-out forwards;
-}
-
-@keyframes explosionAnimation {
-    0% { opacity: 1; }
-    80% { opacity: 0.8; }
-    100% { opacity: 0; visibility: hidden; }
-}
-
-@keyframes horizontalLineAnimation {
-    0% { width: 0; left: 50%; }
-    100% { width: 100%; left: 0; }
-}
-
-@keyframes verticalLineAnimation {
-    0% { height: 0; top: 50%; }
-    100% { height: 100%; top: 0; }
-}
-
-@keyframes diagonalLineAnimation {
-    0% { width: 0; transform: rotate(0deg); }
-    100% { width: 141%; transform: rotate(45deg); }
-}
+/* Removido o efeito de explosão para repetição correta */
 
 /* Ilha dinâmica para controles */
 .floating-controls {
     position: relative;
     width: 100%;
-    max-width: 560px; /* Mesmo tamanho da câmera */
+    max-width: 640px; /* Mesmo tamanho da câmera */
     padding: 20px 25px;
     background: linear-gradient(145deg, rgba(40, 40, 40, 0.7), rgba(20, 20, 20, 0.7));
     backdrop-filter: blur(15px);
@@ -547,6 +478,7 @@ body {
     filter: drop-shadow(0 0 10px rgba(var(--primary-color-rgb), 0.5));
 }
 
+/* Feedback técnico (para avisos de sistema) */
 .form-feedback-container {
     width: 100%;
     padding: 12px 18px;
@@ -584,6 +516,39 @@ body {
 .feedback-message.action-state {
     color: var(--text-color-light);
     font-style: italic;
+}
+
+/* Feedback visual para erros de execução */
+.execution-feedback {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(145deg, rgba(var(--error-color-rgb), 0.8), rgba(180, 30, 30, 0.8));
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 1.1em;
+    font-weight: bold;
+    z-index: 25;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    text-align: center;
+    max-width: 80%;
+}
+
+.execution-feedback.visible {
+    opacity: 1;
+    visibility: visible;
+    animation: pulseError 2s infinite;
+}
+
+@keyframes pulseError {
+    0% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.05); }
+    100% { transform: translateX(-50%) scale(1); }
 }
 
 .workout-status {
@@ -707,7 +672,7 @@ body {
 @media (min-width: 1024px) {
     .camera-container {
         display: grid;
-        grid-template-columns: 1fr 560px 1fr;
+        grid-template-columns: 1fr 640px 1fr;
         gap: 30px;
         padding: 20px;
     }
@@ -732,6 +697,12 @@ body {
     
     .floating-controls {
         margin-top: 25px;
+    }
+    
+    .explanation-box {
+        width: 80%;
+        max-width: 800px;
+        margin: 0 auto;
     }
 }
 
@@ -772,6 +743,11 @@ body {
     .main-nav ul {
         flex-direction: column;
         gap: 15px;
+    }
+    
+    .explanation-box {
+        width: 90%;
+        margin: 0 auto;
     }
 }
 
@@ -841,6 +817,25 @@ body {
         flex-direction: column;
         gap: 15px;
     }
+    
+    .explanation-box {
+        width: 100%;
+        margin: 0 auto;
+        padding: 25px;
+    }
+    
+    .explanation-box h2 {
+        font-size: 1.6em;
+    }
+    
+    .explanation-box p {
+        font-size: 1em;
+    }
+    
+    .execution-feedback {
+        width: 90%;
+        font-size: 1em;
+    }
 }
 
 /* Ajustes para telas muito pequenas */
@@ -864,6 +859,14 @@ body {
     
     .floating-controls {
         padding: 12px;
+    }
+    
+    .explanation-box {
+        padding: 20px;
+    }
+    
+    .explanation-box h2 {
+        font-size: 1.4em;
     }
 }
 

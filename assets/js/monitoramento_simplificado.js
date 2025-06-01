@@ -25,36 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const formFeedbackMessageEl = document.getElementById('formFeedbackMessage');
     const correctRepFeedbackEl = document.getElementById('correctRepFeedback');
 
-    // Criar elementos para efeito de explosão
-    const explosionEffectEl = document.createElement('div');
-    explosionEffectEl.className = 'explosion-effect';
-    
-    // Criar linhas de explosão
-    const numLines = 8; // Número de linhas para o efeito
-    for (let i = 0; i < numLines; i++) {
-        // Linhas horizontais e verticais
-        if (i < 2) {
-            const horizontalLine = document.createElement('div');
-            horizontalLine.className = 'explosion-line horizontal';
-            horizontalLine.style.top = `${i === 0 ? '30%' : '70%'}`;
-            explosionEffectEl.appendChild(horizontalLine);
-            
-            const verticalLine = document.createElement('div');
-            verticalLine.className = 'explosion-line vertical';
-            verticalLine.style.left = `${i === 0 ? '30%' : '70%'}`;
-            explosionEffectEl.appendChild(verticalLine);
-        }
-        
-        // Linhas diagonais
-        const diagonalLine = document.createElement('div');
-        diagonalLine.className = 'explosion-line diagonal';
-        diagonalLine.style.top = '50%';
-        diagonalLine.style.transform = `rotate(${45 * i}deg)`;
-        explosionEffectEl.appendChild(diagonalLine);
-    }
-    
-    // Adicionar ao container da câmera quando o DOM estiver pronto
-    document.querySelector('.camera-view-container').appendChild(explosionEffectEl);
+    // Criar elemento para feedback de execução
+    const executionFeedbackEl = document.createElement('div');
+    executionFeedbackEl.className = 'execution-feedback';
+    document.querySelector('.camera-view-container').appendChild(executionFeedbackEl);
+
+    // Criar elementos para guias visuais
+    const shoulderGuideLine = document.createElement('div');
+    shoulderGuideLine.className = 'shoulder-guide-line';
+    shoulderGuideLine.style.display = 'none';
+    document.querySelector('.camera-view-container').appendChild(shoulderGuideLine);
+
+    const leftAngleGuide = document.createElement('div');
+    leftAngleGuide.className = 'target-angle-guide left';
+    leftAngleGuide.style.display = 'none';
+    document.querySelector('.camera-view-container').appendChild(leftAngleGuide);
+
+    const rightAngleGuide = document.createElement('div');
+    rightAngleGuide.className = 'target-angle-guide right';
+    rightAngleGuide.style.display = 'none';
+    document.querySelector('.camera-view-container').appendChild(rightAngleGuide);
 
     // Criar elemento para o boneco de exemplo
     const exampleFigureContainer = document.createElement('div');
@@ -81,22 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     `;
     document.querySelector('.camera-view-container').appendChild(exampleFigureContainer);
-
-    // Criar elementos para guias visuais
-    const shoulderGuideLine = document.createElement('div');
-    shoulderGuideLine.className = 'shoulder-guide-line';
-    shoulderGuideLine.style.display = 'none';
-    document.querySelector('.camera-view-container').appendChild(shoulderGuideLine);
-
-    const leftAngleGuide = document.createElement('div');
-    leftAngleGuide.className = 'target-angle-guide left';
-    leftAngleGuide.style.display = 'none';
-    document.querySelector('.camera-view-container').appendChild(leftAngleGuide);
-
-    const rightAngleGuide = document.createElement('div');
-    rightAngleGuide.className = 'target-angle-guide right';
-    rightAngleGuide.style.display = 'none';
-    document.querySelector('.camera-view-container').appendChild(rightAngleGuide);
 
     let currentStream;
     let useFrontCamera = true;
@@ -144,7 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let showingExampleFigure = false;
     let exampleFigureTimer = null;
     let noProgressCounter = 0;
-    const MAX_NO_PROGRESS = 5; // Número de verificações sem progresso antes de mostrar o exemplo
+    const MAX_NO_PROGRESS = 10; // Aumentado para ser menos sensível
+    let wasExerciseInProgressBeforeExample = false; // Armazena o estado anterior
+    let exampleShownInCurrentSession = false; // Controla se já mostrou exemplo nesta sessão
     
     // Dimensões do canvas baseadas no vídeo
     let videoWidth, videoHeight;
@@ -154,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         textExplanationSection.classList.remove('active');
         cameraMonitoringSection.classList.remove('active');
         hideFormFeedback();
+        hideExecutionFeedback();
         correctRepFeedbackEl.classList.remove('visible');
         hideExampleFigure();
 
@@ -234,8 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const constraints = {
             video: { 
                 facingMode: useFrontCamera ? 'user' : 'environment', 
-                width: { ideal: 640 }, 
-                height: { ideal: 480 },
+                width: { ideal: 1920 }, 
+                height: { ideal: 1080 },
                 // Reduzir zoom
                 zoom: 1.0
             },
@@ -319,6 +296,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Se o exemplo está sendo mostrado, esconde-o e retoma o exercício
+        if (showingExampleFigure) {
+            hideExampleFigure();
+            isExerciseInProgress = wasExerciseInProgressBeforeExample;
+            updateInitiateButtonIcon();
+            return;
+        }
+
         isExerciseInProgress = !isExerciseInProgress;
 
         if (isExerciseInProgress) {
@@ -326,12 +311,13 @@ document.addEventListener('DOMContentLoaded', () => {
             workoutCompleteMessageEl.classList.remove('visible');
             speakSimpleFeedback(`Iniciando série ${currentSet}. ${repsPerSet} repetições.`);
             hideFormFeedback();
+            hideExecutionFeedback();
             lastFeedbackTime = 0;
             repPhase = 'down';
             repCountedForThisCycle = false;
             formCorrectAtPeak = false; // Reseta flag da forma no pico
-            hideExampleFigure();
             noProgressCounter = 0;
+            exampleShownInCurrentSession = false; // Reseta o controle de exemplo
         } else { // Pausou
             speakSimpleFeedback("Exercício pausado.");
             showFormFeedback("Exercício pausado.", "action-state");
@@ -358,7 +344,9 @@ document.addEventListener('DOMContentLoaded', () => {
         handGestureDetected = false;
         handGestureFeedbackShown = false;
         noProgressCounter = 0;
+        exampleShownInCurrentSession = false;
         hideExampleFigure();
+        hideExecutionFeedback();
 
         stopAnimationAndRest();
         clearCanvas();
@@ -402,14 +390,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     }
 
+    function showExecutionFeedback(message) {
+        executionFeedbackEl.textContent = message;
+        executionFeedbackEl.classList.add('visible');
+    }
+
+    function hideExecutionFeedback() {
+        executionFeedbackEl.classList.remove('visible');
+        setTimeout(() => {
+            if (!executionFeedbackEl.classList.contains('visible')) {
+                executionFeedbackEl.textContent = '';
+            }
+        }, 300);
+    }
+
     function showCorrectRepAnimation() {
         correctRepFeedbackEl.classList.add('visible');
-        // Mostrar efeito de explosão
-        explosionEffectEl.classList.add('visible');
-        setTimeout(() => {
-            explosionEffectEl.classList.remove('visible');
-        }, 800);
-        
         setTimeout(() => {
             correctRepFeedbackEl.classList.remove('visible');
         }, 700);
@@ -417,22 +413,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNÇÕES PARA BONECO DE EXEMPLO ---
     function showExampleFigure() {
-        if (showingExampleFigure) return;
+        if (showingExampleFigure || exampleShownInCurrentSession) return;
+        
+        // Armazena o estado atual do exercício
+        wasExerciseInProgressBeforeExample = isExerciseInProgress;
+        
+        // Pausa o exercício enquanto mostra o exemplo
+        if (isExerciseInProgress) {
+            isExerciseInProgress = false;
+            updateInitiateButtonIcon();
+        }
         
         showingExampleFigure = true;
+        exampleShownInCurrentSession = true; // Marca que já mostrou exemplo nesta sessão
         exampleFigureContainer.classList.add('visible');
         
         // Iniciar animação do boneco
         animateExampleFigure();
         
         // Mostrar feedback
-        showFormFeedback("Observe o exemplo de como fazer o exercício corretamente.", "tip");
+        showExecutionFeedback("Observe o exemplo e tente imitar o movimento");
+        speakSimpleFeedback("Observe o exemplo de como fazer o exercício corretamente.");
         
         // Definir timer para esconder o exemplo após um tempo
         if (exampleFigureTimer) clearTimeout(exampleFigureTimer);
         exampleFigureTimer = setTimeout(() => {
             hideExampleFigure();
-        }, 10000); // 10 segundos de exemplo
+            // Retoma o exercício automaticamente após o exemplo
+            if (wasExerciseInProgressBeforeExample) {
+                isExerciseInProgress = true;
+                updateInitiateButtonIcon();
+                showFormFeedback("Continue o exercício", "tip");
+            }
+        }, 8000); // 8 segundos de exemplo
     }
     
     function hideExampleFigure() {
@@ -440,11 +453,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         showingExampleFigure = false;
         exampleFigureContainer.classList.remove('visible');
+        hideExecutionFeedback();
         
         if (exampleFigureTimer) {
             clearTimeout(exampleFigureTimer);
             exampleFigureTimer = null;
         }
+        
+        noProgressCounter = 0; // Reseta o contador
     }
     
     function animateExampleFigure() {
@@ -718,7 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function processUserPose(landmarks) {
-        if (!isExerciseInProgress) return;
+        if (!isExerciseInProgress || showingExampleFigure) return;
 
         const leftShoulder = landmarks[POSE_LANDMARKS.LEFT_SHOULDER];
         const leftElbow = landmarks[POSE_LANDMARKS.LEFT_ELBOW];
@@ -743,7 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (rightArmAbductionAngle !== null) {
             currentArmAngle = rightArmAbductionAngle;
         } else {
-            showFormFeedback("Não consigo ver seus braços claramente.", "error");
+            showExecutionFeedback("Não consigo ver seus braços claramente");
             isUserFormCorrect = false;
             return;
         }
@@ -756,7 +772,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const minElbowAngleAllowed = 180 - FLEXION_TOLERANCE_DEG; // Ex: 180 - 35 = 145 graus
         if ((leftElbowAngleDeg !== null && leftElbowAngleDeg < minElbowAngleAllowed) ||
             (rightElbowAngleDeg !== null && rightElbowAngleDeg < minElbowAngleAllowed)) {
-            formFeedback = "Mantenha os cotovelos mais esticados (levemente dobrados).";
+            formFeedback = "Mantenha os cotovelos mais esticados";
             currentFormCorrect = false;
         }
 
@@ -770,7 +786,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 3. Verificar se braços sobem demais (acima da linha dos ombros)
         if (currentFormCorrect && currentArmAngle > MAX_ARM_ANGLE_RAD * 1.15) { // 15% acima do alvo
-             formFeedback = "Não levante os braços acima da linha dos ombros.";
+             formFeedback = "Não levante os braços acima da linha dos ombros";
              currentFormCorrect = false;
         }
 
@@ -780,11 +796,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Exibir feedback de forma
         const now = Date.now();
         if (!isUserFormCorrect && formFeedback && (now - lastFeedbackTime > feedbackThrottleMillis)) {
-            showFormFeedback(formFeedback, "error");
+            showExecutionFeedback(formFeedback);
             speakSimpleFeedback(formFeedback);
             lastFeedbackTime = now;
-        } else if (isUserFormCorrect && formFeedbackContainerEl.classList.contains('visible') && formFeedbackMessageEl.classList.contains('error')) {
-            hideFormFeedback();
+        } else if (isUserFormCorrect && executionFeedbackEl.classList.contains('visible')) {
+            hideExecutionFeedback();
         }
 
         // --- Lógica de Contagem de Repetições --- 
@@ -809,7 +825,7 @@ document.addEventListener('DOMContentLoaded', () => {
                      // Atingiu a base vindo do pico, mas a forma estava errada no pico
                      // Dar um feedback? Ex: "Repetição inválida, corrija a forma."
                      if (now - lastFeedbackTime > feedbackThrottleMillis) {
-                         showFormFeedback("Forma incorreta no pico, repetição não contada.", "error");
+                         showExecutionFeedback("Forma incorreta no pico, repetição não contada");
                          // speakSimpleFeedback("Forma incorreta no pico.");
                          lastFeedbackTime = now;
                      }
@@ -824,9 +840,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formCorrectAtPeak = false; // Reseta
             noProgressCounter = 0; // Resetar contador de não progresso
             // Limpa feedback de erro ao iniciar nova subida
-            if (formFeedbackContainerEl.classList.contains('visible') && formFeedbackMessageEl.classList.contains('error')) {
-                 hideFormFeedback();
-            }
+            hideExecutionFeedback();
         } else if (currentArmAngle < REPETITION_THRESHOLD_LIFT && currentArmAngle > REPETITION_THRESHOLD_LOWER && repPhase === 'peak') {
             repPhase = 'lowering';
             noProgressCounter = 0; // Resetar contador de não progresso
@@ -835,14 +849,13 @@ document.addEventListener('DOMContentLoaded', () => {
             noProgressCounter++;
             
             // Verificar se o usuário está parado sem progresso
-            if (noProgressCounter > MAX_NO_PROGRESS && !showingExampleFigure) {
+            if (noProgressCounter > MAX_NO_PROGRESS && !showingExampleFigure && !exampleShownInCurrentSession) {
                 showExampleFigure();
-                noProgressCounter = 0;
             }
         }
 
         // Mostrar dicas se a forma estiver correta e sem erros recentes
-        if (isUserFormCorrect && !formFeedbackContainerEl.classList.contains('visible') && (now - lastFeedbackTime > tipThrottleMillis)) {
+        if (isUserFormCorrect && !executionFeedbackEl.classList.contains('visible') && (now - lastFeedbackTime > tipThrottleMillis)) {
             if (repPhase === 'up') {
                 showFormFeedback("Suba até a linha guia.", "tip");
                 lastFeedbackTime = now; // Atualiza tempo para não repetir dica logo
@@ -882,45 +895,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return extendedFingers >= 4;
     }
 
-    function processHandGestures(multiHandLandmarks) {
-        if (!multiHandLandmarks || multiHandLandmarks.length === 0) {
-            handGestureDetected = false;
-            return;
-        }
-        
-        const now = Date.now();
-        
-        // Verifica se alguma das mãos está aberta (5 dedos)
-        for (const landmarks of multiHandLandmarks) {
-            if (isOpenHandGesture(landmarks)) {
-                // Evita múltiplas detecções em sequência
-                if (now - lastHandGestureTime > handGestureThrottleMillis) {
-                    handGestureDetected = true;
-                    lastHandGestureTime = now;
-                    
-                    // Alterna o estado do exercício (pausa/despausa)
-                    if (!isResting) {
-                        initiateExerciseButton.click();
-                        
-                        // Mostra feedback visual do gesto detectado
-                        if (!handGestureFeedbackShown) {
-                            showFormFeedback("Gesto de mão aberta detectado! " + 
-                                            (isExerciseInProgress ? "Exercício iniciado." : "Exercício pausado."), 
-                                            isExerciseInProgress ? "success" : "action-state");
-                            handGestureFeedbackShown = true;
-                            setTimeout(() => {
-                                handGestureFeedbackShown = false;
-                            }, 2000);
-                        }
-                    }
-                    return;
-                }
-            }
-        }
-        
-        // Se chegou aqui, não detectou o gesto
-        handGestureDetected = false;
-    }
+    function processHandGestures(multiHandLandmarks) {}
 
     // --- FUNÇÕES DE DESENHO NO CANVAS ---
     function clearCanvas() {
@@ -960,9 +935,9 @@ document.addEventListener('DOMContentLoaded', () => {
                            lineWidth: 1, radius: 3});
 
             // Processa a pose para feedback e contagem se estiver em exercício
-            if (isExerciseInProgress) {
+            if (isExerciseInProgress && !showingExampleFigure) {
                 processUserPose(results.poseLandmarks);
-            } else if (!isResting && !textExplanationSection.classList.contains('active')) {
+            } else if (!isResting && !textExplanationSection.classList.contains('active') && !showingExampleFigure) {
                 if (!formFeedbackContainerEl.classList.contains('visible')) {
                     showFormFeedback("Posicione-se e prepare-se para iniciar.", "action-state");
                 }
@@ -970,10 +945,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } else {
             lastUserLandmarks = null;
-            if (isExerciseInProgress) {
-                showFormFeedback("Não detectamos você. Posicione-se melhor.", "error");
+            if (isExerciseInProgress && !showingExampleFigure) {
+                showExecutionFeedback("Não detectamos você. Posicione-se melhor.");
                 isUserFormCorrect = false;
-            } else if (!isResting && !textExplanationSection.classList.contains('active')) {
+            } else if (!isResting && !textExplanationSection.classList.contains('active') && !showingExampleFigure) {
                  showFormFeedback("Aguardando detecção...", "action-state");
                  // Limpa guias se não detectar
                  clearCanvas();
@@ -1003,7 +978,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!icon) return;
         icon.className = 'fas'; // Reseta classes do ícone
 
-        if (isExerciseInProgress) {
+        if (showingExampleFigure) {
+            icon.classList.add('fa-play');
+            initiateExerciseButton.setAttribute('aria-label', 'Continuar Exercício');
+        } else if (isExerciseInProgress) {
             icon.classList.add('fa-pause');
             initiateExerciseButton.setAttribute('aria-label', 'Pausar Exercício');
         } else if (isResting) {
