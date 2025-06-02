@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagina não encontrada - GYM Rats</title>
+    <link rel="stylesheet" href="assets/style/header.css">
+    <link rel="stylesheet" href="assets/style/style.css">
 </head>
 <style>
     body {
@@ -16,12 +18,12 @@
         background-color: black;
     }
 
-    h1 {
+    #title-404 {
         display: flex;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        height: 80vh;
         margin: 0;
         text-align: center;
         color: #fff;
@@ -29,6 +31,27 @@
     }
 </style>
 <body>
-    <h1>PAGINA NÃO ENCONTRADA</h1>
+    <header class="main-header">
+        <div class="container header-content">
+          <div class="logo-area">
+            <h1 class="logo"><a href="index.html">GYM RATS</a></h1>
+          </div>
+                <input type="checkbox" id="menu-toggle" class="menu-toggle">
+                <label for="menu-toggle" class="hamburger-icon">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </label>
+          <nav class="main-nav">
+            <ul>
+              <li><a href="index.html#features-buttons">Funcionalidades</a></li>
+              <li><a href="equipe.html">Equipe</a></li>
+              <li><a href="index.html#about-us">Sobre Nós</a></li>
+              <li><a href="index.html#contact">Contato</a></li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+    <h1 id="title-404">PAGINA NÃO ENCONTRADA</h1>
 </body>
 </html>
