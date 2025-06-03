@@ -1,3 +1,5 @@
+// assets/js/alimentacao.js
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- Referências aos Elementos do DOM ---
     const nutriSummaryInfo = document.getElementById('nutri-summary-info');
@@ -11,13 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const nutritionDetailsForm = document.getElementById('nutrition-details-form');
     const formSteps = document.querySelectorAll('.form-step');
     const formStepTitle = document.getElementById('form-step-title');
-    
+    const formProgressBar = document.querySelector('.form-progress-bar'); // Referência ao container da barra de progresso
+    const formProgressSteps = document.querySelectorAll('.form-progress-bar .progress-step');
+
     const nextStep1Btn = document.getElementById('next-step-1');
     const prevStep2Btn = document.getElementById('prev-step-2');
     const nextStep2Btn = document.getElementById('next-step-2');
     const prevStep3Btn = document.getElementById('prev-step-3');
     const submitNutritionFormBtn = document.getElementById('submit-nutrition-form');
-
 
     const nutriPlanOutput = document.getElementById('nutri-plan-output');
     const currentDayName = document.getElementById('current-day-name');
@@ -27,18 +30,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const regenerateNutriBtn = document.getElementById('regenerate-nutri-btn');
     const exportNutriBtn = document.getElementById('export-nutri-btn');
-    const pdfLoadingSpinner = document.getElementById('pdf-loading-spinner');
-    
+
     const notificationToast = document.getElementById('notification-toast');
 
-    // NOVO: Referência para a seção de dicas
     const nutriTipsSection = document.getElementById('nutri-tips-section');
     const nutriTipsList = document.getElementById('nutri-tips-list');
+    
+    const formLoadingOverlay = document.getElementById('form-loading-overlay');
+    const loadingText = document.querySelector('.loading-text'); // Novo elemento para o texto de carregamento
 
 
     let currentStep = 0;
     let nutritionPlanData = []; // Armazenará o plano semanal completo da Gemini API
-    let globalTipsData = []; // NOVO: Armazenará as dicas globais da Gemini API
+    let globalTipsData = []; // Armazenará as dicas globais da Gemini API
     let currentDayIndex = 0;
 
     const dayNames = [
@@ -57,6 +61,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000);
     }
 
+    function updateProgressBar(stepIndex) {
+        // Remove todas as classes de largura e adiciona a correta
+        formProgressBar.classList.remove('progress-step-1', 'progress-step-2', 'progress-step-3');
+        if (stepIndex === 0) {
+            formProgressBar.classList.add('progress-step-1');
+        } else if (stepIndex === 1) {
+            formProgressBar.classList.add('progress-step-2');
+        } else if (stepIndex === 2) {
+            formProgressBar.classList.add('progress-step-3');
+        }
+
+
+        formProgressSteps.forEach((step, index) => {
+            if (index <= stepIndex) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+            // Adiciona o número da etapa
+            step.textContent = index + 1; 
+        });
+    }
+
     function showStep(stepIndex) {
         formSteps.forEach((step, index) => {
             if (index === stepIndex) {
@@ -68,7 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         currentStep = stepIndex;
-        formStepTitle.textContent = `${stepIndex + 1} de ${formSteps.length}`;
+        formStepTitle.textContent = `Dados para o Plano: ${stepIndex + 1} de ${formSteps.length}`; // Atualiza o título
+        updateProgressBar(stepIndex);
     }
 
     function animateToNextStep() {
@@ -156,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
             }
         }
+        // Para o step 2 (último), não há validações específicas, mas podemos adicionar se necessário
         return isValid;
     }
 
@@ -164,16 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
     async function generateNutritionPlanWithGemini() {
         const userInputs = getUserInputs();
 
-        nutriFormSection.classList.add('hidden');
-        nutriPlanOutput.classList.add('hidden');
-        if (pdfLoadingSpinner) pdfLoadingSpinner.classList.remove('hidden');
+        // 1. Mostrar overlay de carregamento no formulário
+        loadingText.textContent = "Gerando seu plano alimentar inteligente..."; // Atualiza o texto
+        formLoadingOverlay.classList.add('visible');
         
-        currentDayCard.innerHTML = '<div style="text-align: center; padding: 50px;"><i class="fas fa-spinner fa-spin" style="font-size: 3em; color: var(--gymrats-highlight-yellow);"></i><p style="margin-top: 20px;">Gerando seu plano alimentar inteligente...</p></div>';
-        currentDayName.textContent = "Carregando...";
-        nutriPlanOutput.classList.remove('hidden');
-
         try {
-            const response = await fetch('http://localhost:3000/generate-nutrition-plan', {
+            const response = await fetch('https://api-gym-cyan.vercel.app/generate-nutrition-plan', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -190,16 +215,17 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (data.plan && Array.isArray(data.plan)) {
                 nutritionPlanData = data.plan; 
-                globalTipsData = data.tips || []; // NOVO: Armazena as dicas globais
+                globalTipsData = data.tips || [];
             } else {
                 console.error("Resposta da IA não contém 'plan' como um array:", data);
                 throw new Error("A IA não gerou um plano em formato esperado.");
             }
 
             if (nutritionPlanData.length > 0) {
+                // Salvar dados no localStorage
                 localStorage.setItem('gymrats_objetivo', userInputs.goal);
                 localStorage.setItem('gymrats_nivel', userInputs.activityLevel);
-                localStorage.setItem('gymrats_frequencia', "Não especificada");
+                localStorage.setItem('gymrats_frequencia', "Não especificada"); // Ajustar se a IA fornecer
                 
                 const bmr = calculateBMR(userInputs.weight, userInputs.height, userInputs.age, userInputs.gender);
                 const tdee = calculateTDEE(bmr, userInputs.activityLevel);
@@ -211,26 +237,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 localStorage.setItem('gymrats_calorias', Math.round(adjustedCalories).toString());
 
-
-                displayDayPlan(0); // Exibe o plano da primeira dia por padrão
-                displayGlobalTips(); // NOVO: Exibe as dicas globais
-                nutriPlanOutput.classList.remove('hidden');
-                nutriSummaryInfo.classList.remove('hidden');
                 updateSummaryInfoDisplay(userInputs, Math.round(adjustedCalories));
+                nutriSummaryInfo.classList.add('active'); // Mostrar summary info com transição
+
+                // 2. Esconder overlay e formulário, mostrar plano
+                formLoadingOverlay.classList.remove('visible'); // Esconde o overlay
+                nutriFormSection.classList.add('hidden'); // Esconde o formulário completamente
+                
+                displayDayPlan(0); // Exibe o plano da primeira dia por padrão
+                displayGlobalTips(); // Exibe as dicas globais
+                nutriPlanOutput.classList.remove('hidden'); // Remove hidden para iniciar transição
+                nutriPlanOutput.classList.add('active'); // Ativa a visibilidade com transição
+
                 showToast('Plano alimentar gerado com sucesso!', 'success');
             } else {
                 nutriPlanOutput.innerHTML = '<p style="color: red; text-align: center;">A IA gerou o plano, mas ele veio vazio ou em um formato inesperado. Tente novamente ou ajuste os parâmetros.</p>';
                 showToast('Erro: Plano vazio ou inválido da IA.', 'error');
-                nutriFormSection.classList.remove('hidden');
+                formLoadingOverlay.classList.remove('visible'); // Esconde overlay
+                nutriFormSection.classList.remove('hidden'); // Manter o formulário visível em caso de erro
             }
             
         } catch (error) {
             console.error("Erro na requisição ao backend ou ao processar a resposta:", error);
             nutriPlanOutput.innerHTML = `<p style="color: red; text-align: center;">Erro ao gerar plano alimentar. Por favor, tente novamente. <br> Detalhes: ${error.message}</p>`;
             showToast('Erro ao gerar plano. Verifique o console para mais detalhes.', 'error');
-            nutriFormSection.classList.remove('hidden');
-        } finally {
-            if (pdfLoadingSpinner) pdfLoadingSpinner.classList.add('hidden');
+            formLoadingOverlay.classList.remove('visible'); // Esconde overlay
+            nutriFormSection.classList.remove('hidden'); // Manter o formulário visível em caso de erro
         }
     }
 
@@ -271,98 +303,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayDayPlan(dayIndex) {
         if (!nutritionPlanData || nutritionPlanData.length === 0 || !nutritionPlanData[dayIndex]) {
-            currentDayCard.innerHTML = '<p>Nenhum plano disponível para este dia.</p>';
+            currentDayCard.innerHTML = '<p style="text-align: center; color: var(--gymrats-text-secondary);">Nenhum plano disponível para este dia.</p>';
             currentDayName.textContent = dayNames[dayIndex];
+            // currentDayCard.style.height = 'auto'; // Não definir altura fixa aqui
             return;
         }
 
         const dayPlan = nutritionPlanData[dayIndex];
         currentDayName.textContent = dayPlan.dayName || dayNames[dayIndex];
-        currentDayCard.innerHTML = '';
+        
+        // Remove a transição de altura temporariamente para evitar o "salto" ou "gigante"
+        // e então recalcula a altura com o novo conteúdo.
+        // currentDayCard.style.transition = 'none'; 
+        currentDayCard.style.height = 'auto'; // Permite que a altura se ajuste livremente
 
-        const mealList = document.createElement('ul');
-        mealList.classList.add('meal-list');
-
+        let mealListHTML = '<ul class="meal-list">';
         if (dayPlan.meals && Array.isArray(dayPlan.meals)) {
             dayPlan.meals.forEach(meal => {
-                const mealItem = document.createElement('li');
-                mealItem.classList.add('meal-item');
-
-                const mealHeader = document.createElement('div');
-                mealHeader.classList.add('meal-header');
+                const iconHtml = meal.icon && meal.icon.startsWith('fas fa-') 
+                    ? `<i class="${meal.icon}"></i>`
+                    : (meal.icon ? `<span style="font-style: normal;">${meal.icon}</span>` : `<i class="fas fa-utensils"></i>`);
                 
-                // Lógica para adicionar ícone Font Awesome ou emoji
-                // A prioridade é usar Font Awesome se a IA enviar a classe correta
-                const iconElement = document.createElement('i'); // Começa com <i> para Font Awesome
-                if (meal.icon && meal.icon.startsWith('fas fa-')) {
-                    iconElement.className = meal.icon;
-                } else if (meal.icon) {
-                    // Se não for uma classe Font Awesome, tenta renderizar como emoji
-                    iconElement.outerHTML = `<span style="font-size: 1.5em; margin-right: 15px; color: var(--gymrats-highlight-yellow);">${meal.icon}</span>`;
-                    // Substitui o iconElement <i> por um <span> diretamente no DOM
-                    // Não podemos mais usar iconElement.textContent = meal.icon;
-                    // pois ele já foi criado como <i>. Precisamos criar um novo elemento ou outerHTML.
-                    // Para simplificar, vou recriar o elemento no mealHeader.appendChild
-                } else {
-                    iconElement.className = 'fas fa-utensils'; // Fallback padrão
-                }
+                const foodsText = meal.foods && Array.isArray(meal.foods) ? meal.foods.join('<br>') : 'Nenhum alimento detalhado para esta refeição.';
                 
-                // Se o ícone não foi tratado como emoji, adicione o <i> criado
-                if (meal.icon && !meal.icon.startsWith('fas fa-')) {
-                    // Se foi tratado como emoji via outerHTML, o elemento original <i> não é mais válido,
-                    // e o span já foi "injetado".
-                    // Precisamos criar um novo span aqui ou garantir que o outerHTML funcione.
-                    // A melhor abordagem é ter uma variável que armazena o HTML do ícone.
-                    const iconHtml = meal.icon && meal.icon.startsWith('fas fa-') 
-                        ? `<i class="${meal.icon}"></i>`
-                        : (meal.icon ? `<span style="font-style: normal;">${meal.icon}</span>` : `<i class="fas fa-utensils"></i>`);
-                    mealHeader.innerHTML = `${iconHtml}<h5 style="margin-left: 15px;">${meal.mealName}</h5>`; // Injetar HTML para o ícone
-                } else {
-                    mealHeader.appendChild(iconElement);
-                    const mealTitle = document.createElement('h5');
-                    mealTitle.textContent = meal.mealName;
-                    mealHeader.appendChild(mealTitle);
-                }
-                
-                mealItem.appendChild(mealHeader);
-
-                if (meal.foods && Array.isArray(meal.foods)) {
-                    const foodDetails = document.createElement('p');
-                    foodDetails.classList.add('meal-foods');
-                    foodDetails.innerHTML = meal.foods.join('<br>');
-                    mealItem.appendChild(foodDetails);
-                } else {
-                    const noFoods = document.createElement('p');
-                    noFoods.classList.add('meal-foods');
-                    noFoods.innerHTML = 'Nenhum alimento detalhado para esta refeição.';
-                    noFoods.style.fontStyle = 'italic';
-                    mealItem.appendChild(noFoods);
-                }
-
-                mealList.appendChild(mealItem);
+                mealListHTML += `
+                    <li class="meal-item">
+                        <div class="meal-header">
+                            ${iconHtml}
+                            <h5>${meal.mealName}</h5>
+                        </div>
+                        <p class="meal-foods">${foodsText}</p>
+                    </li>
+                `;
             });
         } else {
-            currentDayCard.innerHTML = '<p>Erro: As refeições para este dia não foram carregadas corretamente ou estão em formato inválido.</p>';
+            mealListHTML += `
+                <li class="meal-item">
+                    <p class="meal-foods" style="font-style: italic;">Erro: As refeições para este dia não foram carregadas corretamente ou estão em formato inválido.</p>
+                </li>
+            `;
         }
-
-        currentDayCard.appendChild(mealList);
-
+        mealListHTML += '</ul>';
+        
+        currentDayCard.innerHTML = mealListHTML; 
+        
+        // Se quisermos uma transição de altura, teríamos que fazer algo mais complexo
+        // como capturar a altura atual, aplicar o novo conteúdo, e depois transicionar para a nova altura.
+        // Mas para evitar o "tamanho gigante", deixar 'height: auto;' é a solução mais simples.
+        
         prevDayBtn.disabled = dayIndex === 0;
         nextDayBtn.disabled = dayIndex === (nutritionPlanData.length - 1);
+
+        currentDayIndex = dayIndex; // Atualiza o índice global
     }
 
-    // NOVO: Função para exibir as dicas globais
     function displayGlobalTips() {
-        nutriTipsList.innerHTML = ''; // Limpa as dicas anteriores
+        nutriTipsList.innerHTML = '';
         if (globalTipsData && globalTipsData.length > 0) {
             globalTipsData.forEach(tip => {
                 const li = document.createElement('li');
-                li.innerHTML = `<i class="fas fa-lightbulb"></i> ${tip}`; // Ícone de lâmpada para dicas
+                li.innerHTML = `<i class="fas fa-lightbulb"></i> ${tip}`;
                 nutriTipsList.appendChild(li);
             });
-            nutriTipsSection.classList.remove('hidden'); // Mostra a seção de dicas
+            nutriTipsSection.classList.remove('hidden');
         } else {
-            nutriTipsSection.classList.add('hidden'); // Esconde se não houver dicas
+            nutriTipsSection.classList.add('hidden');
         }
     }
 
@@ -393,27 +398,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (nutritionDetailsForm) {
-        nutritionDetailsForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            await generateNutritionPlanWithGemini();
+    if (submitNutritionFormBtn) { // Usar o submit button diretamente
+        submitNutritionFormBtn.addEventListener('click', async (event) => {
+            event.preventDefault(); // Impede o comportamento padrão do formulário
+            // Valida a última etapa antes de gerar
+            if (validateCurrentStepInputs(2)) { // Assumindo que a última etapa é a 2 (0-indexed)
+                await generateNutritionPlanWithGemini();
+            }
         });
     }
+
 
     // --- Event Listeners para Navegação do Plano Semanal ---
     if (prevDayBtn) {
         prevDayBtn.addEventListener('click', () => {
             if (currentDayIndex > 0) {
-                currentDayIndex--;
-                displayDayPlan(currentDayIndex);
+                displayDayPlan(currentDayIndex - 1); // Passa o novo índice para displayDayPlan
             }
         });
     }
     if (nextDayBtn) {
         nextDayBtn.addEventListener('click', () => {
             if (currentDayIndex < nutritionPlanData.length - 1) {
-                currentDayIndex++;
-                displayDayPlan(currentDayIndex);
+                displayDayPlan(currentDayIndex + 1); // Passa o novo índice para displayDayPlan
             }
         });
     }
@@ -421,26 +428,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Outros Botões de Ação ---
     if (regenerateNutriBtn) {
         regenerateNutriBtn.addEventListener('click', () => {
-            showStep(0);
-            nutriFormSection.classList.remove('hidden');
-            nutriPlanOutput.classList.add('hidden');
-            nutriSummaryInfo.classList.add('hidden');
-            nutriTipsSection.classList.add('hidden'); // NOVO: Esconde as dicas ao resetar
+            showStep(0); // Volta para a primeira etapa do formulário
+            nutriFormSection.classList.remove('hidden'); // Mostra o formulário
+            nutriPlanOutput.classList.add('hidden'); // Esconde o plano com transição (usa .hidden diretamente)
+            nutriPlanOutput.classList.remove('active'); // Remove a classe 'active' para transição de saída
+            nutriSummaryInfo.classList.remove('active'); // Esconde o summary info com transição
+            nutriTipsSection.classList.add('hidden'); // Esconde as dicas
             showToast('Formulário resetado. Preencha novamente para regerar o plano.', 'info');
-            nutritionDetailsForm.reset();
+            nutritionDetailsForm.reset(); // Limpa os campos do formulário
+            // Limpa dados do localStorage
             localStorage.removeItem('gymRatsNutritionDetails');
             localStorage.removeItem('gymrats_objetivo');
             localStorage.removeItem('gymrats_nivel');
             localStorage.removeItem('gymrats_frequencia');
             localStorage.removeItem('gymrats_calorias');
+            // Limpa o plano de dados
+            nutritionPlanData = [];
+            globalTipsData = [];
+            currentDayIndex = 0;
+            currentDayCard.innerHTML = ''; // Limpa o conteúdo do card do dia
         });
     }
 
     // --- Exportar para PDF (Ajustado com Ícones) ---
     if (exportNutriBtn) {
         exportNutriBtn.addEventListener('click', async () => {
+            if (nutritionPlanData.length === 0) {
+                showToast('Nenhum plano gerado para exportar.', 'error');
+                return;
+            }
+
             showToast('Gerando PDF...', 'info');
-            if (pdfLoadingSpinner) pdfLoadingSpinner.classList.remove('hidden');
             if (exportNutriBtn) exportNutriBtn.disabled = true;
 
             const { jsPDF } = window.jspdf;
@@ -462,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const colorFat = [50, 205, 50];
 
             const defaultFont = 'Helvetica'; // jsPDF padrão
-            const fontAwesomeFont = 'FontAwesome'; // Para ícones (se carregada)
+            // const fontAwesomeFont = 'FontAwesome'; // Para ícones (se carregada)
 
             const addPageBackgroundAndFooter = () => {
                 doc.setFillColor(darkBgColor[0], darkBgColor[1], darkBgColor[2]);
@@ -568,8 +586,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 nutritionPlanData.forEach(dayPlan => {
                     cardPromises.push(new Promise(async (resolve) => {
                         const tempDayCard = document.createElement('div');
-                        const cardWidthPx = (pageWidth - (2 * margin) - 10) / 2 * (96 / 25.4);
-
+                        // Ajuste o width para algo menor para caber 2 cards na página e não precisar de um cálculo complexo
+                        const cardWidthPx = (pageWidth / 2 - margin - 5) * (96 / 25.4); // Aproximadamente metade da página, menos margens.
+                        
+                        // Estilos para o tempDayCard para html2canvas:
                         tempDayCard.style.width = `${cardWidthPx}px`;
                         tempDayCard.style.padding = '8px';
                         tempDayCard.style.backgroundColor = `rgb(${cardBgColor[0]}, ${cardBgColor[1]}, ${cardBgColor[2]})`;
@@ -583,6 +603,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         tempDayCard.style.overflow = 'hidden';
                         tempDayCard.style.pageBreakInside = 'avoid';
                         tempDayCard.style.flexShrink = '0';
+                        // IMPORTANTE: Adicione o elemento temporário ao DOM para que html2canvas possa vê-lo e calcular as dimensões.
+                        document.body.appendChild(tempDayCard);
+
 
                         let cardContent = `<h4 style="font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: bold; color: rgb(${highlightYellow[0]}, ${highlightYellow[1]}, ${highlightYellow[2]}); margin-bottom: 6px; text-align: center;">${dayPlan.dayName}</h4>`;
 
@@ -590,16 +613,17 @@ document.addEventListener('DOMContentLoaded', () => {
                              dayPlan.meals.forEach(meal => {
                                  cardContent += `<div style="margin-bottom: 4px; display: flex; align-items: flex-start;">`;
                                  
-                                 // NOVO: Adiciona ícone Font Awesome ou emoji no HTML temporário para renderização no canvas
+                                 // Para ícones, html2canvas geralmente não renderiza Font Awesome diretamente
+                                 // Pode precisar de uma alternativa, como emojis ou imagens.
+                                 // Por enquanto, vamos manter o que estava, mas ciente que pode não aparecer.
                                  if (meal.icon && meal.icon.startsWith('fas fa-')) {
-                                    // Para Font Awesome no HTML, usamos a tag <i>
-                                     cardContent += `<i class="${meal.icon}" style="font-size: 11px; margin-right: 4px; color: rgb(${highlightYellow[0]}, ${highlightYellow[1]}, ${highlightYellow[2]});"></i>`;
+                                     // Isso não funcionará bem no PDF. Considerar trocar por texto ou emoji
+                                     // Ex: Substituir por um emoji ou um placeholder se não tiver suporte FontAwesome no jsPDF
+                                     cardContent += `<span style="font-family: 'Font Awesome 5 Free', 'Font Awesome 5 Solid', sans-serif; font-weight: 900; font-size: 11px; margin-right: 4px; color: rgb(${highlightYellow[0]}, ${highlightYellow[1]}, ${highlightYellow[2]});">&#xf0f5;</span>`; // Exemplo de ícone de utensílio
                                  } else if (meal.icon) {
-                                    // Para emojis, usamos o próprio emoji dentro de um span
                                      cardContent += `<span style="font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif; font-size: 11px; margin-right: 4px; color: rgb(${highlightYellow[0]}, ${highlightYellow[1]}, ${highlightYellow[2]});">${meal.icon}</span>`;
                                  } else {
-                                     // Fallback para ícone padrão
-                                     cardContent += `<i class="fas fa-utensils" style="font-size: 11px; margin-right: 4px; color: rgb(${highlightYellow[0]}, ${highlightYellow[1]}, ${highlightYellow[2]});"></i>`;
+                                     cardContent += `<span style="font-family: 'Font Awesome 5 Free', 'Font Awesome 5 Solid', sans-serif; font-weight: 900; font-size: 11px; margin-right: 4px; color: rgb(${highlightYellow[0]}, ${highlightYellow[1]}, ${highlightYellow[2]});">&#xf0f5;</span>`; // Ícone de utensílio
                                  }
 
                                  cardContent += `<div style="flex-grow: 1;">`;
@@ -616,16 +640,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
 
                         tempDayCard.innerHTML = cardContent;
-                        document.body.appendChild(tempDayCard);
-
+                        // O tempDayCard já está no body, então html2canvas pode renderizá-lo.
                         const canvas = await html2canvas(tempDayCard, {
-                            scale: 4,
-                            backgroundColor: null,
+                            scale: 4, // Aumenta a escala para melhor qualidade
+                            backgroundColor: null, // Captura o fundo transparente
                             logging: false,
                             useCORS: true
                         });
                         const imgData = canvas.toDataURL('image/png');
-                        document.body.removeChild(tempDayCard);
+                        document.body.removeChild(tempDayCard); // Remove o elemento temporário
 
                         resolve({ imgData, width: canvas.width, height: canvas.height });
                     }));
@@ -636,43 +659,60 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cardMarginX = 8;
                 const cardMarginY = 10;
                 const cardsPerRow = 2;
-                const effectiveCardWidth = (pageWidth - (2 * margin) - ((cardsPerRow - 1) * cardMarginX)) / cardsPerRow;
+                // Ajustando effectiveCardWidth para o cálculo correto da imagem
+                const effectiveCardWidthForPdf = (pageWidth - (2 * margin) - ((cardsPerRow - 1) * cardMarginX)) / cardsPerRow;
+
 
                 let currentRowCards = 0;
                 let startX = margin;
                 let highestCardInRow = 0;
+                
+                // Mudar para o inicio da área de cards, abaixo das dicas (se existirem)
+                if (currentY + 10 > pageHeight - margin - 25) { // Se as dicas quase encheram a página
+                    doc.addPage();
+                    addPageBackgroundAndFooter();
+                    currentY = margin;
+                } else {
+                    currentY += 10; // Pequeno espaço após as dicas ou info
+                }
+                
+                doc.setFont(defaultFont, 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor(highlightYellow[0], highlightYellow[1], highlightYellow[2]);
+                doc.text('Plano Semanal Detalhado:', margin, currentY);
+                currentY += 10; // Espaço após o título
 
                 renderedCards.forEach((card, index) => {
                     const aspectRatio = card.width / card.height;
-                    const imgHeight = effectiveCardWidth / aspectRatio;
+                    const imgHeight = effectiveCardWidthForPdf / aspectRatio;
 
-                    if (currentRowCards === cardsPerRow) {
-                        currentY += highestCardInRow + cardMarginY;
-                        startX = margin;
+                    if (currentRowCards === cardsPerRow) { // Se a linha atual já tem 2 cards
+                        currentY += highestCardInRow + cardMarginY; // Pula para a próxima linha
+                        startX = margin; // Reseta X para a margem esquerda
                         currentRowCards = 0;
                         highestCardInRow = 0;
                     }
 
-                    if (currentY + imgHeight > pageHeight - margin - 25) { 
+                    if (currentY + imgHeight > pageHeight - margin - 25) { // Se o card não couber na página
                         doc.addPage();
                         addPageBackgroundAndFooter();
-                        currentY = margin;
+                        currentY = margin; // Reseta Y para o topo da nova página
                         startX = margin;
                         currentRowCards = 0;
                         highestCardInRow = 0;
                     }
 
-                    doc.addImage(card.imgData, 'PNG', startX, currentY, effectiveCardWidth, imgHeight);
+                    doc.addImage(card.imgData, 'PNG', startX, currentY, effectiveCardWidthForPdf, imgHeight);
                     
-                    startX += effectiveCardWidth + cardMarginX;
+                    startX += effectiveCardWidthForPdf + cardMarginX;
                     currentRowCards++;
                     highestCardInRow = Math.max(highestCardInRow, imgHeight);
 
+                    // Se for o último card da linha ou o último card de todos, ajusta o Y para a próxima seção
                     if (currentRowCards === cardsPerRow || index === renderedCards.length - 1) {
                          currentY += highestCardInRow + cardMarginY;
-                         startX = margin;
-                         currentRowCards = 0;
-                         highestCardInRow = 0;
+                         // Não precisamos resetar startX, currentRowCards, highestCardInRow aqui
+                         // pois isso será tratado no próximo loop ou ao final da função.
                     }
                 });
 
@@ -683,7 +723,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Erro ao exportar PDF:", error);
                 showToast('Erro ao exportar o plano para PDF.', 'error');
             } finally {
-                if (pdfLoadingSpinner) pdfLoadingSpinner.classList.add('hidden');
                 if (exportNutriBtn) exportNutriBtn.disabled = false;
             }
         });
