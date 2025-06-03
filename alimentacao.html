@@ -89,6 +89,16 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label for="user-goal">Objetivo Fitness:</label>
+                            <select id="user-goal" class="form-select" required>
+                                <option value="">Selecione...</option>
+                                <option value="perda de peso">Perda de Peso</option>
+                                <option value="hipertrofia muscular">Hipertrofia Muscular</option>
+                                <option value="manutencao do peso">Manutenção do Peso</option>
+                                <option value="ganho de forca">Ganho de Força</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="meal-count">Quantas refeições por dia?</label>
                             <select id="meal-count" class="form-select" required>
                                 <option value="3">3 Refeições</option>
@@ -110,6 +120,10 @@
                                 <option value="omnivore">Onívora</option>
                                 <option value="vegetarian">Vegetariana</option>
                                 <option value="vegan">Vegana</option>
+                                <option value="keto">Keto</option>
+                                <option value="sem gluten">Sem Glúten</option>
+                                <option value="low carb">Low Carb</option>
+                                <option value="outra">Outra (especificar em restrições)</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -118,25 +132,31 @@
                         </div>
                         <div class="form-actions">
                             <button type="button" class="btn btn-secondary" id="prev-step-3"><i class="fas fa-arrow-left"></i> Voltar</button>
-                            <button type="submit" class="btn btn-primary">Gerar Plano Alimentar <i class="fas fa-check-circle"></i></button>
+                            <button type="submit" class="btn btn-primary" id="submit-nutrition-form">Gerar Plano Alimentar <i class="fas fa-check-circle"></i></button>
                         </div>
                     </div>
                 </form>
             </section>
 
-            <section class="alimentacao-plan-output hidden" id="nutri-plan-output">
-                <div class="calendar-navigation">
-                    <button class="nav-arrow" id="prev-day"><i class="fas fa-chevron-left"></i></button>
-                    <h3 id="current-day-name"></h3>
-                    <button class="nav-arrow" id="next-day"><i class="fas fa-chevron-right"></i></button>
+           <section id="nutri-plan-output" class="alimentacao-plan-output hidden">
+                <h3>Seu Plano Alimentar Semanal</h3>
+                <div class="plan-navigation">
+                    <button id="prev-day" class="nav-button"><i class="fas fa-chevron-left"></i> Anterior</button>
+                    <span id="current-day-name" class="current-day-name"></span>
+                    <button id="next-day" class="nav-button">Próximo <i class="fas fa-chevron-right"></i></button>
                 </div>
-                <div class="day-card" id="current-day-card">
+                <div id="current-day-card" class="day-plan-card">
                     </div>
 
-                <div class="nutri-actions">
-                    <button id="regenerate-nutri-btn" class="btn btn-tertiary">Regerar Plano</button>
-                    <button id="export-nutri-btn" class="btn btn-secondary"><i class="fas fa-download"></i> Exportar Plano (PDF)</button>
-                    <span id="pdf-loading-spinner" class="hidden"><i class="fas fa-spinner fa-spin"></i> Gerando...</span>
+                <div id="nutri-tips-section" class="nutri-tips-section hidden">
+                    <h4><i class="fas fa-lightbulb"></i> Dicas Importantes:</h4>
+                    <ul id="nutri-tips-list">
+                        </ul>
+                </div>
+                <div class="plan-actions">
+                    <button id="regenerate-nutri-btn" class="action-button secondary-button"><i class="fas fa-redo"></i> Regerar Plano</button>
+                    <button id="export-nutri-btn" class="action-button primary-button"><i class="fas fa-file-pdf"></i> Exportar para PDF</button>
+                    <span id="pdf-loading-spinner" class="loading-spinner hidden"><i class="fas fa-spinner fa-spin"></i> Gerando PDF...</span>
                 </div>
             </section>
         </div>

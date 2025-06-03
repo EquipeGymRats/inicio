@@ -342,38 +342,62 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: all 0.5s ease-in-out; /* Adiciona transição para aparecer/desaparecer */
+    opacity: 1; /* Padrão, a classe .hidden vai mudar */
 }
 
-.calendar-navigation {
+/* Título dentro da seção de saída */
+.alimentacao-plan-output h3 {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--gymrats-highlight-yellow);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.2em;
+    letter-spacing: 1.5px;
+}
+
+
+.plan-navigation { /* Corresponde ao div com class="plan-navigation" no HTML */
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     margin-bottom: 30px;
     padding: 0 15px;
+    gap: 10px; /* Espaçamento entre os elementos de navegação */
 }
 
-.calendar-navigation .nav-arrow {
+.plan-navigation .nav-button { /* Corresponde aos botões com class="nav-button" */
     background: none;
     border: none;
     color: var(--gymrats-highlight-yellow);
-    font-size: 3em;
+    font-size: 1.2em; /* Tamanho do texto do botão */
     cursor: pointer;
     transition: transform 0.2s ease, color 0.2s ease;
-    padding: 5px;
+    padding: 10px 15px; /* Padding para a área clicável */
+    border-radius: 8px; /* Cantos arredondados */
+    display: flex; /* Para alinhar ícone e texto */
+    align-items: center;
+    gap: 8px; /* Espaço entre ícone e texto */
+    font-weight: bold;
 }
 
-.calendar-navigation .nav-arrow:hover:not(:disabled) {
+.plan-navigation .nav-button i {
+    font-size: 1.5em; /* Tamanho do ícone maior */
+}
+
+.plan-navigation .nav-button:hover:not(:disabled) {
     color: var(--gymrats-text-primary);
-    transform: scale(1.15);
+    background-color: rgba(255, 215, 0, 0.1); /* Um fundo sutil no hover */
+    transform: translateY(-2px);
 }
 
-.calendar-navigation .nav-arrow:disabled {
+.plan-navigation .nav-button:disabled {
     opacity: 0.3;
     cursor: not-allowed;
 }
 
-#current-day-name {
+#current-day-name { /* ID do span que exibe o nome do dia */
     font-family: 'Montserrat', sans-serif;
     color: var(--gymrats-text-primary);
     font-size: 2.5em;
@@ -385,7 +409,7 @@ html, body {
     text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
 
-.day-card {
+.day-card { /* Corresponde ao div com id="current-day-card" e class="day-plan-card" */
     background-color: var(--gymrats-light-bg);
     border-radius: 12px;
     padding: 30px;
@@ -396,15 +420,16 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    transition: all 0.3s ease; /* Para um efeito suave ao mudar de dia */
 }
 
-.meal-list {
+.meal-list { /* Ul dentro de day-card */
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.meal-item {
+.meal-item { /* Li dentro de meal-list */
     background-color: var(--gymrats-dark-bg); /* Mais escuro para contraste */
     padding: 20px 25px;
     border-radius: 10px;
@@ -422,64 +447,184 @@ html, body {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
 }
 
-.meal-header {
+.meal-header { /* Div dentro de meal-item */
     display: flex;
     align-items: center;
     margin-bottom: 5px;
 }
 
-.meal-header i {
+.meal-header i, .meal-header span { /* Inclui span para caso de emoji */
     color: var(--gymrats-highlight-yellow);
     font-size: 1.5em;
     margin-right: 15px;
+    flex-shrink: 0; /* Impede que o ícone encolha */
 }
 
-.meal-header h5 {
+.meal-header h5 { /* H5 dentro de meal-header */
     font-family: 'Montserrat', sans-serif;
     font-size: 1.3em;
     color: var(--gymrats-text-primary);
     font-weight: 700;
+    flex-grow: 1; /* Ocupa o espaço restante */
 }
 
-/* Spinner de Carregamento */
-#pdf-loading-spinner {
+.meal-foods { /* P dentro de meal-item */
+    font-size: 1em;
+    color: var(--gymrats-text-secondary);
+    line-height: 1.6;
+    padding-left: calc(1.5em + 15px + 10px); /* Ajusta o padding para alinhar com o texto após o ícone/título */
+    /* 1.5em (tamanho do ícone) + 15px (margin-right do ícone) + 10px (padding extra para segurança) */
+}
+.action-button { /* Mudei o nome de .btn para .action-button para corresponder ao seu HTML */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none; /* Garante que não tenha borda padrão */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    min-width: 200px; /* Garante um tamanho mínimo para os botões */
+}
+
+.action-button i {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+/* Estilo para o botão primário (Exportar para PDF) */
+.primary-button {
+    background-color: var(--gymrats-highlight-yellow);
+    color: var(--gymrats-dark-bg);
+}
+
+.primary-button:hover {
+    background-color: var(--gymrats-button-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
+}
+
+/* Estilo para o botão secundário (Regerar Plano) */
+.secondary-button {
+    background-color: var(--gymrats-light-bg);
+    color: var(--gymrats-text-primary);
+    border: 1px solid var(--gymrats-border); /* Adiciona borda sutil */
+}
+
+.secondary-button:hover {
+    background-color: var(--gymrats-border); /* Um pouco mais escuro no hover */
+    border-color: var(--gymrats-highlight-yellow); /* Borda amarela no hover */
+    color: var(--gymrats-text-primary); /* Mantém a cor do texto */
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+
+/* Botões de Ação na seção de saída */
+.plan-actions {
+    display: flex;
+    flex-direction: column; /* Para empilhar em telas menores */
+    gap: 20px; /* Espaço entre os botões */
+    margin-top: 40px;
+    width: 100%; /* Ocupa a largura total do pai */
+    align-items: center; /* Centraliza os botões */
+}
+
+.plan-actions .action-button {
+    /* Já definida acima, esta regra pode ser redundante, mas reforça */
+    width: 100%;
+    max-width: 300px; /* Limita a largura máxima para não ficar muito largo */
+    margin: 0 auto; /* Garante que o botão seja centralizado dentro do flex container */
+}
+@media (min-width: 769px) {
+    .plan-actions {
+        flex-direction: row; /* Coloca os botões lado a lado em telas maiores */
+        justify-content: center; /* Centraliza o grupo de botões */
+    }
+
+    .plan-actions .action-button {
+        width: auto; /* Deixa a largura automática para se ajustar ao conteúdo */
+        flex: 1; /* Permite que os botões cresçam e ocupem o espaço disponível */
+        max-width: 280px; /* Pode ajustar este max-width para o tamanho ideal */
+    }
+}
+/* Loading Spinner para PDF/IA */
+.loading-spinner { /* Span com id="pdf-loading-spinner" e class="loading-spinner" */
     font-size: 1em;
     color: var(--gymrats-highlight-yellow);
     margin-left: 15px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    justify-content: center; /* Centraliza o spinner */
+    width: 100%;
+    margin-top: 20px;
+    font-weight: bold;
 }
-#pdf-loading-spinner.hidden {
+.loading-spinner.hidden {
     display: none !important;
 }
 
-.meal-foods {
-    font-size: 1em;
+/* Dicas e Curiosidades */
+.nutri-tips-section { /* Div com id="nutri-tips-section" e class="nutri-tips-section" */
+    background-color: var(--gymrats-light-bg); /* Fundo um pouco mais claro */
+    border: 1px solid var(--gymrats-border);
+    border-radius: 12px; /* Mais arredondado */
+    padding: 25px; /* Mais padding */
+    margin-top: 30px;
+    color: var(--gymrats-text-primary);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease-in-out;
+}
+
+.nutri-tips-section h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5em; /* Título um pouco maior */
+    color: var(--gymrats-highlight-yellow);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3); /* Sutil brilho */
+}
+
+.nutri-tips-section h4 .fas {
+    margin-right: 12px;
+    font-size: 1.3em;
+    color: var(--gymrats-highlight-yellow);
+}
+
+.nutri-tips-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.nutri-tips-section ul li {
+    margin-bottom: 12px; /* Mais espaço entre as dicas */
+    padding-left: 30px; /* Mais espaço para o ícone customizado */
+    position: relative;
     color: var(--gymrats-text-secondary);
     line-height: 1.6;
-    padding-left: 45px; /* Alinhar com o ícone */
+    font-size: 1em;
 }
 
-/* Ícones de Macronutrientes */
-.macro-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    margin-left: 10px;
-    vertical-align: middle;
-    font-size: 0.7em;
-    font-weight: bold;
-    color: var(--gymrats-dark-bg); /* Texto escuro para alto contraste no ícone */
-    flex-shrink: 0;
+.nutri-tips-section ul li .fas {
+    position: absolute;
+    left: 0;
+    top: 3px; /* Ajuste para alinhar com o texto */
+    color: var(--gymrats-highlight-yellow);
+    font-size: 1.1em; /* Tamanho do ícone da dica */
 }
-.macro-p { background-color: var(--color-protein); }
-.macro-c { background-color: var(--color-carb); }
-.macro-g { background-color: var(--color-fat); }
 
+.nutri-tips-section.hidden {
+    display: none;
+    opacity: 0;
+}
 /* Dicas e Curiosidades */
 .tip-card {
     background-color: var(--gymrats-highlight-yellow-light); /* Fundo sutil amarelo */
@@ -551,6 +696,56 @@ html, body {
     color: white;
 }
 
+.nutri-tips-section {
+    background-color: var(--gymrats-medium-bg);
+    border: 1px solid var(--gymrats-border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 30px; /* Espaço do card do plano */
+    color: var(--gymrats-text-primary);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+}
+
+.nutri-tips-section h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.4em;
+    color: var(--gymrats-highlight-yellow);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.nutri-tips-section h4 .fas {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+.nutri-tips-section ul {
+    list-style: none; /* Remove bullet points padrão */
+    padding: 0;
+}
+
+.nutri-tips-section ul li {
+    margin-bottom: 10px;
+    padding-left: 25px; /* Espaço para o ícone customizado */
+    position: relative;
+    color: var(--gymrats-text-secondary);
+    line-height: 1.5;
+}
+
+.nutri-tips-section ul li .fas {
+    position: absolute;
+    left: 0;
+    top: 5px; /* Ajuste para alinhar com o texto */
+    color: var(--gymrats-highlight-yellow); /* Cor do ícone da dica */
+}
+
+/* Para esconder a seção de dicas quando não houver */
+.nutri-tips-section.hidden {
+    display: none;
+    opacity: 0;
+}
 
 /* Responsividade */
 @media (max-width: 768px) {
