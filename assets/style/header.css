@@ -1,98 +1,147 @@
 /* assets/style/footer.css */
+/* Definições de variáveis de cor (certifique-se de que estão no seu CSS, geralmente no :root) */
+:root {
+    --color-black: #0A0A0A; /* Preto Principal */
+    --color-white: #FFFFFF; /* Branco Puro */
+    --color-yellow: #FFD700; /* Amarelo Vibrante */
+    --gymrats-highlight-yellow: #FFD700;
+    --gymrats-text-primary: #FFFFFF;
+    --color-light-gray: #E0E0E0; /* Cinza Claro (para textos secundários) */
+    --color-medium-gray: #1E1E1E; /* Um cinza mais escuro para elementos de fundo */
+    --color-dark-gray: #0F0F0F; /* Um cinza muito escuro, quase preto, para detalhes */
+}
 
 .main-footer {
-    background-color: var(--gymrats-medium-bg); /* Um cinza escuro para o rodapé */
-    color: var(--gymrats-text-secondary); /* Texto secundário para informações */
-    padding: 40px 20px; /* Padding generoso */
-    text-align: center;
-    border-top: 2px solid var(--gymrats-border); /* Linha sutil no topo */
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3); /* Sombra para destacar */
+    background-color: var(--color-black); /* Fundo do rodapé agora é o preto principal */
+    color: var(--color-light-gray);
+    padding: 40px 20px;
+    font-family: Arial, sans-serif;
+    border-top: 1px solid var(--color-medium-gray); /* Borda superior mais sutil */
 }
 
-.footer-content {
-    max-width: 1000px;
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Ajustado para espaçar a marca e a navegação */
+    max-width: 1200px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px; /* Espaço entre os blocos do rodapé */
 }
 
-.footer-logo {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1.8em;
-    font-weight: 700;
-    color: var(--gymrats-highlight-yellow);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-    margin-bottom: 10px;
-}
-
-.footer-links ul {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap; /* Permite que os links quebrem linha */
-    justify-content: center;
-    gap: 20px;
+.footer-brand {
+    flex: 1; /* Ocupa o espaço disponível à esquerda */
+    min-width: 250px;
     margin-bottom: 20px;
 }
 
-.footer-links a {
-    color: var(--gymrats-text-primary);
-    text-decoration: none;
-    font-weight: 500;
+.brand-name {
+    font-size: 2em;
+    color: var(--color-yellow);
+    margin-bottom: 5px;
+}
+
+.brand-tagline {
+    font-size: 0.9em;
+    color: var(--color-light-gray);
+    margin-bottom: 20px;
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+}
+
+.social-links a {
+    color: var(--color-light-gray);
+    font-size: 1.5em;
     transition: color 0.3s ease;
 }
 
-.footer-links a:hover {
-    color: var(--gymrats-highlight-yellow);
+.social-links a:hover {
+    color: var(--color-yellow);
 }
 
-.footer-social-media {
+/* Esconde a navegação por padrão em telas menores (Mobile First) */
+.footer-links-single {
+    display: none; /* Oculta a navegação por padrão */
+    /* Removido flex: 1; aqui, pois em mobile não fará diferença com display:none */
+    min-width: 150px; /* Mantido para quando for exibido, garante um tamanho mínimo */
     margin-bottom: 20px;
 }
 
-.footer-social-media a {
-    color: var(--gymrats-text-primary);
-    font-size: 1.5em;
-    margin: 0 15px;
-    transition: color 0.3s ease, transform 0.2s ease;
+.link-group h4 {
+    font-size: 1.2em;
+    color: var(--color-white);
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 5px;
 }
 
-.footer-social-media a:hover {
-    color: var(--gymrats-highlight-yellow);
-    transform: translateY(-3px);
+.link-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.footer-info p {
-    font-size: 0.9em;
-    margin: 5px 0;
-    color: var(--gymrats-text-secondary);
+.link-group ul li {
+    margin-bottom: 10px;
 }
 
-.footer-info span {
-    font-weight: 700;
+.link-group ul li a {
+    color: var(--color-light-gray);
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
 
-/* Responsividade para o rodapé */
+.link-group ul li a:hover {
+    color: var(--color-yellow);
+}
+
+.footer-bottom-bar {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: 20px;
+    font-size: 0.85em;
+    color: var(--color-light-gray);
+}
+
+/* Responsividade: Exibe a navegação apenas em telas maiores e a posiciona no canto */
+@media (min-width: 769px) { /* A partir de tablets/desktops */
+    .footer-links-single {
+        display: block; /* Torna a navegação visível novamente em telas maiores */
+        text-align: right; /* Alinha o texto à direita */
+        margin-left: auto; /* Empurra para a direita, ocupando o restante do espaço */
+        flex: none; /* Permite que o width defina o tamanho, em vez de flex:1 */
+    }
+
+    .footer-container {
+        flex-direction: row; /* Volta para a linha em telas maiores */
+        align-items: flex-start; /* Alinha no topo */
+    }
+
+    .footer-brand {
+        flex: 1; /* Garante que a marca ocupe o espaço necessário à esquerda */
+        text-align: left; /* Garante que o texto da marca esteja à esquerda */
+    }
+}
+
+/* Ajustes para telas menores (mantendo o que já estava bom) */
 @media (max-width: 768px) {
-    .main-footer {
-        padding: 30px 15px;
-    }
-    .footer-content {
-        gap: 20px;
-    }
-    .footer-links ul {
+    .footer-container {
         flex-direction: column;
-        gap: 10px;
+        align-items: center;
+        text-align: center; /* Centraliza tudo no mobile */
     }
-    .footer-social-media a {
-        font-size: 1.3em;
-        margin: 0 10px;
+
+    .footer-brand {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+
+    .social-links {
+        justify-content: center; /* Centraliza os ícones sociais no mobile */
     }
 }
-
 /* assets/style/header.css */
 
 /* Header Principal */

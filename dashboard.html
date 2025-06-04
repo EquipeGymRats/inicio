@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Rats: Seu Painel</title>
+    <link rel="stylesheet" href="assets/style/header.css">
+    <link rel="stylesheet" href="assets/style/dashboard.css"> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="shortcut icon" type="imagex/png" href="assets/logo.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo-area">
+                <h1 class="logo"><a href="index.html">GYM RATS</a></h1>
+            </div>
+            <input type="checkbox" id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">
+            <label for="menu-toggle" class="menu-icon"><i class="fas fa-bars"></i></label>
+            <nav class="main-nav">
+                <ul>
+                    </ul>
+            </nav>
+            <div class="user-info">
+                <span class="greeting"><i class="fas fa-hand-wave"></i> Olá, Pedro!</span>
+                <img src="https://via.placeholder.com/40/FFD700/0A0A0A?text=U" alt="Foto do Usuário" class="user-avatar">
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="dashboard-grid">
+            <section class="dashboard-column left-column">
+                <div class="dashboard-card food-card">
+                    <h2><i class="fas fa-utensils"></i> Alimentação Hoje</h2>
+                    <div class="food-summary">
+                        <div class="meal-item">
+                            <h3 class="meal-title"><i class="fas fa-coffee"></i> Café</h3>
+                            <p class="meal-details">Ovos (2), pão integral (2), café (s/ açúcar)</p>
+                        </div>
+                        <div class="meal-item">
+                            <h3 class="meal-title"><i class="fas fa-drumstick-bite"></i> Almoço</h3>
+                            <p class="meal-details">Frango (150g), arroz (100g), salada verde</p>
+                        </div>
+                        <div class="meal-item">
+                            <h3 class="meal-title"><i class="fas fa-apple-alt"></i> Lanche</h3>
+                            <p class="meal-details">Iogurte, frutas</p>
+                        </div>
+                        <div class="meal-item">
+                            <h3 class="meal-title"><i class="fas fa-fish"></i> Jantar</h3>
+                            <p class="meal-details">Peixe (120g), vegetais cozidos</p>
+                        </div>
+                        <a href="alimentacao.html" class="view-all-link">Ver plano completo <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="dashboard-card workout-card">
+                    <h2><i class="fas fa-dumbbell"></i> Treino do Dia</h2>
+                    <div class="workout-details">
+                        <p class="workout-type">**Treino A: Peito e Tríceps**</p>
+                        <ul class="exercise-list">
+                            <li>Supino Reto (4x10)</li>
+                            <li>Crucifixo Inclinado (3x12)</li>
+                            <li>Tríceps Testa (4x10)</li>
+                        </ul>
+                        <button class="action-button primary-button mark-workout-done">
+                            <i class="fas fa-check-circle"></i> Treino Concluído!
+                        </button>
+                        <a href="treino-personalizado.html" class="view-all-link">Gerar novo treino <i class="fas fa-redo"></i></a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-column center-column">
+                <div class="dashboard-card create-post-card">
+                    <div class="post-input-area">
+                        <textarea id="post-text" placeholder="Compartilhe seu progresso ou dicas!" rows="2"></textarea>
+                        <div class="post-actions">
+                            <label for="post-image" class="upload-image-button" title="Anexar Imagem">
+                                <i class="fas fa-paperclip"></i>
+                                <input type="file" id="post-image" accept="image/*" class="hidden">
+                            </label>
+                            <button class="action-button primary-button send-post-button">Publicar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card post-feed">
+                    <h3>Seu Feed</h3>
+                    <div class="feed-posts-container">
+                        <div class="feed-post-item">
+                            <div class="post-header">
+                                <img src="https://via.placeholder.com/30/FFD700/0A0A0A?text=U" alt="Usuário" class="post-avatar">
+                                <span class="post-username">Pedro</span>
+                                <span class="post-time">5 min atrás</span>
+                            </div>
+                            <p class="post-text">Treino de pernas concluído! Me sentindo mais forte 💪 #gymrats</p>
+                            <img src="https://via.placeholder.com/400x250/1A1A1A/F0F0F0?text=Sua+Foto+Aqui" alt="Imagem da Postagem" class="post-image">
+                            <div class="post-actions-footer">
+                                <span class="post-action-button"><i class="far fa-heart"></i> 12</span>
+                                <span class="post-action-button"><i class="far fa-comment"></i> 3</span>
+                            </div>
+                        </div>
+                        <div class="feed-post-item">
+                            <div class="post-header">
+                                <img src="https://via.placeholder.com/30/FFD700/0A0A0A?text=U" alt="Usuário" class="post-avatar">
+                                <span class="post-username">Pedro</span>
+                                <span class="post-time">1h atrás</span>
+                            </div>
+                            <p class="post-text">Receita nova de panqueca de banana, uma delícia e proteica! 🍌</p>
+                            <div class="post-actions-footer">
+                                <span class="post-action-button"><i class="far fa-heart"></i> 25</span>
+                                <span class="post-action-button"><i class="far fa-comment"></i> 8</span>
+                            </div>
+                        </div>
+                         <div class="feed-post-item">
+                            <div class="post-header">
+                                <img src="https://via.placeholder.com/30/FFD700/0A0A0A?text=U" alt="Usuário" class="post-avatar">
+                                <span class="post-username">Pedro</span>
+                                <span class="post-time">Ontem</span>
+                            </div>
+                            <p class="post-text">Bati meu PR no agachamento! A evolução é real! 🙌</p>
+                            <img src="https://via.placeholder.com/400x250/1A1A1A/F0F0F0?text=Sua+Foto+Aqui" alt="Imagem da Postagem" class="post-image">
+                            <div class="post-actions-footer">
+                                <span class="post-action-button"><i class="far fa-heart"></i> 40</span>
+                                <span class="post-action-button"><i class="far fa-comment"></i> 15</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-column right-column">
+                <div class="dashboard-card evolution-character-card">
+                    <h2><i class="fas fa-chart-line"></i> Sua Evolução</h2>
+                    <div class="evolution-placeholder">
+                        <img src="https://i.pinimg.com/736x/eb/86/a9/eb86a9f3e783311e397ba4461ed5300b.jpg" alt="Boneco de Evolução" class="evolution-image">
+                        <p class="evolution-message">Continue treinando para ver sua evolução!</p>
+                    </div>
+                </div>
+                <div class="dashboard-card motivation-card">
+                    <h2><i class="fas fa-quote-left"></i> Motivação</h2>
+                    <p class="motivation-quote">"A dor é temporária. O orgulho é para sempre."</p>
+                    <span class="quote-author">- Anônimo</span>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="notification-toast" class="notification-toast"></div>
+
+    <script>
+        // Simulação do nome do usuário
+        const userName = "Pedro"; // Em um aplicativo real, isso viria do login
+        document.querySelector('.greeting').innerHTML = `<i class="fas fa-hand-wave"></i> Olá, ${userName}!`;
+
+        // Lógica básica para o botão "Treino Concluído!"
+        document.querySelector('.mark-workout-done').addEventListener('click', function() {
+            alert('Parabéns! Treino marcado como concluído!');
+            // Aqui você integraria com um backend para realmente registrar o treino
+        });
+
+        // Lógica básica para o botão "Publicar" do feed
+        document.querySelector('.send-post-button').addEventListener('click', function() {
+            const postText = document.getElementById('post-text').value;
+            const postImageInput = document.getElementById('post-image');
+            const postImage = postImageInput.files[0];
+
+            if (postText.trim() === '' && !postImage) {
+                alert('Por favor, escreva algo ou anexe uma imagem para publicar.');
+                return;
+            }
+
+            const feedContainer = document.querySelector('.feed-posts-container');
+            const newPost = document.createElement('div');
+            newPost.classList.add('feed-post-item');
+
+            let imageUrl = '';
+            if (postImage) {
+                imageUrl = URL.createObjectURL(postImage);
+            }
+
+            newPost.innerHTML = `
+                <div class="post-header">
+                    <img src="https://via.placeholder.com/30/FFD700/0A0A0A?text=U" alt="Usuário" class="post-avatar">
+                    <span class="post-username">${userName}</span>
+                    <span class="post-time">Agora mesmo</span>
+                </div>
+                <p class="post-text">${postText}</p>
+                ${imageUrl ? `<img src="${imageUrl}" alt="Imagem da Postagem" class="post-image">` : ''}
+                <div class="post-actions-footer">
+                    <span class="post-action-button"><i class="far fa-heart"></i> 0</span>
+                    <span class="post-action-button"><i class="far fa-comment"></i> 0</span>
+                </div>
+            `;
+            feedContainer.prepend(newPost); // Adiciona o novo post no topo
+            document.getElementById('post-text').value = ''; // Limpa o campo de texto
+            postImageInput.value = ''; // Limpa a seleção de arquivo
+            alert('Publicação enviada com sucesso!');
+        });
+
+    </script>
+</body>
+</html>

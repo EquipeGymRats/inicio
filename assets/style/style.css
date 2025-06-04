@@ -32,53 +32,7 @@
    margin: 0 auto;
    padding: 20px 0;
   }
-  
-/* Header */
-.main-header {
-    background-color: rgba(10, 10, 10, 0.8); /* Added transparency for blur */
-    padding: 10px 0; /* Reduced padding */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    backdrop-filter: blur(8px); /* Added blur effect */
-    -webkit-backdrop-filter: blur(8px); /* For Safari support */
-}
-  
-  .header-content {
-   display: flex;
-   justify-content: space-between; /* Logo em uma ponta, navegação na outra */
-   align-items: center;
-   gap: 20px;
-  }
-  
-  .logo-area {
-   display: flex;
-   align-items: center;
-   justify-content: center;
-  }
-  
-  .main-header .logo {
-   font-family: 'Montserrat', sans-serif;
-   font-size: 1.8em; /* Tamanho do logo reduzido para ser mais compacto */
-   font-weight: 700;
-   color: var(--color-yellow);
-   text-transform: uppercase;
-   letter-spacing: 1.5px; /* Ajuste no espaçamento */
-   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-   transition: color 0.3s ease;
-  }
-
-.main-header .logo a {
-    color: var(--color-yellow);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-  
-.main-header .logo a:hover {
-    color: var(--color-white);
-}
-  
+   
   /* Navegação do Header */
   .main-nav ul {
     list-style: none;
