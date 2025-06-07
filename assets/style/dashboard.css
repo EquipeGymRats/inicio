@@ -1,0 +1,821 @@
+/* assets/style/dashboard.css */
+
+/* Definição de Cores da Paleta Gym Rats (Mantenha do arquivo alimentacao.css ou header.css) */
+:root {
+    --gymrats-dark-bg: #080808;
+    --gymrats-medium-bg: #1A1A1A;
+    --gymrats-light-bg: #2C2C2C;
+    --gymrats-border: #3A3A3A;
+    --gymrats-text-primary: #F0F0F0;
+    --gymrats-text-secondary: #B0B0B0;
+    --gymrats-highlight-yellow: #FFD700;
+    --gymrats-highlight-yellow-light: rgba(255, 215, 0, 0.2);
+    --gymrats-button-hover: #FFEB3B;
+    --gymrats-secondary-button-hover: #4A4A4A;
+
+    --color-protein: #00BFFF;
+    --color-carb: #FFA500;
+    --color-fat: #32CD32;
+
+    /* Altura aproximada do header para cálculo de altura do main */
+    --header-height: 60px; /* Ajuste se o seu header tiver altura diferente */
+}
+
+/* Reset Básico e Estilos Globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--gymrats-dark-bg);
+    color: var(--gymrats-text-primary);
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header (assumindo que header.css já lida com a maioria) */
+.main-header .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Espaçamento padrão */
+}
+
+.main-header .user-avatar {
+    width: 2.5rem; /* 40px */
+    height: 2.5rem; /* 40px */
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--gymrats-highlight-yellow);
+}
+
+.main-header .greeting {
+    font-size: 1rem; /* 16px */
+    font-weight: 700;
+    color: var(--gymrats-highlight-yellow);
+    display: flex; /* Para alinhar ícone e texto */
+    align-items: center;
+}
+
+.main-header .greeting .fas {
+    margin-right: 0.5rem; /* 8px */
+    color: var(--gymrats-text-primary);
+}
+
+
+/* Main Dashboard Layout */
+.dashboard-main {
+    flex-grow: 1; /* Permite que o main ocupe o restante da altura */
+    padding: 1.25rem 1rem; /* 20px 16px */
+    max-width: 90rem; /* 1440px */
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    /* Altura total da viewport menos a altura do header */
+    height: calc(100vh - var(--header-height));
+}
+
+.dashboard-grid {
+    display: grid;
+    /* Define 3 colunas com proporções ajustadas para equilibrar o conteúdo */
+    grid-template-columns: 1.2fr 2fr 0.8fr; /* Ex: 1.2 partes, 2 partes, 0.8 partes */
+    grid-template-rows: 1fr; /* Uma única linha que ocupa a altura restante do pai */
+    gap: 1rem; /* 16px de espaçamento entre os cards */
+    height: 99%; /* Ocupa a altura total do dashboard-main */
+}
+
+/* Estilo Base para os Cards */
+.dashboard-card {
+    background-color: var(--gymrats-medium-bg);
+    border-radius: 0.75rem; /* 12px */
+    padding: 1rem; /* 16px */
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2); /* Sombra mais sutil */
+    border: 1px solid var(--gymrats-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-card h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.25rem; /* 20px */
+    color: var(--gymrats-highlight-yellow);
+    margin-bottom: 0.75rem; /* 12px */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* 8px */
+}
+
+.dashboard-card h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem; /* 16px */
+    color: var(--gymrats-text-primary);
+    margin-bottom: 0.5rem; /* 8px */
+}
+
+.dashboard-card p, .dashboard-card ul, .dashboard-card span {
+    color: var(--gymrats-text-secondary);
+    font-size: 0.875rem; /* 14px */
+}
+
+/* Links e Botões de Ação Comuns */
+.action-button {
+    padding: 0.625rem 1.25rem; /* 10px 20px */
+    border: none;
+    border-radius: 0.5rem; /* 8px */
+    font-size: 0.9375rem; /* 15px */
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-shrink: 0; /* Impede que o botão encolha */
+}
+
+.primary-button {
+    background-color: var(--gymrats-highlight-yellow);
+    color: var(--gymrats-dark-bg);
+}
+
+.primary-button:hover {
+    background-color: var(--gymrats-button-hover);
+    transform: translateY(-1px);
+}
+
+.view-all-link {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem; /* 5px */
+    color: var(--gymrats-highlight-yellow);
+    text-decoration: none;
+    font-weight: 700;
+    margin-top: 0.75rem; /* 12px */
+    font-size: 0.875rem;
+    transition: color 0.2s ease-in-out;
+}
+
+.view-all-link:hover {
+    color: var(--gymrats-button-hover);
+}
+
+/* Colunas do Grid (Desktop) */
+.left-column {
+    display: grid;
+    grid-template-rows: 2fr 2fr 1fr; /* 2 partes para alimentação, 2 para treino, 1 para motivação */
+    gap: 1rem;
+    height: 100%; /* Ocupa a altura total da coluna do grid */
+}
+
+.center-column {
+    display: grid;
+    grid-template-rows: auto 1fr; /* Área de postagem (altura automática), feed ocupa o resto */
+    gap: 1rem;
+    height: 100%;
+}
+
+.right-column {
+    display: flex; /* Flexbox para centralizar o conteúdo verticalmente */
+    flex-direction: column;
+    align-items: center; /* Centraliza horizontalmente */
+    height: 100%;
+    gap: 1rem;
+}
+
+
+/* CARD: Alimentação Hoje */
+.food-card {
+    display: flex;
+    flex-direction: column;
+}
+.food-summary {
+    flex-grow: 1; /* Permite que a lista de refeições cresça */
+    overflow-y: auto; /* Adiciona scroll apenas se necessário */
+    padding-right: 0.3rem; /* Espaço para a barra de scroll */
+}
+
+.food-summary::-webkit-scrollbar {
+    width: 6px;
+}
+.food-summary::-webkit-scrollbar-track {
+    background: var(--gymrats-dark-bg);
+    border-radius: 10px;
+}
+.food-summary::-webkit-scrollbar-thumb {
+    background-color: var(--gymrats-highlight-yellow);
+    border-radius: 10px;
+}
+
+.meal-item {
+    background-color: var(--gymrats-dark-bg);
+    border-radius: 0.5rem; /* 8px */
+    padding: 0.625rem 0.75rem; /* 10px 12px */
+    margin-bottom: 0.5rem; /* 8px */
+    border: 1px solid var(--gymrats-border);
+}
+
+.meal-item:last-child {
+    margin-bottom: 0;
+}
+
+.meal-title {
+    font-size: 0.9375rem; /* 15px */
+    color: var(--gymrats-text-primary);
+    margin-bottom: 0.2rem; /* 3px */
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 700;
+}
+
+.meal-title .fas {
+    color: var(--gymrats-highlight-yellow);
+    font-size: 0.85rem;
+}
+
+.meal-details {
+    font-size: 0.8rem; /* 13px */
+    color: var(--gymrats-text-secondary);
+    padding-left: 1.5rem; /* Alinha o texto com o ícone do título */
+}
+
+
+/* CARD: Treino do Dia */
+.workout-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.workout-details {
+    flex-grow: 1; /* Takes available space in card after H2 */
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Crucial for flex children in constrained spaces, allows shrinking */
+    /* justify-content: space-between; */ /* Removed to rely on natural flow */
+}
+
+.workout-type {
+    font-size: 0.9375rem; /* 15px */
+    color: var(--gymrats-text-primary);
+    margin-bottom: 0.75rem; /* 12px */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    flex-shrink: 0; /* Prevent this section from shrinking */
+}
+
+.workout-type .fas {
+    color: var(--color-protein);
+}
+
+.exercise-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0.75rem; /* 12px */
+    flex-grow: 1; /* Allows the list to take up available space */
+    overflow-y: auto; /* Adiciona scroll se necessário */
+    padding-right: 0.3rem;
+    min-height: 30px; /* Or 0. Ensures the list is at least somewhat visible or can shrink */
+}
+
+.exercise-list::-webkit-scrollbar {
+    width: 6px;
+}
+.exercise-list::-webkit-scrollbar-track {
+    background: var(--gymrats-dark-bg);
+    border-radius: 10px;
+}
+.exercise-list::-webkit-scrollbar-thumb {
+    background-color: var(--color-protein);
+    border-radius: 10px;
+}
+
+.exercise-list li {
+    background-color: var(--gymrats-dark-bg);
+    border-radius: 0.375rem; /* 6px */
+    padding: 0.5rem 0.75rem; /* 8px 12px */
+    margin-bottom: 0.3rem; /* 5px */
+    font-size: 0.875rem; /* 14px */
+    border: 1px solid var(--gymrats-border);
+}
+
+.exercise-list li:last-child {
+    margin-bottom: 0;
+}
+
+.mark-workout-done {
+    width: 100%; /* Botão "Treino Concluído" ocupa toda a largura */
+    margin-top: 0.5rem; /* Margem acima do botão */
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+.workout-card .view-all-link { /* More specific selector for the link in workout card */
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--gymrats-highlight-yellow);
+    text-decoration: none;
+    font-weight: 700;
+    margin-top: 0.75rem; /* Existing margin */
+    font-size: 0.875rem;
+    transition: color 0.2s ease-in-out;
+    flex-shrink: 0; /* Prevent link from shrinking */
+}
+
+.workout-card .view-all-link:hover {
+    color: var(--gymrats-button-hover);
+}
+
+
+/* CARD: Motivação do Dia */
+.motivation-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+}
+
+.motivation-card h2 .fas {
+    color: var(--gymrats-text-secondary);
+}
+
+.motivation-quote {
+    font-style: italic;
+    font-size: 1rem; /* 16px */
+    margin: 0.75rem 0; /* 12px */
+    color: var(--gymrats-text-primary);
+}
+
+.quote-author {
+    display: block;
+    text-align: right;
+    font-size: 0.75rem; /* 12px */
+    color: var(--gymrats-text-secondary);
+    width: 100%; /* Para alinhar à direita */
+}
+
+/* CARD: Área de Postagem (Create Post) */
+.create-post-card {
+    margin-bottom: 1rem; /* Espaço entre a área de postagem e o feed */
+    padding: 1rem;
+}
+
+.post-input-area {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* 12px */
+}
+
+#post-text {
+    width: 100%;
+    padding: 0.75rem; /* 12px */
+    border: 1px solid var(--gymrats-border);
+    border-radius: 0.5rem; /* 8px */
+    background-color: var(--gymrats-dark-bg);
+    color: var(--gymrats-text-primary);
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9375rem; /* 15px */
+    resize: vertical;
+    min-height: 3.75rem; /* 60px */
+}
+
+#post-text::placeholder {
+    color: var(--gymrats-text-secondary);
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.upload-image-button {
+    background-color: var(--gymrats-light-bg);
+    color: var(--gymrats-text-primary);
+    border: 1px solid var(--gymrats-border);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem; /* 8px 12px */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    flex-shrink: 0;
+}
+
+.upload-image-button:hover {
+    background-color: var(--gymrats-secondary-button-hover);
+}
+
+.upload-image-button .hidden {
+    display: none;
+}
+
+.send-post-button {
+    flex-grow: 1; /* Permite que o botão "Publicar" ocupe o espaço restante */
+    max-width: 10rem; /* Limite de largura para o botão Publicar */
+    padding: 0.625rem 1.25rem;
+}
+
+
+/* CARD: Feed de Publicações */
+.post-feed {
+    flex-grow: 1; /* Permite que o feed ocupe o restante da altura da coluna */
+    overflow-y: auto; /* Habilita rolagem interna para o feed */
+    padding-right: 0.3rem; /* Espaço para a barra de scroll */
+}
+
+.post-feed::-webkit-scrollbar {
+    width: 6px;
+}
+.post-feed::-webkit-scrollbar-track {
+    background: var(--gymrats-dark-bg);
+    border-radius: 10px;
+}
+.post-feed::-webkit-scrollbar-thumb {
+    background-color: var(--gymrats-highlight-yellow);
+    border-radius: 10px;
+}
+
+.feed-posts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* 16px de espaçamento entre as postagens */
+}
+
+.feed-post-item {
+    background-color: var(--gymrats-dark-bg);
+    border-radius: 0.625rem; /* 10px */
+    padding: 0.75rem; /* 12px */
+    border: 1px solid var(--gymrats-border);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15); /* Sombra mais leve */
+}
+
+.feed-post-item .post-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.625rem; /* 10px */
+}
+
+.feed-post-item .post-avatar {
+    width: 2rem; /* 32px */
+    height: 2rem; /* 32px */
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--gymrats-highlight-yellow);
+}
+
+.feed-post-item .post-username {
+    font-weight: 700;
+    color: var(--gymrats-text-primary);
+    font-size: 0.875rem;
+}
+
+.feed-post-item .post-time {
+    font-size: 0.75rem; /* 12px */
+    color: var(--gymrats-text-secondary);
+    margin-left: auto; /* Empurra para a direita */
+}
+
+.feed-post-item .post-text {
+    font-size: 0.875rem;
+    color: var(--gymrats-text-primary);
+    margin-bottom: 0.625rem;
+    white-space: pre-wrap;
+}
+
+.feed-post-item .post-image {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    margin-bottom: 0.625rem;
+    object-fit: cover;
+    max-height: 10rem; /* 160px - Altura máxima reduzida para imagens do feed */
+    width: 100%; /* Garante que a imagem ocupe a largura total do card */
+}
+
+.feed-post-item .post-actions-footer {
+    display: flex;
+    gap: 1rem;
+    color: var(--gymrats-text-secondary);
+    font-size: 0.8rem;
+}
+
+.feed-post-item .post-action-button {
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.feed-post-item .post-action-button:hover {
+    color: var(--gymrats-highlight-yellow);
+}
+
+/* CARD: Boneco da Evolução */
+.evolution-character-card {
+    text-align: center;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centraliza o conteúdo verticalmente */
+    align-items: center; /* Centraliza o conteúdo horizontalmente */
+}
+
+.evolution-placeholder {
+    width: 100%; /* Ocupa a largura disponível no card, respeitando max-width */
+    max-width: 11rem; /* Aumentado de 9rem para 11rem (aprox. 176px) */
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem; /* Espaço entre o placeholder e a mensagem abaixo */
+    margin-left: auto; /* Para centralizar o bloco do placeholder */
+    margin-right: auto; /* Para centralizar o bloco do placeholder */
+    position: relative;
+    /* Usar padding-top para manter a proporção 9:16 (16/9 = 1.7777...) */
+    padding-top: calc(100% * (16 / 9)); /* 177.77% da largura atual para altura */
+    background-color: var(--gymrats-dark-bg);
+    border-radius: 0.5rem;
+    border: 1px dashed var(--gymrats-highlight-yellow);
+    display: flex; /* Mantido para consistência, embora a imagem seja absoluta */
+    justify-content: center;
+    align-items: center;
+    flex-grow: 0; /* Alterado de 1 para 0, para não esticar verticalmente desnecessariamente */
+}
+
+.evolution-placeholder .evolution-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Garante que a imagem se ajuste sem cortar */
+    opacity: 0.8; /* Um pouco mais visível */
+}
+
+.evolution-message {
+    /* Removido: position: absolute; bottom: 0.5rem; z-index: 1; */
+    text-align: center; /* Mantido */
+    font-size: 0.75rem; /* 12px - Tamanho base */
+    color: var(--gymrats-text-secondary); /* Mantido */
+    padding: 0 0.5rem; /* Padding horizontal para o texto */
+    margin-top: 0.25rem; /* Espaço acima da mensagem, abaixo do placeholder */
+    width: 100%; /* Para que o text-align: center funcione corretamente no bloco */
+    max-width: 11rem; /* Opcional: para alinhar com o placeholder se desejado */
+}
+
+
+/* ===== RESPONSIVIDADE ===== */
+
+/* Tablets e Laptops Menores (até 1024px) */
+@media (max-width: 1024px) {
+    .dashboard-main {
+        height: auto; /* Permite rolagem no main para tablets */
+        overflow-y: auto; /* Ativa rolagem se o conteúdo exceder */
+        padding: 1rem; /* 16px */
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1.5fr 1fr; /* Duas colunas para tablets */
+        grid-template-rows: auto auto; /* Duas linhas */
+        grid-template-areas:
+            "left-col center-col"
+            "right-col center-col"; /* Boneco na linha de baixo, alinhado ao feed */
+        gap: 1rem;
+        height: auto; /* Permite que o grid se ajuste naturalmente */
+    }
+
+    .left-column {
+        grid-area: left-col;
+        grid-template-rows: 2fr 2fr 1fr; /* Mantém proporções dos cards internos */
+        gap: 1rem;
+    }
+    .center-column {
+        grid-area: center-col;
+        gap: 1rem;
+    }
+    .right-column {
+        grid-area: right-col;
+        margin-top: 0; /* Remove margem extra */
+        min-height: 10rem; /* Altura mínima para o boneco se não houver conteúdo */
+    }
+
+    .dashboard-card {
+        padding: 0.875rem; /* 14px */
+    }
+
+    .dashboard-card h2 {
+        font-size: 1.15rem; /* 18.4px */
+        margin-bottom: 0.6rem;
+    }
+
+    .dashboard-card h3 {
+        font-size: 0.95rem; /* 15.2px */
+    }
+
+    .meal-item, .exercise-list li {
+        padding: 0.5rem 0.6rem; /* 8px 10px */
+        font-size: 0.85rem; /* 13.6px */
+    }
+
+    .mark-workout-done, .send-post-button {
+        padding: 0.5rem 1rem; /* 8px 16px */
+        font-size: 0.875rem;
+    }
+
+    .upload-image-button {
+        padding: 0.4rem 0.6rem; /* 6px 10px */
+        font-size: 0.85rem;
+    }
+
+    .motivation-quote {
+        font-size: 0.95rem;
+    }
+
+    .post-feed .feed-post-item {
+        padding: 0.625rem; /* 10px */
+    }
+    .post-feed .post-text, .post-feed .post-username {
+        font-size: 0.85rem;
+    }
+    .post-feed .post-image {
+        max-height: 8rem; /* 128px */
+    }
+
+    .evolution-placeholder {
+        max-width: 8.5rem; /* Ajustado de 7rem (proporcional a 11rem base) */
+        /* padding-top: calc(100% * (16 / 9)); /* Mantém proporção - already set globally */
+    }
+    .evolution-message { /* Mensagem agora é um elemento separado */
+        font-size: 0.7rem;
+    }
+}
+
+
+/* Mobile (até 768px) */
+@media (max-width: 768px) {
+    .main-header .user-info {
+        gap: 0.5rem;
+    }
+    .main-header .greeting {
+        font-size: 0.85rem;
+    }
+    .main-header .user-avatar {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .dashboard-main {
+        padding: 0.75rem 0.5rem; /* 12px 8px */
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* Uma única coluna */
+        grid-template-areas: none; /* Remove áreas nomeadas */
+        gap: 0.75rem; /* 12px */
+        height: auto; /* Permite rolagem total na tela */
+    }
+
+    /* Todos os cards passam para flex-direction: column e altura automática */
+    .left-column, .center-column, .right-column {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        gap: 0.75rem; /* Espaço entre os cards dentro da coluna */
+    }
+
+    .dashboard-card {
+        padding: 0.75rem; /* 12px */
+        border-radius: 0.625rem; /* 10px */
+    }
+
+    .dashboard-card h2 {
+        font-size: 1.1rem; /* 17.6px */
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-card h3 {
+        font-size: 0.9rem; /* 14.4px */
+    }
+
+    .dashboard-card p, .dashboard-card ul, .dashboard-card span {
+        font-size: 0.8rem; /* 12.8px */
+    }
+
+    .meal-item, .exercise-list li {
+        padding: 0.4rem 0.6rem; /* 6px 10px */
+        font-size: 0.8rem;
+    }
+
+    .meal-title {
+        font-size: 0.875rem;
+    }
+
+    .meal-details {
+        font-size: 0.75rem;
+    }
+
+    .mark-workout-done, .send-post-button {
+        padding: 0.4rem 0.8rem; /* 6px 12px */
+        font-size: 0.85rem;
+    }
+
+    .upload-image-button {
+        font-size: 0.8rem;
+    }
+
+    #post-text {
+        min-height: 3.5rem; /* 56px */
+        font-size: 0.875rem;
+    }
+
+    .post-actions {
+        flex-direction: column; /* Empilha botões de postagem */
+        align-items: stretch;
+    }
+    .upload-image-button, .send-post-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .post-feed .post-image {
+        max-height: 6rem; /* 96px */
+    }
+
+    .evolution-character-card {
+        order: -1; /* Move o boneco para o topo em mobile, se preferir */
+        /* Ou remova esta linha para manter a ordem padrão */
+        min-height: 8rem; /* Altura mínima para o card do boneco */
+    }
+
+    .evolution-placeholder {
+        max-width: 6rem; /* Ajustado de 5rem */
+        /* padding-top: calc(100% * (16 / 9)); /* already set globally */
+        margin-top: 0.25rem;
+    }
+    .evolution-message { /* Mensagem agora é um elemento separado */
+        font-size: 0.65rem;
+        /* bottom: 0.25rem; /* Removido: não é mais posicionado absolutamente */
+    }
+}
+
+/* Telas muito pequenas (até 480px) */
+@media (max-width: 480px) {
+    .main-header .greeting {
+        font-size: 0.75rem;
+    }
+    .main-header .user-avatar {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+    .dashboard-main {
+        padding: 0.5rem;
+    }
+    .dashboard-card {
+        padding: 0.6rem;
+    }
+    .dashboard-card h2 {
+        font-size: 1rem;
+    }
+    .dashboard-card h3 {
+        font-size: 0.85rem;
+    }
+    .dashboard-card p, .dashboard-card ul, .dashboard-card span {
+        font-size: 0.75rem;
+    }
+    .meal-item, .exercise-list li {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    .motivation-quote {
+        font-size: 0.85rem;
+    }
+    #post-text {
+        font-size: 0.8rem;
+        min-height: 3rem;
+    }
+    .mark-workout-done, .send-post-button {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.6rem;
+    }
+    .upload-image-button {
+        font-size: 0.75rem;
+    }
+    .post-feed .post-image {
+        max-height: 5rem;
+    }
+    .evolution-placeholder {
+        max-width: 4.5rem; /* Ajustado de 4rem */
+        /* padding-top: calc(100% * (16 / 9)); /* already set globally */
+    }
+    .evolution-message { /* Mensagem agora é um elemento separado */
+        font-size: 0.6rem;
+    }
+}
