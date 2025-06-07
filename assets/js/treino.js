@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentDayIndex = 0; // Índice do dia atual sendo exibido (0 para Segunda, 1 para Terça, etc.)
 
     // URL do seu backend (ajuste conforme necessário)
-    const BASE_URL = 'http://api-gym-cyan.vercel.app'; // **VERIFIQUE E ATUALIZE ESTA URL**
+    const BASE_URL = 'https://api-gym-cyan.vercel.app'; // **VERIFIQUE E ATUALIZE ESTA URL**
 
     // Inicializar modal de exercício
     initExerciseModal();
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!url) return null;
         
         // Padrões de URL do YouTube
-        const regExp = /^.*(http:\/\/www\.youtube\.com\/watch\?v=|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const regExp = /^.*(https:\/\/www\.youtube\.com\/watch\?v=|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
         
         return (match && match[2].length === 11) ? match[2] : null;
