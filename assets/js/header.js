@@ -3,7 +3,6 @@ import { authService } from './auth.js';
 const userAuthDisplay = document.getElementById('user-auth-display');
 const authText = document.getElementById('auth-text');
 const loginLink = document.getElementById('login-link');
-const cadastroLink = document.getElementById('cadastro-link');
 const logoutLink = document.getElementById('logout-link');
 const authDropdown = document.getElementById('auth-dropdown');
 
@@ -15,19 +14,16 @@ async function updateAuthHeader() {
         if (userProfile && userProfile.username) {
             authText.textContent = `Olá, ${userProfile.username.charAt(0).toUpperCase() + userProfile.username.slice(1)}`;
             loginLink.style.display = 'none';
-            cadastroLink.style.display = 'none';
             logoutLink.style.display = 'block';
         } else {
             authText.textContent = 'Perfil';
             loginLink.style.display = 'block';
-            cadastroLink.style.display = 'block';
             logoutLink.style.display = 'none';
             authDropdown.classList.remove('show');
         }
     } else {
         authText.textContent = 'Perfil';
         loginLink.style.display = 'block';
-        cadastroLink.style.display = 'block';
         logoutLink.style.display = 'none';
         authDropdown.classList.remove('show');
     }
@@ -59,7 +55,7 @@ if (logoutLink) {
         e.preventDefault();
         authService.logout();
         await updateAuthHeader();
-        window.location.href = 'index.html';
+        window.location.href = 'index';
     });
 }
 
