@@ -72,15 +72,12 @@ html, body {
 
 .alimentacao-header-info h2 {
     font-family: 'Montserrat', sans-serif;
-    font-size: 3.5em;
+    font-size: 3.0em;
     color: var(--gymrats-highlight-yellow);
     margin-bottom: 15px;
     text-transform: uppercase;
     letter-spacing: 3px;
-    text-shadow:
-        0 0 5px var(--gymrats-highlight-yellow),
-        0 0 10px var(--gymrats-highlight-yellow),
-        0 0 15px var(--gymrats-highlight-yellow-light);
+    text-shadow: 0 0 2px var(--gymrats-highlight-yellow), 0 0 4px var(--gymrats-highlight-yellow), 0 0 8px var(--gymrats-highlight-yellow-light)
 }
 
 .alimentacao-header-info p {

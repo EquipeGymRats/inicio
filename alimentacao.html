@@ -14,27 +14,43 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
-   <header class="main-header">
-        <div class="container header-content">
-            <div class="logo-area">
-                <div class="logo"><a href="index.html">Gym Rats</a></div>
-            </div>
-            <input type="checkbox" id="menu-toggle" class="menu-toggle">
-            <label for="menu-toggle" class="hamburger-icon">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </label>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="treino.html">Treino</a></li>
-                    <li><a href="alimentacao.html">Alimentação</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="contato.html">Contato</a></li>
-                </ul>
-            </nav>
+    <header class="main-header">
+    <div class="container header-content">
+        <div class="logo-area">
+            <h1 class="logo"><a href="index.html">GYM RATS</a></h1>
         </div>
+        <input type="checkbox" id="menu-toggle" class="menu-toggle">
+        <label for="menu-toggle" class="hamburger-icon">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        </label>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html#features-buttons">Funcionalidades</a></li>
+                <li><a href="equipe.html">Equipe</a></li>
+                <li><a href="index.html#about-us">Sobre Nós</a></li>
+                <li><a href="index.html#contact">Contato</a></li>
+            </ul>
+        </nav>
+        <div class="auth-section">
+            <div class="user-info" id="user-auth-display">
+                <i class="fas fa-user-circle"></i>
+                <span id="auth-text">Perfil</span>
+            </div>
+            <div class="auth-dropdown" id="auth-dropdown">
+                <a href="login.html" id="login-link">
+                <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="cadastro.html" id="cadastro-link">
+                <i class="fas fa-user-plus"></i> Cadastro
+                </a>
+                <a href="#" id="logout-link" style="display: none;">
+                <i class="fas fa-sign-out-alt"></i> Sair
+                </a>
+            </div>
+        </div>
+    </div>
     </header>
 
     <main class="alimentacao-section">
@@ -172,5 +188,6 @@
     <div id="notification-toast" class="notification-toast"></div>
 
     <script src="assets/js/alimentacao.js"></script>
+    <script type="module" src="assets/js/header.js"></script>
 </body>
 </html>

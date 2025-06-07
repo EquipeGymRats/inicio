@@ -4,131 +4,160 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Rats: Geração de Treino</title>
-    <link rel="stylesheet" href="assets/style/style.css">
     <link rel="stylesheet" href="assets/style/treino.css">
+    <link rel="stylesheet" href="assets/style/header.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="/assets/style/header.css">
-    <meta name="description" content="Crie seu treino ideal com o Gym Rats. Responda algumas perguntas e receba um plano de treino personalizado.">
-    <meta name="keywords" content="treino, personal trainer, fitness, academia, hipertrofia, força, resistência, perda de peso">
+    <link rel="shortcut icon" type="imagex/png" href="assets/logo.ico">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <header class="main-header">
     <div class="container header-content">
-      <div class="logo-area">
-        <h1 class="logo"><a href="index.html">GYM RATS</a></h1>
-      </div>
-                <input type="checkbox" id="menu-toggle" class="menu-toggle">
-                <label for="menu-toggle" class="hamburger-icon">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                </label>
-      <nav class="main-nav">
-        <ul>
-          <li><a href="index.html#features-buttons">Funcionalidades</a></li>
-          <li><a href="equipe.html">Equipe</a></li>
-          <li><a href="index.html#about-us">Sobre Nós</a></li>
-          <li><a href="index.html#contact">Contato</a></li>
-        </ul>
-      </nav>
+        <div class="logo-area">
+            <h1 class="logo"><a href="index.html">GYM RATS</a></h1>
+        </div>
+        <input type="checkbox" id="menu-toggle" class="menu-toggle">
+        <label for="menu-toggle" class="hamburger-icon">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        </label>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html#features-buttons">Funcionalidades</a></li>
+                <li><a href="equipe.html">Equipe</a></li>
+                <li><a href="index.html#about-us">Sobre Nós</a></li>
+                <li><a href="index.html#contact">Contato</a></li>
+            </ul>
+        </nav>
+        <div class="auth-section">
+            <div class="user-info" id="user-auth-display">
+                <i class="fas fa-user-circle"></i>
+                <span id="auth-text">Perfil</span>
+            </div>
+            <div class="auth-dropdown" id="auth-dropdown">
+                <a href="login.html" id="login-link">
+                <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="cadastro.html" id="cadastro-link">
+                <i class="fas fa-user-plus"></i> Cadastro
+                </a>
+                <a href="#" id="logout-link" style="display: none;">
+                <i class="fas fa-sign-out-alt"></i> Sair
+                </a>
+            </div>
+        </div>
     </div>
-  </header>
+    </header>
 
-    <main class="treino-generator-section">
-        <div class="container">
-            <section class="generator-form-section" id="form-section">
-                <h2>Crie Seu Treino Ideal</h2>
-                <p>Responda algumas perguntas e nós montaremos um treino personalizado para você.</p>
+    <main>
+        <section class="treino-generator-section container">
+            <div id="form-section" class="generator-form-section">
+                <h2><i class="fas fa-dumbbell"></i> Crie Seu Plano de Treino</h2>
+                <p class="section-description">Responda algumas perguntas para gerarmos um treino personalizado para você.</p>
 
                 <form id="training-form">
                     <div class="form-group">
-                        <label for="experience-level">Seu Nível de Experiência:</label>
-                        <select id="experience-level" class="form-select" required>
-                            <option value="">Selecione...</option>
-                            <option value="iniciante">Iniciante</option>
-                            <option value="intermediario">Intermediário</option>
-                            <option value="avancado">Avançado</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Qual seu Objetivo Principal?</label>
+                        <label for="level"><i class="fas fa-chart-line"></i> Seu Nível de Experiência:</label>
                         <div class="radio-group">
-                            <input type="radio" id="hypertrophy" name="objective" value="hipertrofia" required>
-                            <label for="hypertrophy"><i class="fas fa-dumbbell"></i> Hipertrofia</label> 
-                            
-                            <input type="radio" id="strength" name="objective" value="forca">
-                            <label for="strength"><i class="fas fa-fist-raised"></i> Força</label>
-                            
-                            <input type="radio" id="resistance" name="objective" value="resistencia">
-                            <label for="resistance"><i class="fas fa-running"></i> Resistência Muscular</label>
-                            
-                            <input type="radio" id="weight-loss" name="objective" value="perda-peso">
-                            <label for="weight-loss"><i class="fas fa-weight-scale"></i> Perda de Peso</label>
+                            <input type="radio" id="level-iniciante" name="level" value="iniciante" checked>
+                            <label for="level-iniciante"><i class="fas fa-seedling"></i> Iniciante</label>
+                            <input type="radio" id="level-intermediario" name="level" value="intermediario">
+                            <label for="level-intermediario"><i class="fas fa-fire"></i> Intermediário</label>
+                            <input type="radio" id="level-avancado" name="level" value="avancado">
+                            <label for="level-avancado"><i class="fas fa-star"></i> Avançado</label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="frequency">Quantos dias por semana você pretende treinar?</label>
-                        <select id="frequency" class="form-select" required>
-                            <option value="">Selecione...</option>
-                            <option value="2">2 dias</option>
-                            <option value="3">3 dias</option>
-                            <option value="4">4 dias</option>
-                            <option value="5">5 dias</option>
-                            <option value="6">6 dias</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Onde você costuma treinar?</label>
+                        <label for="objective"><i class="fas fa-bullseye"></i> Seu Objetivo Principal:</label>
                         <div class="radio-group">
-                            <input type="radio" id="gym" name="equipment" value="academia" required>
-                            <label for="gym"><i class="fas fa-building"></i> Academia Completa</label>
-                            
-                            <input type="radio" id="free-weights" name="equipment" value="halteres">
-                            <label for="free-weights"><i class="fas fa-dumbbell"></i> Halteres/Elásticos</label> 
-                            
-                            <input type="radio" id="bodyweight" name="equipment" value="peso-corporal">
-                            <label for="bodyweight"><i class="fas fa-child"></i> Peso Corporal</label>
+                            <input type="radio" id="objective-hipertrofia" name="objective" value="hipertrofia" checked>
+                            <label for="objective-hipertrofia"><i class="fas fa-dumbbell"></i> Ganho de Massa (Hipertrofia)</label>
+                            <input type="radio" id="objective-perda-peso" name="objective" value="perda de peso">
+                            <label for="objective-perda-peso"><i class="fas fa-weight-scale"></i> Perda de Peso</label>
+                            <input type="radio" id="objective-resistencia" name="objective" value="resistencia">
+                            <label for="objective-resistencia"><i class="fas fa-running"></i> Resistência</label>
+                            <input type="radio" id="objective-forca" name="objective" value="forca">
+                            <label for="objective-forca"><i class="fas fa-hand-fist"></i> Força</label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="time-per-session">Tempo disponível por sessão de treino:</label>
-                        <select id="time-per-session" class="form-select" required>
-                            <option value="">Selecione...</option>
-                            <option value="30-45">30-45 min</option>
-                            <option value="45-60">45-60 min</option>
-                            <option value="60-90">60-90 min</option>
-                            <option value="90+">90+ min</option>
-                        </select>
+                        <label for="frequency"><i class="fas fa-calendar-alt"></i> Frequência Semanal (vezes):</label>
+                        <div class="radio-group">
+                            <input type="radio" id="frequency-3" name="frequency" value="3" checked>
+                            <label for="frequency-3">3x</label>
+                            <input type="radio" id="frequency-4" name="frequency" value="4">
+                            <label for="frequency-4">4x</label>
+                            <input type="radio" id="frequency-5" name="frequency" value="5">
+                            <label for="frequency-5">5x</label>
+                            <input type="radio" id="frequency-6" name="frequency" value="6">
+                            <label for="frequency-6">6x</label>
+                            <input type="radio" id="frequency-7" name="frequency" value="7">
+                            <label for="frequency-7">7x</label>
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Gerar Meu Treino</button>
+                    <div class="form-group">
+                        <label for="equipment"><i class="fas fa-boxes"></i> Equipamentos Disponíveis:</label>
+                        <div class="radio-group">
+                            <input type="radio" id="equipment-casa" name="equipment" value="apenas peso corporal em casa" checked>
+                            <label for="equipment-casa"><i class="fas fa-home"></i> Casa (Peso Corporal)</label>
+                            <input type="radio" id="equipment-halteres" name="equipment" value="halteres e pesos livres em casa">
+                            <label for="equipment-halteres"><i class="fas fa-dumbbell"></i> Casa (com Halteres)</label>
+                            <input type="radio" id="equipment-academia" name="equipment" value="equipamentos completos de academia">
+                            <label for="equipment-academia"><i class="fas fa-building"></i> Academia Completa</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group slider-group">
+                        <label for="time-per-session"><i class="fas fa-hourglass-half"></i> Tempo por Sessão: <span id="time-value">60 minutos</span></label>
+                        <input type="range" id="time-per-session" name="timePerSession" min="30" max="120" value="60" step="15">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-magic"></i> Gerar Treino Personalizado</button>
                 </form>
-            </section>
-
-            <section class="training-output-section hidden" id="output-section">
-                <h2>Seu Treino Personalizado</h2>
-                <div class="summary-info">
-                    <p>Nível: <span id="summary-level"></span> | Objetivo: <span id="summary-objective"></span> | Frequência: <span id="summary-frequency"></span></p>
-                </div>
-                <div id="training-plan">
+                <div id="loading-spinner" class="loading-spinner hidden">
+                    <div class="loading-squares-container">
+                        <div class="loading-square"></div>
+                        <div class="loading-square"></div>
+                        <div class="loading-square"></div>
+                        <div class="loading-square"></div>
                     </div>
+                    <p>Criando Exercício...</p>
+                </div>
+            </div>
+
+            <section id="output-section" class="training-output-section hidden">
+                <h2><i class="fas fa-check-circle"></i> Seu Plano de Treino GYM RATS</h2>
+                <div class="summary-card">
+                    <p><i class="fas fa-chart-line"></i> Nível: <span id="summary-level"></span></p>
+                    <p><i class="fas fa-bullseye"></i> Objetivo: <span id="summary-objective"></span></p>
+                    <p><i class="fas fa-calendar-alt"></i> Frequência: <span id="summary-frequency"></span></p>
+                </div>
+
+                <div class="day-navigation">
+                    <button id="prev-day" class="nav-button"><i class="fas fa-chevron-left"></i> Anterior</button>
+                    <span id="current-day-name" class="current-day-name"></span>
+                    <button id="next-day" class="nav-button">Próximo <i class="fas fa-chevron-right"></i></button>
+                </div>
+
+                <div id="training-plan" class="training-plan-display">
+                    <!-- O conteúdo do plano de treino será inserido aqui dinamicamente -->
+                </div>
+
                 <div class="output-actions">
-                    <button id="save-training-btn" class="btn btn-secondary">Salvar Meu Treino</button>
-                    <button id="new-training-btn" class="btn btn-tertiary">Gerar Novo Treino</button>
+                    <button id="save-training-btn" class="btn btn-success" disabled><i class="fas fa-save"></i> Salvar Treino</button>
+                    <button id="new-training-btn" class="btn btn-secondary"><i class="fas fa-redo-alt"></i> Gerar Novo Treino</button>
                 </div>
             </section>
-        </div>
+        </section>
     </main>
 
-
-    <footer class="main-footer">
+  <footer class="main-footer">
     <div class="footer-container">
         <div class="footer-brand">
             <h3 class="brand-name">GYM RATS</h3>
@@ -155,10 +184,24 @@
     <div class="footer-bottom-bar">
         <p>© 2025 Projeto Gym Rats. Todos os direitos reservados. Desenvolvido para a 16ª FETEPS.</p>
     </div>
-</footer>
+  </footer>
 
     <div id="notification-toast" class="notification-toast"></div>
 
-    <script src="assets/js/treino.js"></script>
+    <script type="module" src="assets/js/treino.js"></script>
+      <script type="module" src="assets/js/header.js"></script>
+    <script>
+        // Script para atualizar o valor do tempo por sessão
+        const timeInput = document.getElementById('time-per-session');
+        const timeValueSpan = document.getElementById('time-value');
+        timeInput.addEventListener('input', () => {
+            timeValueSpan.textContent = `${timeInput.value} minutos`;
+        });
+        // Definir valor inicial ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            timeValueSpan.textContent = `${timeInput.value} minutos`;
+        });
+    </script>
 </body>
 </html>
+

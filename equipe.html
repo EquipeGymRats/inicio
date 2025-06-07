@@ -16,23 +16,40 @@
 <body>
   <header class="main-header">
     <div class="container header-content">
-      <div class="logo-area">
-        <h1 class="logo"><a href="index.html">GYM RATS</a></h1>
-      </div>
-            <input type="checkbox" id="menu-toggle" class="menu-toggle">
-            <label for="menu-toggle" class="hamburger-icon">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </label>
-      <nav class="main-nav">
-        <ul>
-          <li><a href="index.html#features-buttons">Funcionalidades</a></li>
-          <li><a href="equipe.html">Equipe</a></li>
-          <li><a href="index.html#about-us">Sobre Nós</a></li>
-          <li><a href="index.html#contact">Contato</a></li>
-        </ul>
-      </nav>
+        <div class="logo-area">
+          <h1 class="logo"><a href="index.html">GYM RATS</a></h1>
+        </div>
+        <input type="checkbox" id="menu-toggle" class="menu-toggle">
+        <label for="menu-toggle" class="hamburger-icon">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        </label>
+        <nav class="main-nav">
+          <ul>
+              <li><a href="index.html#features-buttons">Funcionalidades</a></li>
+              <li><a href="equipe.html">Equipe</a></li>
+              <li><a href="index.html#about-us">Sobre Nós</a></li>
+              <li><a href="index.html#contact">Contato</a></li>
+          </ul>
+        </nav>
+        <div class="auth-section">
+          <div class="user-info" id="user-auth-display">
+              <i class="fas fa-user-circle"></i>
+              <span id="auth-text">Perfil</span>
+          </div>
+          <div class="auth-dropdown" id="auth-dropdown">
+              <a href="login.html" id="login-link">
+              <i class="fas fa-sign-in-alt"></i> Login
+              </a>
+              <a href="cadastro.html" id="cadastro-link">
+              <i class="fas fa-user-plus"></i> Cadastro
+              </a>
+              <a href="#" id="logout-link" style="display: none;">
+              <i class="fas fa-sign-out-alt"></i> Sair
+              </a>
+          </div>
+        </div>
     </div>
   </header>
 
@@ -150,6 +167,7 @@
     <div class="footer-bottom-bar">
         <p>© 2025 Projeto Gym Rats. Todos os direitos reservados. Desenvolvido para a 16ª FETEPS.</p>
     </div>
-</footer>
+  </footer>
+  <script type="module" src="assets/js/header.js"></script>
 </body>
 </html>

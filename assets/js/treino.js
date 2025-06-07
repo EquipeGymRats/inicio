@@ -1,4 +1,9 @@
+// Arquivo JavaScript final com funcionalidades de frontend e backend
+
+import { authService } from './auth.js'; // Importar o serviço de autenticação (manter se necessário para o backend)
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Elementos do DOM
     const trainingForm = document.getElementById('training-form');
     const formSection = document.getElementById('form-section');
     const outputSection = document.getElementById('output-section');
@@ -9,321 +14,578 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveTrainingBtn = document.getElementById('save-training-btn');
     const newTrainingBtn = document.getElementById('new-training-btn');
     const notificationToast = document.getElementById('notification-toast');
+    const loadingSpinner = document.getElementById('loading-spinner');
 
-    // Funções de Treino (dados simulados para a "IA")
-    // Adicionado mais exercícios para permitir maior variação
-    const exercises = {
-        iniciante: {
-            hipertrofia: [
-                { name: "Agachamento Livre (Peso Corporal)", setsReps: "3 séries de 10-12 repetições", tips: "Mantenha o peito aberto e desça como se fosse sentar em uma cadeira invisível. Controle o movimento." },
-                { name: "Flexão de Braço (joelhos no chão)", setsReps: "3 séries de 8-10 repetições", tips: "Mantenha o corpo reto da cabeça aos joelhos. Contraia o abdômen e desça o peito em direção ao chão." },
-                { name: "Remada Curvada (com halteres leves ou elástico)", setsReps: "3 séries de 10-12 repetições", tips: "Puxe os cotovelos para trás, espremendo as omoplatas. Mantenha as costas retas e o core ativo." },
-                { name: "Elevação Lateral (com garrafas d'água ou elástico)", setsReps: "3 séries de 12-15 repetições", tips: "Levante os braços para os lados até a altura dos ombros, cotovelos levemente flexionados. Não use impulso." },
-                { name: "Prancha Abdominal", setsReps: "3 séries de 30-45 segundos", tips: "Mantenha o corpo reto, como uma tábua. Não deixe o quadril cair ou levantar demais. Respire fundo." },
-                { name: "Panturrilha em pé", setsReps: "3 séries de 15-20 repetições", tips: "Levante os calcanhares o máximo que puder, controlando a descida. Sinta a queima na panturrilha." },
-                { name: "Afundo (Peso Corporal)", setsReps: "3 séries de 8-10 repetições por perna", tips: "Dê um passo à frente e abaixe o quadril até o joelho de trás quase tocar o chão. Mantenha o equilíbrio." },
-                { name: "Crucifixo Invertido (com elástico)", setsReps: "3 séries de 12-15 repetições", tips: "Simule um abraço inverso. Foque na parte superior das costas e ombros posteriores." }
-            ],
-            forca: [
-                { name: "Agachamento Livre (Peso Corporal)", setsReps: "3 séries de 8-10 repetições", tips: "Foco na forma e profundidade. Movimento controlado e lento na descida, explosivo na subida." },
-                { name: "Flexão de Braço (joelhos no chão ou parede)", setsReps: "3 séries de 6-8 repetições", tips: "Mantenha a tensão em todo o movimento, especialmente na fase de descida. Foco na força." },
-                { name: "Ponte de Glúteos", setsReps: "3 séries de 12-15 repetições", tips: "Eleve o quadril até formar uma linha reta com ombros e joelhos. Contraia bem os glúteos no topo." },
-                { name: "Remada com Elástico", setsReps: "3 séries de 8-10 repetições", tips: "Foco na contração das costas, não apenas nos braços. Puxe em direção ao abdômen." },
-                { name: "Prancha Lateral", setsReps: "3 séries de 20-30 segundos por lado", tips: "Mantenha o corpo reto e o core contraído. Não deixe o quadril cair." },
-                { name: "Rosca Bíceps (com halteres leves)", setsReps: "3 séries de 10-12 repetições", tips: "Suba o peso controladamente, sem balançar o corpo. Sinta o bíceps." }
-            ],
-            "perda-peso": [
-                { name: "Caminhada Rápida / Corrida Leve", setsReps: "30-45 minutos", tips: "Mantenha um ritmo constante que te deixe ofegante, mas capaz de conversar. Mantenha a frequência cardíaca elevada." },
-                { name: "Agachamento Livre (Peso Corporal)", setsReps: "3 séries de 15-20 repetições", tips: "Mantenha o ritmo. Bom para aquecer os músculos e queimar calorias. Sem descanso longo." },
-                { name: "Mountain Climbers", setsReps: "3 séries de 30-45 segundos", tips: "Leve os joelhos ao peito alternadamente. Mantenha o core firme e o ritmo acelerado." },
-                { name: "Polichinelos", setsReps: "3 séries de 30-45 segundos", tips: "Movimento contínuo e rápido para elevar a frequência cardíaca. Coordene respiração e movimento." },
-                { name: "Burpees (sem flexão, adaptação)", setsReps: "3 séries de 8-10 repetições", tips: "Movimento completo e intenso. Adapte para seu nível, focando na fluidez." },
-                { name: "Afundo alternado", setsReps: "3 séries de 10-12 repetições por perna", tips: "Movimento fluido e controlado. Mantenha o equilíbrio e o ritmo para manter a queima calórica." }
-            ],
-            resistencia: [
-                { name: "Caminhada Rápida / Corrida Leve", setsReps: "30-45 minutos", tips: "Mantenha um ritmo constante e controlável. Foque na resistência aeróbica e na respiração." },
-                { name: "Agachamento Livre (Peso Corporal)", setsReps: "3 séries de 15-20 repetições", tips: "Mantenha o ritmo. Bom para aquecer os músculos e queimar calorias. Sem descanso longo." },
-                { name: "Prancha Abdominal", setsReps: "3 séries de 45-60 segundos", tips: "Mantenha o corpo reto, como uma tábua. Aumente o tempo gradualmente para melhorar a resistência do core." },
-                { name: "Afundo (Peso Corporal)", setsReps: "3 séries de 10-12 repetições por perna", tips: "Dê um passo à frente e abaixe o quadril até o joelho de trás quase tocar o chão. Mantenha a forma." },
-                { name: "Abdominal Remador", setsReps: "3 séries de 15-20 repetições", tips: "Sente-se e estenda braços e pernas, depois encolha-se, levando as mãos aos pés. Foco na contração abdominal." },
-                { name: "Flexão de Braço (joelhos no chão)", setsReps: "3 séries de 12-15 repetições", tips: "Concentre-se na execução perfeita, mesmo com maior número de repetições. Mantenha o ritmo." }
-            ]
-        },
-        intermediario: {
-            hipertrofia: [
-                { name: "Agachamento com Halteres / Barra", setsReps: "4 séries de 8-12 repetições", tips: "Concentre-se na profundidade e na contração do glúteo ao subir. Mantenha a coluna neutra." },
-                { name: "Supino Reto (com halteres / barra)", setsReps: "4 séries de 8-12 repetições", tips: "Desça a barra até tocar levemente o peito. Mantenha os cotovelos em 45 graus. Controle o movimento." },
-                { name: "Remada Curvada com Halteres / Barra", setsReps: "4 séries de 8-12 repetições", tips: "Puxe em direção ao abdômen. Mantenha as costas travadas e o core firme. Sinta as costas trabalhando." },
-                { name: "Desenvolvimento de Ombro (com halteres / barra)", setsReps: "3 séries de 10-12 repetições", tips: "Empurre o peso para cima, controlando a descida. Evite usar o impulso do corpo." },
-                { name: "Rosca Direta (com halteres / barra)", setsReps: "3 séries de 10-12 repetições", tips: "Mantenha os cotovelos fixos ao lado do corpo. Sinta a contração no bíceps." },
-                { name: "Tríceps Testa (com halteres)", setsReps: "3 séries de 10-12 repetições", tips: "Mantenha os cotovelos apontando para cima. Sinta o alongamento e contração no tríceps." },
-                { name: "Leg Press (máquina)", setsReps: "4 séries de 10-15 repetições", tips: "Mantenha as costas bem apoiadas. Pés na largura dos ombros. Desça até 90 graus." },
-                { name: "Cadeira Extensora", setsReps: "3 séries de 12-15 repetições", tips: "Foque na contração máxima do quadríceps no topo do movimento. Controle a descida." },
-                { name: "Cadeira Flexora", setsReps: "3 séries de 12-15 repetições", tips: "Sinta o posterior da coxa. Mantenha o quadril firme no banco." },
-                { name: "Elevação Lateral (com halteres)", setsReps: "3 séries de 12-15 repetições", tips: "Movimento controlado, sem balançar. Levante até a altura dos ombros." }
-            ],
-            forca: [
-                { name: "Agachamento com Halteres / Barra", setsReps: "5 séries de 5 repetições", tips: "Foco na técnica e explosão. Descanse mais entre as séries para recuperação total da força." },
-                { name: "Supino Reto (com halteres / barra)", setsReps: "5 séries de 5 repetições", tips: "Movimento controlado e explosivo. Recupere bem. Concentre-se na força do empurrão." },
-                { name: "Levantamento Terra (com halteres / kettlebell)", setsReps: "3 séries de 6-8 repetições", tips: "Mantenha a coluna neutra. Puxe o peso com as pernas e glúteos, não com as costas." },
-                { name: "Remada Curvada (com halteres / barra)", setsReps: "4 séries de 6-8 repetições", tips: "Concentre-se na força da puxada e na contração das costas. Use uma pegada firme." },
-                { name: "Desenvolvimento de Ombro (com halteres)", setsReps: "4 séries de 6-8 repetições", tips: "Movimento forte e controlado. Empurre o peso acima da cabeça. Core contraído." },
-                { name: "Barra Fixa (com assistência ou máquina)", setsReps: "3 séries x Máx. Reps", tips: "Foco na amplitude completa de movimento. Sinta as costas e bíceps." },
-                { name: "Paralelas (com assistência ou máquina)", setsReps: "3 séries x Máx. Reps", tips: "Desça até sentir um alongamento no peito. Use a força do tríceps e peito." }
-            ],
-            "perda-peso": [
-                { name: "Circuito de Treinamento (30-40s por exercício, 15s descanso)", setsReps: "3-4 voltas", tips: "Mantenha o ritmo alto. Pouco descanso entre os exercícios para manter a frequência cardíaca elevada." },
-                { name: "Burpees", setsReps: "Max repetições em 40s", tips: "Movimento completo e intenso. Foco na transição rápida entre as posições." },
-                { name: "Swing com Kettlebell (ou halter)", setsReps: "3 séries de 15-20 repetições", tips: "Movimento do quadril, não dos braços. Explosão para cima. Sinta os glúteos." },
-                { name: "Corrida/Pulo de Corda (intenso)", setsReps: "20-30 minutos (com variações de intensidade)", tips: "Alterne períodos de alta intensidade com descanso ativo. Queime mais calorias." },
-                { name: "Afundo com Salto", setsReps: "3 séries de 10-12 repetições por perna", tips: "Movimento explosivo. Alterne as pernas no ar. Amortecimento suave na aterrissagem." },
-                { name: "Remada Alta com Halteres", setsReps: "3 séries de 12-15 repetições", tips: "Puxe os halteres até a altura do queixo, cotovelos para cima. Foque nos ombros e trapézios." },
-                { name: "Prancha com Elevação de Braço e Perna Alternada", setsReps: "3 séries de 10-12 repetições por lado", tips: "Mantenha o core estável. Não deixe o corpo balançar." }
-            ],
-            resistencia: [
-                { name: "Circuito de Treinamento (45s por exercício, 15s descanso)", setsReps: "4-5 voltas", tips: "Mantenha a execução correta mesmo com a fadiga. Foque na resistência muscular e cardiovascular." },
-                { name: "Polichinelos (alto volume)", setsReps: "3 séries de 60 segundos", tips: "Alta intensidade, foque na respiração constante e profunda. Mantenha o movimento fluido." },
-                { name: "Agachamento Salto", setsReps: "3 séries de 12-15 repetições", tips: "Explosão na subida, amortecimento na descida. Priorize a continuidade e o ritmo." },
-                { name: "Remada Invertida (barra baixa ou TRX)", setsReps: "3 séries de 15-20 repetições", tips: "Use o peso do corpo para puxar. Sinta as costas. Mantenha a prancha corporal." },
-                { name: "Abdominal Bicicleta", setsReps: "3 séries de 20-30 repetições por lado", tips: "Toque o cotovelo no joelho oposto. Mantenha o ritmo e contraia o abdômen." },
-                { name: "Flexão de Braço (regular)", setsReps: "3 séries de Máx. Repetições", tips: "Faça o máximo que conseguir com boa forma. Se precisar, use os joelhos no final." },
-                { name: "Corrida (ritmo moderado)", setsReps: "30-45 minutos", tips: "Mantenha um ritmo que você possa sustentar por toda a duração. Foque na respiração." }
-            ]
-        },
-        avancado: {
-            hipertrofia: [
-                { name: "Agachamento Completo (com barra)", setsReps: "4-5 séries de 6-10 repetições", tips: "Desça abaixo de 90 graus. Foco na tensão constante e no controle da descida." },
-                { name: "Supino Reto (com barra)", setsReps: "4-5 séries de 6-10 repetições", tips: "Variações de pegada para diferentes ênfases no peito. Amplitude total de movimento." },
-                { name: "Remada Cavalinho / Barra T", setsReps: "4 séries de 8-12 repetições", tips: "Foco na amplitude de movimento e contração máxima das costas. Puxe com força." },
-                { name: "Desenvolvimento de Ombro (em pé com barra)", setsReps: "4 séries de 8-12 repetições", tips: "Empurre o peso para cima, controlando a descida. Sem impulso do corpo. Rigidez do core." },
-                { name: "Rosca Scott (barra ou halteres)", setsReps: "3-4 séries de 8-12 repetições", tips: "Isolamento do bíceps. Mantenha a forma rigorosa e sinta a contração." },
-                { name: "Tríceps Corda (na polia)", setsReps: "3-4 séries de 10-15 repetições", tips: "Force a extensão total e sinta o pico de contração no tríceps. Mantenha os cotovelos fixos." },
-                { name: "Leg Press", setsReps: "4 séries de 10-15 repetições", tips: "Pés na plataforma: mais alto para glúteo, mais baixo para quadríceps. Profundidade controlada." },
-                { name: "Cadeira Extensora / Flexora", setsReps: "3 séries de 12-15 repetições (bi-set opcional)", tips: "Foco na contração e alongamento máximo. Experimente um bi-set para intensidade." },
-                { name: "Levantamento Terra Romeno (Halteres/Barra)", setsReps: "3-4 séries de 8-12 repetições", tips: "Foco na flexão de quadril, sentindo o alongamento do posterior da coxa. Coluna neutra." },
-                { name: "Elevação Lateral Inclinado (Halteres)", setsReps: "3 séries de 12-15 repetições", tips: "Deite-se de lado em um banco inclinado para isolar o ombro. Movimento lento e controlado." }
-            ],
-            forca: [
-                { name: "Agachamento Baixo (com barra)", setsReps: "5 séries de 3-5 repetições", tips: "Técnica impecável. Use um spotter se necessário. Foco na explosão e rigidez do core." },
-                { name: "Supino Reto (com barra)", setsReps: "5 séries de 3-5 repetições", tips: "Foco na explosão e estabilidade. Mantenha os ombros travados para trás." },
-                { name: "Levantamento Terra Clássico", setsReps: "3-4 séries de 3-5 repetições", tips: "Comece com peso leve para aquecimento. Priorize a forma e a progressão de carga controlada." },
-                { name: "Remada Pendlay / Remada com Barra", setsReps: "4 séries de 5-8 repetições", tips: "Puxe até tocar o abdômen. Movimento explosivo e controlado. Mantenha a postura." },
-                { name: "Desenvolvimento Militar (em pé)", setsReps: "4 séries de 5-8 repetições", tips: "Rigidez do core. Empurre a barra para cima e levemente para trás. Controle a descida." },
-                { name: "Terra Sumô", setsReps: "3 séries de 3-5 repetições", tips: "Foco na força dos glúteos e adutores. Pés mais abertos, pontas para fora." },
-                { name: "Press de Ombro com Halteres (sentado)", setsReps: "4 séries de 6-10 repetições", tips: "Estabilidade do tronco. Empurre os halteres acima da cabeça sem balançar." },
-                { name: "Remada Unilateral com Haltere", setsReps: "4 séries de 6-8 repetições por braço", tips: "Puxe o haltere em direção ao quadril. Sinta a escápula. Foco na contração da dorsal." }
-            ],
-            "perda-peso": [
-                { name: "Treino HIIT (High-Intensity Interval Training)", setsReps: "20-30 minutos (intervalos de 1:1 ou 1:2 trabalho:descanso)", tips: "Alterne entre exercícios intensos (sprint, burpees) e descanso ativo/passivo. Máximo esforço." },
-                { name: "Circuitos Metabólicos Complexos", setsReps: "4-5 exercícios, 3-4 voltas, pouco descanso", tips: "Combine exercícios multiarticulares (ex: Agachamento Salto, Flexão, Burpee) para maximizar a queima calórica." },
-                { name: "Sprints na esteira / ao ar livre", setsReps: "8-12 x 30s sprint / 60s descanso", tips: "Máxima velocidade nos sprints. Foco na recuperação rápida entre os tiros." },
-                { name: "Box Jumps / Pular Corda (variado)", setsReps: "3 séries de 15-20 repetições / 10-15 min contínuos", tips: "Movimentos explosivos para elevar o metabolismo e a frequência cardíaca rapidamente." },
-                { name: "Clean & Press (com halteres)", setsReps: "3 séries de 8-10 repetições", tips: "Movimento explosivo que trabalha o corpo todo. Comece leve e aprenda a técnica." },
-                { name: "Thrusters (com halteres)", setsReps: "3 séries de 10-12 repetições", tips: "Combinação de agachamento frontal com desenvolvimento de ombro. Ótimo para cardio." },
-                { name: "Remada Remador com Halteres (explosivo)", setsReps: "3 séries de 12-15 repetições", tips: "Puxe com força e controle a volta. Mantenha o abdômen contraído." }
-            ],
-            resistencia: [
-                { name: "Treino em Circuito de Alta Repetição", setsReps: "5-6 exercícios, 4-5 voltas, 15-20 reps, 30s descanso", tips: "Foco na capacidade de manter a intensidade e a forma ao longo de muitas repetições e séries." },
-                { name: "Corrida de Longa Duração", setsReps: "45-60 minutos", tips: "Mantenha um ritmo confortável, mas desafiador. Monitore a frequência cardíaca para otimizar a resistência." },
-                { name: "Natação / Ciclismo (alto volume)", setsReps: "45-60 minutos", tips: "Atividades de baixo impacto para aumentar a resistência cardiovascular e muscular. Foco na duração." },
-                { name: "Burpees / Kettlebell Swings (alto volume)", setsReps: "3-4 séries de 20-30 repetições", tips: "Exercícios que desafiam a resistência muscular e o sistema cardiovascular. Mantenha a forma." },
-                { name: "Wall Ball Shots", setsReps: "3 séries de 15-20 repetições", tips: "Agachamento e arremesso de bola na parede. Movimento contínuo e intenso. Ótimo para resistência." },
-                { name: "Remada na Máquina (alto volume)", setsReps: "4 séries de 20-25 repetições", tips: "Foco na cadência e na contração muscular. Mantenha o ritmo por um longo período." },
-                { name: "Pulo de Corda (diferentes variações)", setsReps: "15-20 minutos contínuos", tips: "Varie os tipos de pulo para desafiar diferentes músculos e manter o interesse." }
-            ]
-        }
-    };
+    // Elementos de navegação de dias
+    const prevDayBtn = document.getElementById('prev-day');
+    const nextDayBtn = document.getElementById('next-day');
+    const currentDayNameSpan = document.getElementById('current-day-name');
 
-    // Define a quantidade de exercícios por dia com base no nível
-    const exercisesPerDay = {
-        iniciante: { min: 3, max: 4 },
-        intermediario: { min: 4, max: 5 },
-        avancado: { min: 5, max: 6 }
-    };
+    // Variáveis globais
+    let currentTrainingPlan = null; // Armazena o plano de treino completo
+    let currentDayIndex = 0; // Índice do dia atual sendo exibido (0 para Segunda, 1 para Terça, etc.)
 
-    const getDailyExercises = (level, objective, frequency) => {
-        let availableExercises = [...(exercises[level][objective] || [])]; // Copia para não modificar o original
-        
-        // Garante que temos exercícios suficientes
-        if (availableExercises.length < exercisesPerDay[level].max) {
-            console.warn(`Aviso: Poucos exercícios disponíveis para o nível ${level} e objetivo ${objective}. Considere adicionar mais.`);
-            // Repete exercícios se não houver o suficiente (solução temporária para o protótipo)
-            while (availableExercises.length < exercisesPerDay[level].max * 2) {
-                availableExercises = availableExercises.concat(exercises[level][objective] || []);
-            }
-        }
+    // URL do seu backend (ajuste conforme necessário)
+    const BASE_URL = 'http://api-gym-cyan.vercel.app'; // **VERIFIQUE E ATUALIZE ESTA URL**
 
-        const days = {};
-        const numDays = parseInt(frequency); // Converte a frequência para número
+    // Inicializar modal de exercício
+    initExerciseModal();
 
-        for (let i = 1; i <= numDays; i++) {
-            const dayName = `Dia ${i}${numDays > 1 && numDays <= 4 ? String.fromCharCode(64 + i) : ''}`; // A, B, C, D
-            const numExercisesForThisDay = Math.floor(Math.random() * (exercisesPerDay[level].max - exercisesPerDay[level].min + 1)) + exercisesPerDay[level].min;
-            
-            const selectedForDay = [];
-            const tempAvailable = [...availableExercises]; // Copia para cada dia
-
-            for (let j = 0; j < numExercisesForThisDay; j++) {
-                if (tempAvailable.length === 0) {
-                    console.warn("Todos os exercícios foram usados, reiniciando o pool para continuar.");
-                    tempAvailable.push(...(exercises[level][objective] || [])); // Reabastece se acabar
-                }
-                const randomIndex = Math.floor(Math.random() * tempAvailable.length);
-                selectedForDay.push(tempAvailable.splice(randomIndex, 1)[0]); // Remove do pool
-            }
-            days[dayName] = selectedForDay;
-        }
-        return days;
-    };
-
-    const showToast = (message, duration = 3000) => {
+    // Função para mostrar notificação toast
+    function showToast(message, duration = 3000) {
         notificationToast.textContent = message;
         notificationToast.classList.add('show');
         setTimeout(() => {
             notificationToast.classList.remove('show');
         }, duration);
-    };
+    }
 
-    const renderTrainingPlan = (level, objective, frequency, plan) => {
-        summaryLevel.textContent = level.charAt(0).toUpperCase() + level.slice(1);
-        summaryObjective.textContent = objective.charAt(0).toUpperCase() + objective.slice(1).replace('-', ' ');
-        summaryFrequency.textContent = frequency;
+    // Função para extrair o ID do vídeo do YouTube a partir da URL
+    function getYoutubeVideoId(url) {
+        if (!url) return null;
+        
+        // Padrões de URL do YouTube
+        const regExp = /^.*(http:\/\/www\.youtube\.com\/watch\?v=|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
 
-        trainingPlanDiv.innerHTML = ''; // Limpa o conteúdo anterior
-
-        for (const day in plan) {
-            const dayDiv = document.createElement('div');
-            dayDiv.classList.add('training-day');
-            dayDiv.innerHTML = `<h4>${day}</h4>`;
-            
-            const exerciseList = document.createElement('ol'); // Usar lista ordenada
-            exerciseList.classList.add('exercise-list');
-
-            plan[day].forEach(exercise => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('exercise-item');
-                listItem.innerHTML = `
-                    <div class="exercise-content">
-                        <h5>${exercise.name}</h5>
-                        <p class="sets-reps">${exercise.setsReps}</p>
-                        <p class="tips">Dica: ${exercise.tips}</p>
+    // Função para inicializar o modal de exercício
+    function initExerciseModal() {
+        // Criar elementos do modal (mantido do treino-atualizado-com-videos.js)
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'exercise-modal-overlay';
+        modalOverlay.id = 'exercise-modal-overlay';
+        
+        const modalContent = document.createElement('div');
+        modalContent.className = 'exercise-modal';
+        
+        modalContent.innerHTML = `
+            <button class="modal-close" id="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Nome do Exercício</h3>
+                <div class="modal-subtitle" id="modal-subtitle">
+                    <i class="fas fa-repeat"></i>
+                    <span id="modal-sets-reps">3 séries de 10-12 repetições</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h4 class="modal-section-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Dica de Execução
+                    </h4>
+                    <div class="tip-card" id="modal-tip">
+                        Dica do exercício aparecerá aqui.
                     </div>
-                    <button class="replace-exercise-btn" data-exercise-name="${exercise.name}" data-day="${day}" data-level="${level}" data-objective="${objective}">
-                        <i class="fas fa-rotate"></i>
-                    </button>
+                </div>
+                
+                <div class="modal-section">
+                    <h4 class="modal-section-title">
+                        <i class="fas fa-video"></i>
+                        Tutorial em Vídeo
+                    </h4>
+                    <div class="video-container" id="modal-video">
+                        <div class="video-placeholder">
+                            <i class="fas fa-film"></i>
+                            <p>Vídeo tutorial não disponível</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <h4 class="modal-section-title">
+                        <i class="fas fa-list-ol"></i>
+                        Passo a Passo
+                    </h4>
+                    <ul class="tutorial-steps" id="modal-steps">
+                        </ul>
+                </div>
+                
+                <div class="modal-section">
+                    <h4 class="modal-section-title">
+                        <i class="fas fa-dumbbell"></i>
+                        Músculos Trabalhados
+                    </h4>
+                    <div class="muscle-groups" id="modal-muscles">
+                        </div>
+                </div>
+                
+                <div class="modal-section">
+                    <h4 class="modal-section-title">
+                        <i class="fas fa-chart-line"></i>
+                        Nível de Dificuldade
+                    </h4>
+                    <div class="difficulty-meter" id="modal-difficulty">
+                        </div>
+                </div>
+            </div>
+        `;
+        
+        modalOverlay.appendChild(modalContent);
+        document.body.appendChild(modalOverlay);
+        
+        // Adicionar evento para fechar o modal
+        document.getElementById('modal-close').addEventListener('click', closeExerciseModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeExerciseModal();
+            }
+        });
+    }
+
+    // Função para abrir o modal de exercício
+    function openExerciseModal(exercise) {
+        const modalOverlay = document.getElementById('exercise-modal-overlay');
+        
+        // Preencher dados do exercício no modal (mantido do treino-atualizado-com-videos.js)
+        document.getElementById('modal-title').textContent = exercise.name;
+        document.getElementById('modal-sets-reps').textContent = exercise.setsReps;
+        document.getElementById('modal-tip').textContent = exercise.tips;
+        
+        // Preencher o vídeo do YouTube se disponível
+        const videoContainer = document.getElementById('modal-video');
+        if (exercise.youtubeUrl) {
+            const videoId = getYoutubeVideoId(exercise.youtubeUrl);
+            if (videoId) {
+                videoContainer.innerHTML = `
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        src="https://www.youtube.com/embed/${videoId}" 
+                        title="Tutorial de ${exercise.name}" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
                 `;
-                exerciseList.appendChild(listItem);
+            } else {
+                videoContainer.innerHTML = `
+                    <div class="video-placeholder">
+                        <i class="fas fa-film"></i>
+                        <p>Link de vídeo inválido</p>
+                    </div>
+                `;
+            }
+        } else {
+            videoContainer.innerHTML = `
+                <div class="video-placeholder">
+                    <i class="fas fa-film"></i>
+                    <p>Vídeo tutorial não disponível</p>
+                </div>
+            `;
+        }
+        
+        // Preencher passos do tutorial
+        const stepsContainer = document.getElementById('modal-steps');
+        stepsContainer.innerHTML = '';
+        if (exercise.tutorialSteps && exercise.tutorialSteps.length > 0) {
+            exercise.tutorialSteps.forEach(step => {
+                const li = document.createElement('li');
+                li.textContent = step;
+                stepsContainer.appendChild(li);
             });
-            dayDiv.appendChild(exerciseList);
-            trainingPlanDiv.appendChild(dayDiv);
+        } else {
+            const li = document.createElement('li');
+            li.textContent = 'Passos detalhados não disponíveis para este exercício.';
+            stepsContainer.appendChild(li);
+        }
+        
+        // Preencher músculos trabalhados
+        const musclesContainer = document.getElementById('modal-muscles');
+        musclesContainer.innerHTML = '';
+        if (exercise.muscleGroups && exercise.muscleGroups.length > 0) {
+            exercise.muscleGroups.forEach(muscle => {
+                const tag = document.createElement('span');
+                tag.className = 'muscle-tag';
+                tag.textContent = muscle.charAt(0).toUpperCase() + muscle.slice(1);
+                musclesContainer.appendChild(tag);
+            });
+        } else {
+            const tag = document.createElement('span');
+            tag.className = 'muscle-tag';
+            tag.textContent = 'Informação não disponível';
+            musclesContainer.appendChild(tag);
+        }
+        
+        // Preencher nível de dificuldade
+        const difficultyContainer = document.getElementById('modal-difficulty');
+        difficultyContainer.innerHTML = '';
+        const difficulty = exercise.difficulty || 1;
+        for (let i = 1; i <= 5; i++) {
+            const dot = document.createElement('div');
+            dot.className = `difficulty-dot ${i <= difficulty ? 'active' : ''}`;
+            difficultyContainer.appendChild(dot);
+        }
+        
+        // Mostrar o modal
+        modalOverlay.classList.add('active');
+    }
+
+    // Função para fechar o modal de exercício
+    function closeExerciseModal() {
+        const modalOverlay = document.getElementById('exercise-modal-overlay');
+        modalOverlay.classList.remove('active');
+        
+        // Parar o vídeo do YouTube se estiver sendo reproduzido
+        const videoContainer = document.getElementById('modal-video');
+        const iframe = videoContainer.querySelector('iframe');
+        if (iframe) {
+            const iframeSrc = iframe.src;
+            iframe.src = iframeSrc; // Recarrega o iframe para parar o vídeo
+        }
+    }
+
+    // Função para exibir o treino do dia atual com dicas modernizadas
+    function displayCurrentDayTraining() {
+        if (!currentTrainingPlan || !currentTrainingPlan.plan || currentTrainingPlan.plan.length === 0) {
+            trainingPlanDiv.innerHTML = '<p class="day-off-message"><i class="fas fa-exclamation-triangle"></i> Nenhum treino disponível.</p>';
+            currentDayNameSpan.textContent = 'Nenhum dia';
+            prevDayBtn.disabled = true;
+            nextDayBtn.disabled = true;
+            return;
         }
 
-        // Adiciona listeners para os botões de substituir
-        document.querySelectorAll('.replace-exercise-btn').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const currentExerciseName = event.currentTarget.dataset.exerciseName;
-                const currentDay = event.currentTarget.dataset.day;
-                const currentLevel = event.currentTarget.dataset.level;
-                const currentObjective = event.currentTarget.dataset.objective;
+        const day = currentTrainingPlan.plan[currentDayIndex];
+        currentDayNameSpan.textContent = day.dayName; // Atualiza o nome do dia na navegação
 
-                // Lógica para substituir o exercício (simplificada para o protótipo)
-                const savedTrainings = JSON.parse(localStorage.getItem('gymRatsTrainings')) || [];
-                const currentTrainingIndex = savedTrainings.findIndex(t => t.current === true);
+        let dayContent = '';
+        if (day.exercises && day.exercises.length > 0) {
+            dayContent += `<div class="training-day">
+                <h4 class="training-day-header"><i class="fas fa-calendar-day"></i> ${day.dayName}</h4>
+                <ul class="exercise-list">`;
+            day.exercises.forEach((exercise, index) => {
+                // Gera um ID único para cada exercício
+                const exerciseId = `exercise-${currentDayIndex}-${index}`;
+                
+                // Adiciona ícones específicos para cada tipo de dica
+                let tipIcon = 'lightbulb';
+                
+                // Determina o ícone com base no conteúdo da dica
+                if (exercise.tips.toLowerCase().includes('técnica') || 
+                    exercise.tips.toLowerCase().includes('forma') || 
+                    exercise.tips.toLowerCase().includes('postura')) {
+                    tipIcon = 'check-circle';
+                } else if (exercise.tips.toLowerCase().includes('contraia') || 
+                               exercise.tips.toLowerCase().includes('força') || 
+                               exercise.tips.toLowerCase().includes('explosivo')) {
+                    tipIcon = 'bolt';
+                } else if (exercise.tips.toLowerCase().includes('respire') || 
+                               exercise.tips.toLowerCase().includes('ritmo') || 
+                               exercise.tips.toLowerCase().includes('constante')) {
+                    tipIcon = 'wind';
+                } else if (exercise.tips.toLowerCase().includes('equilíbrio') || 
+                               exercise.tips.toLowerCase().includes('estabilidade')) {
+                    tipIcon = 'balance-scale';
+                }
+                
+                dayContent += `
+                    <li id="${exerciseId}">
+                        <div class="exercise-content">
+                            <span class="exercise-name" data-number="${index + 1}">${exercise.name}</span>
+                            <div class="exercise-details">
+                                <span class="exercise-sets-reps"><i class="fas fa-repeat"></i> ${exercise.setsReps}</span>
+                                <div class="exercise-tips">
+                                    <i class="fas fa-${tipIcon}"></i>
+                                    <span>${exercise.tips}</span>
+                                    </div>
+                            </div>
+                        </div>
+                    </li>`;
+            });
+            dayContent += `</ul></div>`;
+        } else {
+            dayContent = `<div class="training-day">
+                <h4 class="training-day-header"><i class="fas fa-calendar-day"></i> ${day.dayName}</h4>
+                <p class="day-off-message"><i class="fas fa-couch"></i> Dia de Descanso</p>
+            </div>`;
+        }
+        trainingPlanDiv.innerHTML = dayContent;
 
-                if (currentTrainingIndex !== -1) {
-                    let currentTraining = savedTrainings[currentTrainingIndex];
-                    let updatedPlan = currentTraining.plan;
-
-                    const dayExercises = updatedPlan[currentDay];
-                    const exerciseIndex = dayExercises.findIndex(ex => ex.name === currentExerciseName);
-
-                    if (exerciseIndex !== -1) {
-                        const allPossibleExercises = exercises[currentLevel][currentObjective];
-                        // Filtra exercícios que não estão no dia atual
-                        const availableAlternatives = allPossibleExercises.filter(
-                            ex => !dayExercises.some(dEx => dEx.name === ex.name)
-                        );
-                        
-                        let newExercise = null;
-                        if (availableAlternatives.length > 0) {
-                            newExercise = availableAlternatives[Math.floor(Math.random() * availableAlternatives.length)];
-                        } else {
-                            // Se não houver alternativas diferentes, pega qualquer um aleatório
-                            newExercise = allPossibleExercises[Math.floor(Math.random() * allPossibleExercises.length)];
-                        }
-
-                        if (newExercise) {
-                            updatedPlan[currentDay][exerciseIndex] = newExercise;
-                            currentTraining.plan = updatedPlan;
-                            
-                            savedTrainings[currentTrainingIndex] = currentTraining;
-                            localStorage.setItem('gymRatsTrainings', JSON.stringify(savedTrainings));
-                            
-                            renderTrainingPlan(currentLevel, currentObjective, currentTraining.frequency, updatedPlan);
-                            showToast("Exercício substituído!");
-                        } else {
-                            showToast("Não foi possível encontrar uma alternativa.", 2000);
-                        }
-                    }
+        // Adicionar eventos para os exercícios (agora apenas para abrir o modal)
+        if (day.exercises && day.exercises.length > 0) {
+            day.exercises.forEach((exercise, index) => {
+                const exerciseId = `exercise-${currentDayIndex}-${index}`;
+                const exerciseElement = document.getElementById(exerciseId);
+                
+                if (exerciseElement) {
+                    // Adicionar evento de clique para o nome do exercício
+                    const exerciseName = exerciseElement.querySelector('.exercise-name');
+                    exerciseName.addEventListener('click', () => {
+                        openExerciseModal(exercise);
+                    });
                 }
             });
-        });
+        }
 
-        formSection.classList.add('hidden');
-        outputSection.classList.remove('hidden');
-    };
+        // Gerencia estado dos botões de navegação
+        prevDayBtn.disabled = currentDayIndex === 0;
+        nextDayBtn.disabled = currentDayIndex === currentTrainingPlan.plan.length - 1;
+    }
 
-    // Evento de submissão do formulário
-    trainingForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const level = document.getElementById('experience-level').value;
-        const objective = document.querySelector('input[name="objective"]:checked').value;
-        const frequency = document.getElementById('frequency').value;
-        const equipment = document.querySelector('input[name="equipment"]:checked').value;
-        const timePerSession = document.getElementById('time-per-session').value;
-
-        const generatedPlan = getDailyExercises(level, objective, frequency);
-
-        let savedTrainings = JSON.parse(localStorage.getItem('gymRatsTrainings')) || [];
-        savedTrainings = savedTrainings.map(t => ({ ...t, current: false }));
-
-        const currentTrainingData = {
-            level,
-            objective,
-            frequency,
-            equipment,
-            timePerSession,
-            plan: generatedPlan,
-            dateGenerated: new Date().toISOString(),
-            current: true
-        };
-        savedTrainings.push(currentTrainingData);
-        localStorage.setItem('gymRatsTrainings', JSON.stringify(savedTrainings));
+    // Função para renderizar o plano de treino recebido da API
+    function renderTrainingPlan(planData) {
+        currentTrainingPlan = planData; // Salva o plano completo recebido da API
         
-        renderTrainingPlan(level, objective, frequency, generatedPlan);
+        // Preencher informações de resumo
+        // Estes dados vêm do backend ao buscar o treino salvo
+        summaryLevel.textContent = planData.level.charAt(0).toUpperCase() + planData.level.slice(1);
+        summaryObjective.textContent = planData.objective.charAt(0).toUpperCase() + planData.objective.slice(1);
+        summaryFrequency.textContent = `${planData.frequency} vezes por semana`;
+
+        // Preencher os campos do formulário com os dados do treino anterior
+        // Isso é importante para que o usuário veja os inputs preenchidos
+        document.querySelector(`input[name="level"][value="${planData.level}"]`).checked = true;
+        document.querySelector(`input[name="objective"][value="${planData.objective}"]`).checked = true;
+        document.querySelector(`input[name="frequency"][value="${planData.frequency}"]`).checked = true;
+        document.querySelector(`input[name="equipment"][value="${planData.equipment}"]`).checked = true;
+        const timeInput = document.getElementById('time-per-session');
+        timeInput.value = planData.timePerSession;
+        document.getElementById('time-value').textContent = `${planData.timePerSession} minutos`;
+
+
+        // Exibe o primeiro dia do treino ao carregar/gerar
+        currentDayIndex = 0;
+        displayCurrentDayTraining();
+
+        // **MODIFICAÇÃO AQUI:** Esconde o formulário se um treino for carregado ou gerado
+        formSection.classList.add('hidden'); // Esconde o formulário
+        formSection.style.filter = 'none'; // Remove o blur (caso tenha sido aplicado)
+        loadingSpinner.classList.add('hidden'); // Esconde o spinner
+        outputSection.classList.remove('hidden'); // Mostra a seção de output
+        saveTrainingBtn.disabled = true; // Desabilita se já estiver salvo
+        saveTrainingBtn.textContent = 'Treino Salvo!'; // Indica que já está salvo ou que foi carregado
+    }
+
+    // NOVO: Função para carregar o treino anterior do usuário
+    async function loadPreviousTraining() {
+        loadingSpinner.innerHTML = `
+            <div class="loading-squares-container">
+                <div class="loading-square"></div>
+                <div class="loading-square"></div>
+                <div class="loading-square"></div>
+                <div class="loading-square"></div>
+            </div>
+            <p>Carregando seu treino anterior...</p>
+        `;
+        formSection.style.filter = 'blur(5px)';
+        loadingSpinner.classList.remove('hidden');
+
+        try {
+            const token = authService.getToken(); // Obtenha o token de autenticação
+            if (!token) {
+                showToast("Usuário não autenticado. Faça login para carregar seu treino.", 5000);
+                loadingSpinner.classList.add('hidden');
+                formSection.style.filter = 'none';
+                return;
+            }
+
+            const response = await fetch(`${BASE_URL}/api/training/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token, // Envia o token no cabeçalho
+                },
+            });
+
+            if (response.ok) {
+                const planData = await response.json();
+                renderTrainingPlan(planData); // Renderiza o plano encontrado e esconde o formulário
+                showToast("Treino anterior carregado com sucesso!", 3000);
+            } else if (response.status === 404) {
+                showToast("Nenhum treino encontrado para este usuário. Gere um novo treino!", 4000);
+                trainingForm.reset(); // Limpa o formulário caso não haja treino
+                outputSection.classList.add('hidden'); // Esconde a seção de output
+                formSection.classList.remove('hidden'); // Garante que o formulário esteja visível para gerar um novo treino
+                saveTrainingBtn.disabled = false; // Habilita o botão de salvar para um novo treino
+                saveTrainingBtn.textContent = 'Salvar Treino';
+            } else {
+                const errorData = await response.json();
+                showToast(`Erro ao carregar treino: ${errorData.message || response.statusText}`, 5000);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar treino anterior:', error);
+            showToast("Erro ao carregar treino. Verifique a conexão com o backend.", 5000);
+        } finally {
+            loadingSpinner.classList.add('hidden');
+            formSection.style.filter = 'none';
+        }
+    }
+
+    // Event Listeners para navegação de dias
+    prevDayBtn.addEventListener('click', () => {
+        if (currentTrainingPlan && currentDayIndex > 0) {
+            currentDayIndex--;
+            displayCurrentDayTraining();
+        }
     });
 
-    // Botão Salvar Treino
-    saveTrainingBtn.addEventListener('click', () => {
-        showToast("Treino salvo com sucesso no histórico!", 3000);
+    nextDayBtn.addEventListener('click', () => {
+        if (currentTrainingPlan && currentDayIndex < currentTrainingPlan.plan.length - 1) {
+            currentDayIndex++;
+            displayCurrentDayTraining();
+        }
+    });
+
+    // Botão Salvar Treino (Lógica de backend original)
+    saveTrainingBtn.addEventListener('click', async () => {
+        if (!currentTrainingPlan) {
+            showToast("Nenhum treino para salvar!", 3000);
+            return;
+        }
+
+        // Exemplo de como enviar o treino para o backend salvar
+        // Você precisará ajustar a URL e o método conforme sua API de backend
+        try {
+            const token = authService.getToken(); // Obtenha o token de autenticação se necessário
+            if (!token) {
+                showToast("Faça login para salvar seu treino.", 5000);
+                return;
+            }
+
+            // Coletar dados do formulário para salvar junto com o plano
+            const level = document.querySelector('input[name="level"]:checked').value;
+            const objective = document.querySelector('input[name="objective"]:checked').value;
+            const frequency = document.querySelector('input[name="frequency"]:checked').value;
+            const equipment = document.querySelector('input[name="equipment"]:checked').value;
+            const timePerSession = document.getElementById('time-per-session').value;
+
+            const trainingToSave = {
+                level,
+                objective,
+                frequency,
+                equipment,
+                timePerSession: parseInt(timePerSession),
+                plan: currentTrainingPlan.plan // Envia apenas o array 'plan'
+            };
+
+            const response = await fetch(`${BASE_URL}/api/training/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token, // Envia o token no cabeçalho
+                },
+                body: JSON.stringify(trainingToSave)
+            });
+
+            if (response.ok) {
+                showToast("Treino salvo com sucesso!", 3000);
+                saveTrainingBtn.disabled = true;
+                saveTrainingBtn.textContent = 'Treino Salvo!';
+            } else {
+                const errorData = await response.json();
+                showToast(`Erro ao salvar treino: ${errorData.message || response.statusText}`, 5000);
+            }
+        } catch (error) {
+            console.error('Erro ao salvar treino:', error);
+            showToast("Erro ao salvar treino. Tente novamente mais tarde.", 5000);
+        }
     });
 
     // Botão Gerar Novo Treino
     newTrainingBtn.addEventListener('click', () => {
         trainingForm.reset();
         outputSection.classList.add('hidden');
-        formSection.classList.remove('hidden');
+        formSection.classList.remove('hidden'); // Mostra o formulário novamente
+        formSection.style.filter = 'none'; // Remove o blur
+        saveTrainingBtn.disabled = false; // Reabilita o botão de salvar
+        saveTrainingBtn.textContent = 'Salvar Treino';
+        currentTrainingPlan = null; // Limpa o plano atual
+        currentDayIndex = 0; // Reseta o índice do dia
+        trainingPlanDiv.innerHTML = ''; // Limpa a exibição do treino
         showToast("Formulário limpo! Comece um novo treino.", 2000);
+        
+        // Resetar o valor do span de tempo
+        const timeInput = document.getElementById('time-per-session');
+        const timeValueSpan = document.getElementById('time-value');
+        timeValueSpan.textContent = `${timeInput.value} minutos`;
     });
 
-    // Carregar o último treino salvo ao carregar a página
-    const loadLastTraining = () => {
-        const savedTrainings = JSON.parse(localStorage.getItem('gymRatsTrainings')) || [];
-        const lastTraining = savedTrainings.find(t => t.current === true);
-        if (lastTraining) {
-            renderTrainingPlan(lastTraining.level, lastTraining.objective, lastTraining.frequency, lastTraining.plan);
+    // Submissão do formulário (Lógica de backend original integrada com frontend melhorado)
+    trainingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const level = document.querySelector('input[name="level"]:checked').value;
+        const objective = document.querySelector('input[name="objective"]:checked').value;
+        const frequency = document.querySelector('input[name="frequency"]:checked').value;
+        const equipment = document.querySelector('input[name="equipment"]:checked').value;
+        const timePerSession = document.getElementById('time-per-session').value;
+
+        // Aplica blur ao formulário e mostra o spinner de carregamento
+        formSection.style.filter = 'blur(5px)';
+        loadingSpinner.innerHTML = `
+            <div class="loading-squares-container">
+                <div class="loading-square"></div>
+                <div class="loading-square"></div>
+                <div class="loading-square"></div>
+                <div class="loading-square"></div>
+            </div>
+            <p>Criando Exercício...</p>
+        `;
+        loadingSpinner.classList.remove('hidden');
+
+        // Coleta os dados do formulário
+        const formData = {
+            level: level,
+            objective: objective,
+            frequency: frequency,
+            equipment: equipment,
+            timePerSession: parseInt(timePerSession) // Converte para número se necessário
+        };
+
+        // Chama a API de backend para gerar o treino
+        try {
+            const token = authService.getToken(); // Obtenha o token de autenticação se necessário
+            if (!token) {
+                showToast("Usuário não autenticado. Faça login para gerar seu treino.", 5000);
+                loadingSpinner.classList.add('hidden');
+                formSection.style.filter = 'none';
+                return;
+            }
+
+            const response = await fetch(`${BASE_URL}/api/training/generate-training-plan`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token, // Envia o token no cabeçalho
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                const planData = await response.json();
+                renderTrainingPlan(planData); // Renderiza o plano recebido da API e esconde o formulário
+                showToast("Treino gerado com sucesso!", 3000);
+                saveTrainingBtn.disabled = false; // Habilita o botão de salvar para o novo treino
+                saveTrainingBtn.textContent = 'Salvar Treino';
+            } else {
+               const errorData = await response.json();
+                showToast(`Erro ao gerar treino: ${errorData.message || response.statusText}`, 5000);
+                // Esconde o spinner e remove o blur em caso de erro
+                loadingSpinner.classList.add('hidden');
+                formSection.style.filter = 'none';
+            }
+        } catch (error) {
+            console.error('Erro ao chamar API de geração de treino:', error);
+            showToast("Erro ao gerar treino. Verifique a conexão com o backend.", 5000);
+            // Esconde o spinner e remove o blur em caso de erro
+            loadingSpinner.classList.add('hidden');
+            formSection.style.filter = 'none';
         }
-    };
-    loadLastTraining();
+    });
+
+    // Script para atualizar o valor do tempo por sessão (mantido do HTML)
+    const timeInput = document.getElementById('time-per-session');
+    const timeValueSpan = document.getElementById('time-value');
+    timeInput.addEventListener('input', () => {
+        timeValueSpan.textContent = `${timeInput.value} minutos`;
+    });
+    // Definir valor inicial ao carregar a página
+    // Isso é chamado apenas uma vez, então também precisamos chamar a função de carregamento
+    // para garantir que o span seja atualizado se um treino salvo for carregado.
+    
+    // NOVO: Chamar loadPreviousTraining ao carregar a página
+    loadPreviousTraining();
 });

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Rats: Login ou Cadastro</title>
+    <link rel="stylesheet" href="assets/style/style.css">
+    <link rel="stylesheet" href="assets/style/header.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="shortcut icon" type="imagex/png" href="assets/logo.ico">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilos específicos para a página de login/cadastro */
+        .auth-container {
+            max-width: 500px;
+            margin: 80px auto; /* Mantém um bom espaçamento superior e centraliza */
+            padding: 40px;
+            background-color: var(--color-medium-gray); /* Fundo do card, cinza escuro */
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7); /* Sombra mais acentuada para modernidade */
+            border: 1px solid rgba(255, 215, 0, 0.1); /* Borda sutil com tom amarelo */
+            text-align: center;
+            animation: fadeInScale 0.6s ease-out forwards; /* Animação de entrada */
+        }
+        .auth-container h2 {
+            color: var(--color-yellow); /* Título em amarelo vibrante */
+            margin-bottom: 30px;
+            font-size: 2em; /* Tamanho maior para destaque */
+        }
+        .auth-container .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .auth-container label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--color-white);
+            font-weight: 700;
+        }
+        .auth-container input[type="text"],
+        .auth-container input[type="email"],
+        .auth-container input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--color-dark-gray); /* Borda mais escura */
+            background-color: var(--color-black); /* Fundo do input preto */
+            color: var(--color-white);
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transição suave no foco */
+        }
+        .auth-container input[type="text"]:focus,
+        .auth-container input[type="email"]:focus,
+        .auth-container input[type="password"]:focus {
+            border-color: var(--color-yellow); /* Borda amarela no foco */
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3); /* Sombra amarela suave no foco */
+            outline: none; /* Remove o outline padrão do navegador */
+        }
+        .auth-container button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: var(--color-yellow);
+            color: var(--color-black);
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Adiciona transform para efeito de clique */
+        }
+        .auth-container button:hover {
+            background-color: #e6c200; /* Amarelo um pouco mais escuro */
+            transform: translateY(-2px); /* Efeito de "levantar" no hover */
+        }
+        .auth-container button:active {
+            transform: translateY(0); /* Efeito de "clique" */
+        }
+        .toggle-form {
+            margin-top: 20px;
+            color: var(--color-light-gray);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .toggle-form:hover {
+            color: var(--color-yellow);
+            text-decoration: underline; /* Adiciona underline no hover */
+        }
+
+        /* Animação para o card de autenticação */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Estilos para a notificação flutuante */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px; /* Alinhado à direita */
+            background-color: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            z-index: 1000; /* Garante que fique acima de outros elementos */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification-toast.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .notification-toast.success {
+            background-color: #28a745; /* Verde para sucesso */
+        }
+
+        .notification-toast.error {
+            background-color: #dc3545; /* Vermelho para erro */
+        }
+
+        .notification-toast i {
+            font-size: 1.2em;
+        }
+
+        /* Responsividade para o container de autenticação */
+        @media (max-width: 768px) {
+            .auth-container {
+                margin: 40px 20px; /* Reduz margem em telas menores */
+                padding: 30px 20px;
+            }
+            .auth-container h2 {
+                font-size: 1.8em;
+            }
+            .auth-container button {
+                font-size: 1em;
+                padding: 10px;
+            }
+            .notification-toast {
+                width: auto;
+                left: 10px; /* Ajusta para ficar mais próximo da borda em telas menores */
+                right: 10px; /* Ajusta para ficar mais próximo da borda em telas menores */
+                transform: translateX(0); /* Remove a transformação se não for centralizado */
+                text-align: center;
+                flex-direction: row; /* Mantém a linha para ícone e texto */
+            }
+        }
+        @media (max-width: 480px) {
+            .auth-container {
+                margin: 20px 15px;
+                padding: 25px 15px;
+            }
+            .auth-container h2 {
+                font-size: 1.6em;
+            }
+            .auth-container label {
+                font-size: 0.9em;
+            }
+            .auth-container input {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+            .notification-toast {
+                top: 10px; /* Ainda mais para cima em telas muito pequenas */
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo-area">
+                <h1 class="logo"><a href="index.html">GYM RATS</a></h1>
+            </div>
+            <input type="checkbox" id="menu-toggle" class="menu-toggle">
+            <label for="menu-toggle" class="hamburger-icon">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </label>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html#features-buttons">Funcionalidades</a></li>
+                    <li><a href="equipe.html">Equipe</a></li>
+                    <li><a href="index.html#about-us">Sobre Nós</a></li>
+                    <li><a href="index.html#contact">Contato</a></li>
+                </ul>
+            </nav>
+            <div class="auth-section">
+                <div class="user-info" id="user-auth-display">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="auth-text">Entrar</span>
+                </div>
+                <div class="auth-dropdown" id="auth-dropdown">
+                    <a href="login.html" id="login-link">Login</a>
+                    <a href="cadastro.html" id="cadastro-link">Cadastro</a>
+                    <a href="#" id="logout-link" style="display: none;">Sair</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="auth-container">
+            <div id="login-form-container">
+                <h2>Faça Login</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email:</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Senha:</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit">Entrar</button>
+                </form>
+                <p class="toggle-form" id="show-register">Não tem uma conta? Crie agora!</p>
+            </div>
+
+            <div id="register-form-container" style="display: none;">
+                <h2>Crie sua Conta</h2>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="register-username">Nome de Usuário:</label>
+                        <input type="text" id="register-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email:</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Senha:</label>
+                        <input type="password" id="register-password" required>
+                    </div>
+                    <button type="submit">Cadastrar</button>
+                </form>
+                <p class="toggle-form" id="show-login">Já tem uma conta? Faça login!</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="notification-toast" class="notification-toast"></div>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3 class="brand-name">GYM RATS</h3>
+                <p class="brand-tagline">Sua jornada fitness começa aqui.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/projetogymrats" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/projetogymrats" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com/company/projetogymrats" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://www.youtube.com/@projetogymrats" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-links-single">
+                <div class="link-group">
+                    <h4>Navegação</h4>
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="equipe.html">Quem Somos</a></li>
+                        <li><a href="equipe.html#projeto">Nosso Projeto</a></li>
+                        <li><a href="index.html#contact">Contato</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom-bar">
+            <p>© 2025 Projeto Gym Rats. Todos os direitos reservados. Desenvolvido para a 16ª FETEPS.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { authService } from './assets/js/auth.js'; // Caminho relativo do login.html para auth.js
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const loginFormContainer = document.getElementById('login-form-container');
+            const registerFormContainer = document.getElementById('register-form-container');
+            const showRegisterBtn = document.getElementById('show-register');
+            const showLoginBtn = document.getElementById('show-login');
+            const notificationToast = document.getElementById('notification-toast');
+
+            // Chamada inicial para verificar o status de login ao carregar a página
+            // Se já estiver logado, redireciona.
+            if (authService.isLoggedIn()) {
+                window.location.href = 'treino-personalizado.html';
+            }
+
+            function showNotification(message, type) {
+                notificationToast.textContent = ''; // Clear previous content
+                const icon = document.createElement('i');
+                if (type === 'success') {
+                    icon.className = 'fas fa-check-circle';
+                } else if (type === 'error') {
+                    icon.className = 'fas fa-times-circle';
+                }
+                const textSpan = document.createElement('span');
+                textSpan.textContent = message;
+
+                notificationToast.appendChild(icon);
+                notificationToast.appendChild(textSpan);
+
+                notificationToast.className = 'notification-toast show';
+                notificationToast.classList.add(type);
+
+                setTimeout(() => {
+                    notificationToast.classList.remove('show');
+                    // Optional: remove type class after hiding if you want to reuse it with different styles
+                    notificationToast.classList.remove(type);
+                }, 3000);
+            }
+
+            // Event Listener para o formulário de login
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+                    const result = await authService.login(email, password); // Usa o serviço de autenticação
+                    if (result.success) {
+                        showNotification(result.message, 'success');
+                        // Redireciona APÓS a notificação ser exibida por um breve período
+                        setTimeout(() => {
+                            window.location.href = 'treino-personalizado.html';
+                        }, 500); // Pequeno delay para a notificação ser visível
+                    } else {
+                        showNotification(result.message, 'error');
+                    }
+                });
+            }
+
+            // Event Listener para o formulário de registro
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const username = document.getElementById('register-username').value;
+                    const email = document.getElementById('register-email').value;
+                    const password = document.getElementById('register-password').value;
+                    const result = await authService.register(username, email, password); // Usa o serviço de autenticação
+                    if (result.success) {
+                        showNotification(result.message, 'success');
+                         // Redireciona APÓS a notificação ser exibida por um breve período
+                        setTimeout(() => {
+                            window.location.href = 'treino-personalizado.html';
+                        }, 500); // Pequeno delay
+                    } else {
+                        showNotification(result.message, 'error');
+                    }
+                });
+            }
+
+            // Toggle entre formulários de login e cadastro
+            if (showRegisterBtn) {
+                showRegisterBtn.addEventListener('click', (e) => {
+                    e.preventDefault(); // Impede o comportamento padrão do link
+                    loginFormContainer.style.display = 'none';
+                    registerFormContainer.style.display = 'block';
+                    // Adiciona animação de "subir" para o formulário de registro
+                    registerFormContainer.classList.add('slide-in-up');
+                    loginFormContainer.classList.remove('slide-in-up'); // Remove se houver
+                });
+            }
+
+            if (showLoginBtn) {
+                showLoginBtn.addEventListener('click', (e) => {
+                    e.preventDefault(); // Impede o comportamento padrão do link
+                    registerFormContainer.style.display = 'none';
+                    loginFormContainer.style.display = 'block';
+                    // Adiciona animação de "subir" para o formulário de login
+                    loginFormContainer.classList.add('slide-in-up');
+                    registerFormContainer.classList.remove('slide-in-up'); // Remove se houver
+                });
+            }
+        });
+
+        // Adicionar algumas animações de transição para o toggle de formulário
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes slideInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .slide-in-up {
+                animation: slideInUp 0.4s ease-out forwards;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+
+    <script type="module" src="assets/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Administração</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Definição de Cores da Paleta Gym Rats */
+        :root {
+            --gymrats-dark-bg: #080808;
+            --gymrats-medium-bg: #1A1A1A;
+            --gymrats-light-bg: #2C2C2C;
+            --gymrats-border: #3A3A3A;
+            --gymrats-text-primary: #F0F0F0;
+            --gymrats-text-secondary: #B0B0B0;
+            --gymrats-highlight-yellow: #FFD700;
+            --gymrats-highlight-yellow-light: rgba(255, 215, 0, 0.2);
+            --gymrats-button-hover: #FFEB3B; /* Amarelo um pouco mais claro para hover */
+            --gymrats-secondary-button-hover: #4A4A4A; /* Cinza escuro para hover do secundário */
+            
+            /* Cores de Macronutrientes (se aplicável, para consistência) */
+            --color-protein: #00BFFF; /* Azul vibrante */
+            --color-carb: #FFA500;   /* Laranja */
+            --color-fat: #32CD32;    /* Verde limão */
+
+            /* Cores para mensagens de status */
+            --status-success-bg: #1f502c; /* Um verde mais escuro e sutil */
+            --status-success-text: #e1ffe8;
+            --status-success-border: #3ac754;
+
+            --status-error-bg: #5c1f24; /* Um vermelho mais escuro e sutil */
+            --status-error-text: #ffe1e1;
+            --status-error-border: #d64a51;
+
+            --status-info-bg: #1f3a50; /* Um azul mais escuro e sutil */
+            --status-info-text: #e1efff;
+            --status-info-border: #3a80c7;
+        }
+
+        /* Reset Básico para consistência */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Roboto', sans-serif;
+            color: var(--gymrats-text-primary);
+            background-color: var(--gymrats-dark-bg);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Personalização da barra de rolagem (WebKit) */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px; /* Para barras de rolagem horizontais */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gymrats-medium-bg);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gymrats-highlight-yellow);
+            border-radius: 10px;
+            border: 2px solid var(--gymrats-medium-bg); /* Adiciona uma pequena borda para destacar */
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gymrats-button-hover);
+        }
+
+        /* Para Firefox (suporte limitado, mas pode mudar a cor do polegar) */
+        * {
+            scrollbar-color: var(--gymrats-highlight-yellow) var(--gymrats-medium-bg);
+            scrollbar-width: thin;
+        }
+
+        /* Container Global - Centraliza o conteúdo principal */
+        .container {
+            max-width: 1200px;
+            padding: 20px;
+            background: var(--gymrats-medium-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid var(--gymrats-border);
+
+            /* PROPRIEDADES PARA CENTRALIZAR O CONTAINER */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-height: 95vh; /* Limita a altura máxima para evitar que o conteúdo exceda a tela */
+            overflow-y: auto; /* Adiciona barra de rolagem se o conteúdo for maior que a altura máxima */
+        }
+
+        h1, h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--gymrats-highlight-yellow);
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        h1 {
+            font-size: 2.8em;
+            text-shadow: 0 0 5px var(--gymrats-highlight-yellow-light);
+        }
+        h2 {
+            font-size: 2.2em;
+            margin-top: 30px;
+            text-shadow: 0 0 3px var(--gymrats-highlight-yellow-light);
+        }
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--gymrats-text-primary); /* Ajustado para ser mais neutro */
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        /* Abas */
+        .tab-container {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--gymrats-border);
+            justify-content: center;
+        }
+        .tab-button {
+            padding: 12px 25px;
+            cursor: pointer;
+            border: none;
+            background-color: var(--gymrats-light-bg);
+            margin: 0 5px;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+            color: var(--gymrats-text-secondary);
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+        }
+        .tab-button.active {
+            background-color: var(--gymrats-highlight-yellow);
+            color: var(--gymrats-dark-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+        }
+        .tab-button:hover:not(.active) {
+            background-color: var(--gymrats-secondary-button-hover);
+            color: var(--gymrats-text-primary);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Tabelas */
+        /* Novo wrapper para rolagem horizontal */
+        .table-responsive {
+            overflow-x: auto; /* Adiciona barra de rolagem horizontal se o conteúdo for maior que o container */
+            -webkit-overflow-scrolling: touch; /* Melhora a rolagem em dispositivos touch */
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        table {
+            width: 100%;
+            min-width: 700px; /* Define uma largura mínima para evitar quebra em telas pequenas */
+            border-collapse: collapse;
+            background-color: var(--gymrats-light-bg);
+            border-radius: 8px;
+            overflow: hidden; /* Mantém as bordas arredondadas */
+        }
+        th, td {
+            border: 1px solid var(--gymrats-border);
+            padding: 12px 15px;
+            text-align: left;
+            color: var(--gymrats-text-primary);
+            font-size: 0.95em;
+            white-space: nowrap; /* Evita que o texto quebre linhas */
+            overflow: hidden; /* Esconde o conteúdo que transborda */
+            text-overflow: ellipsis; /* Adiciona "..." ao texto cortado */
+        }
+        th {
+            background-color: var(--gymrats-highlight-yellow);
+            color: var(--gymrats-dark-bg);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        tr:nth-child(even) {
+            background-color: var(--gymrats-medium-bg);
+        }
+        tr:hover {
+            background-color: var(--gymrats-secondary-button-hover);
+        }
+
+        /* Larguras específicas para colunas de ID e email */
+        td:nth-child(1) /* ID do Usuário/Treino */ {
+            max-width: 120px; /* Limita a largura do ID */
+        }
+        td:nth-child(2) /* Username (que contém ID) */ {
+            max-width: 150px;
+        }
+        td:nth-child(3) /* Coluna Email */ {
+            max-width: 200px;
+        }
+        td:nth-child(4) /* Coluna Role */ {
+            max-width: 100px;
+        }
+        td:nth-child(5) /* Coluna Ativo */ {
+            max-width: 80px;
+            text-align: center;
+        }
+        td:nth-child(6) /* Coluna Criado Em */ {
+            max-width: 120px;
+        }
+
+        /* Botões de Ação na Tabela */
+        .actions {
+            white-space: nowrap; /* Garante que os botões fiquem na mesma linha */
+            min-width: 380px; /* Espaço mínimo para os botões de ação (aumentado) */
+            display: flex;
+            flex-wrap: wrap; /* Permite que os botões quebrem linha se não houver espaço */
+            gap: 5px; /* Espaçamento entre os botões */
+        }
+
+        .actions button {
+            padding: 8px 12px;
+            /* margin-right: 8px; <-- REMOVIDO, USAR GAP */
+            border: none;
+            border-radius: 6mm;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .actions button i {
+            font-size: 0.9em;
+        }
+
+        .actions .delete {
+            background-color: var(--status-error-border); /* Vermelho */
+            color: white;
+        }
+        .actions .delete:hover {
+            background-color: #c0392b; /* Vermelho mais escuro */
+            transform: translateY(-2px);
+        }
+
+        .actions .edit {
+            background-color: #f39c12; /* Laranja */
+            color: var(--gymrats-dark-bg);
+        }
+        .actions .edit:hover {
+            background-color: #e67e22; /* Laranja mais escuro */
+            transform: translateY(-2px);
+        }
+
+        .actions .reset-password {
+            background-color: #3498db; /* Azul */
+            color: white;
+        }
+        .actions .reset-password:hover {
+            background-color: #2980b9; /* Azul mais escuro */
+            transform: translateY(-2px);
+        }
+
+        .actions .view-training {
+            background-color: var(--status-success-border); /* Verde */
+            color: white;
+        }
+        .actions .view-training:hover {
+            background-color: #27ae60; /* Verde mais escuro */
+            transform: translateY(-2px);
+        }
+
+        /* Novos estilos para os botões de Admin e Ativar/Desativar */
+        .actions .make-admin, .actions .remove-admin {
+            background-color: var(--status-info-border); /* Azul claro */
+            color: white;
+        }
+        .actions .make-admin:hover, .actions .remove-admin:hover {
+            background-color: #2c6e9e; /* Azul mais escuro */
+            transform: translateY(-2px);
+        }
+
+        .actions .activate, .actions .deactivate {
+            background-color: #8e44ad; /* Roxo */
+            color: white;
+        }
+        .actions .activate:hover, .actions .deactivate:hover {
+            background-color: #6a1b9a; /* Roxo mais escuro */
+            transform: translateY(-2px);
+        }
+
+        /* Estilo para o texto de status Ativo/Inativo na tabela */
+        .status-active {
+            color: var(--status-success-border);
+            font-weight: bold;
+        }
+        .status-inactive {
+            color: var(--status-error-border);
+            font-weight: bold;
+        }
+
+
+        /* Mensagens de Feedback */
+        .message {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .message.success {
+            background-color: var(--status-success-bg);
+            color: var(--status-success-text);
+            border: 1px solid var(--status-success-border);
+        }
+        .message.error {
+            background-color: var(--status-error-bg);
+            color: var(--status-error-text);
+            border: 1px solid var(--status-error-border);
+        }
+
+        /* Spinner de Carregamento */
+        .spinner {
+            border: 4px solid rgba(255, 215, 0, 0.2); /* Borda transparente com cor da paleta */
+            border-left-color: var(--gymrats-highlight-yellow);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+            display: none; /* Escondido por padrão */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilos do Modal */
+        .modal {
+            display: none; /* Hidden by default, will be set to 'flex' by JS */
+            position: fixed; /* Stay in place */
+            z-index: 100; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll for the background, though content handles it */
+            background-color: rgba(0,0,0,0.7); /* Black w/ more opacity */
+            backdrop-filter: blur(5px); /* Efeito de blur no fundo */
+            display: flex; /* Use flexbox to center/position content */
+            justify-content: center;
+            align-items: flex-start; /* Alinha o modal ao topo */
+            padding-top: 50px; /* Adiciona um espaço do topo para o modal */
+        }
+
+        .modal-content {
+            background-color: var(--gymrats-medium-bg);
+            padding: 30px;
+            border: 1px solid var(--gymrats-border);
+            width: 90%;
+            max-width: 800px;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+            animation-name: animatemodal;
+            animation-duration: 0.4s;
+            color: var(--gymrats-text-primary);
+            max-height: 80vh; /* Limita a altura do conteúdo do modal a 80% da altura da viewport */
+            overflow-y: auto; /* Adiciona barra de rolagem vertical ao conteúdo do modal se necessário */
+            -webkit-overflow-scrolling: touch; /* Melhora a rolagem em dispositivos touch */
+        }
+
+        @keyframes animatemodal {
+            from {transform: translateY(-50px); opacity: 0}
+            to {transform: translateY(0); opacity: 1}
+        }
+
+        .close-button {
+            color: var(--gymrats-text-secondary);
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            transition: color 0.3s ease;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--gymrats-highlight-yellow);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-body h3 {
+            margin-top: 15px;
+            color: var(--gymrats-highlight-yellow);
+            font-size: 1.6em;
+            text-align: left;
+        }
+
+        .modal-body ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 10px;
+        }
+
+        /* Estilo para um dia de treino/alimentação no modal */
+        .modal-body .training-day {
+            margin-bottom: 25px;
+            background-color: var(--gymrats-light-bg);
+            border: 1px solid var(--gymrats-border);
+            padding: 20px;
+            border-radius: 8mm;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        }
+        .modal-body .training-day h4 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--gymrats-text-primary);
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 2px solid var(--gymrats-border);
+            padding-bottom: 10px;
+            text-transform: capitalize;
+        }
+        /* Estilo para exercícios de treino no modal */
+        .modal-body .training-exercise {
+            margin-bottom: 10px;
+            padding-left: 30px; /* Espaço para o ícone */
+            position: relative;
+            color: var(--gymrats-text-secondary);
+            font-size: 1.05em;
+        }
+        .modal-body .training-exercise::before {
+            content: "\f058"; /* Font Awesome check-circle icon */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--status-success-border); /* Cor verde para check */
+            font-size: 1.2em;
+        }
+        /* Estilo para itens de alimentação no modal */
+        .modal-body .meal-item {
+            background-color: var(--gymrats-dark-bg);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border: 1px solid var(--gymrats-border);
+        }
+        .modal-body .meal-item strong {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 1.15em;
+            color: var(--gymrats-highlight-yellow);
+        }
+        .modal-body .meal-item strong i {
+            margin-right: 10px;
+            font-size: 1.3em;
+            color: var(--gymrats-highlight-yellow);
+        }
+        .modal-body .meal-item ul {
+            padding-left: 20px;
+            list-style-type: disc;
+            color: var(--gymrats-text-secondary);
+            font-size: 1em;
+        }
+        .modal-body .meal-item ul li {
+            background-color: transparent;
+            padding: 2px 0;
+            margin-bottom: 2px;
+            border-radius: 0;
+            list-style-type: disc; /* Garante que os pontos apareçam */
+        }
+        
+        /* Estilos do formulário dentro do modal de edição */
+        .modal-form-group {
+            margin-bottom: 15px;
+        }
+        .modal-form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gymrats-text-primary);
+            font-size: 1em;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 6mm;
+            border: 1px solid var(--gymrats-border);
+            background-color: var(--gymrats-dark-bg);
+            color: var(--gymrats-text-primary);
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--gymrats-highlight-yellow);
+            box-shadow: 0 0 0 3px var(--gymrats-highlight-yellow-light);
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        .modal-actions button {
+            padding: 10px 20px;
+            border-radius: 6mm;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .modal-actions .save-button {
+            background-color: var(--gymrats-highlight-yellow);
+            color: var(--gymrats-dark-bg);
+            border: none;
+        }
+        .modal-actions .save-button:hover {
+            background-color: var(--gymrats-button-hover);
+            transform: translateY(-2px);
+        }
+        .modal-actions .cancel-button {
+            background-color: var(--gymrats-light-bg);
+            color: var(--gymrats-text-primary);
+            border: 1px solid var(--gymrats-border);
+        }
+        .modal-actions .cancel-button:hover {
+            background-color: var(--gymrats-secondary-button-hover);
+            transform: translateY(-2px);
+        }
+
+
+        /* Responsividade geral */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px auto;
+                padding: 15px;
+                /* Resetar centralização absoluta para melhor rolagem em mobile */
+                position: static;
+                top: auto;
+                left: auto;
+                transform: none;
+                max-height: none;
+                overflow-y: visible; /* Deixar o body rolar */
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+            h2 {
+                font-size: 1.8em;
+            }
+            .tab-button {
+                padding: 10px 15px;
+                font-size: 0.95em;
+            }
+            th, td {
+                padding: 10px;
+                font-size: 0.85em;
+            }
+            .actions {
+                flex-direction: column; /* Botões de ação em coluna em telas menores */
+                min-width: unset; /* Remove largura mínima fixa */
+                gap: 8px; /* Mantém o gap */
+            }
+            .actions button {
+                width: 100%; /* Botões ocupam a largura total disponível */
+                padding: 8px 10px;
+                font-size: 0.8em;
+            }
+            /* Responsividade do Modal */
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+                max-height: 90vh; /* Ajusta a altura máxima em telas menores */
+                margin-top: 20px; /* Reduz o padding-top em telas menores */
+            }
+            .close-button {
+                font-size: 28px;
+                top: 10px;
+                right: 15px;
+            }
+            .modal-body h3 {
+                font-size: 1.4em;
+            }
+            .modal-body .training-day h4 {
+                font-size: 1.2em;
+            }
+            .modal-body .training-exercise,
+            .modal-body .meal-item,
+            .modal-body .meal-item ul li {
+                font-size: 0.95em;
+            }
+            .modal-body .meal-item strong {
+                font-size: 1.05em;
+            }
+            .modal-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .modal-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard de Administração</h1>
+
+        <div class="tab-container">
+            <button class="tab-button active" onclick="openTab(event, 'users')">Usuários</button>
+            <button class="tab-button" onclick="openTab(event, 'data-analysis')">Análise de Dados</button>
+        </div>
+
+        <div id="users" class="tab-content active">
+            <h2>Gerenciamento de Usuários</h2>
+            <div id="users-message" class="message"></div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th> <th>Ativo</th> <th>Criado Em</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        </tbody>
+                </table>
+            </div>
+            <div id="users-loading-spinner" class="spinner"></div>
+        </div>
+
+        <div id="data-analysis" class="tab-content">
+            <h2>Análise de Dados (Treinos e Alimentação)</h2>
+            <p style="color: var(--gymrats-text-secondary); text-align: center; margin-bottom: 20px;">Esta seção exibirá todos os treinos e planos de alimentação das pessoas.</p>
+            <div id="data-analysis-message" class="message"></div>
+            <h3>Treinos Registrados</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID do Treino</th>
+                            <th>Usuário</th>
+                            <th>Nível</th>
+                            <th>Objetivo</th>
+                            <th>Frequência</th>
+                            <th>Equipamento</th>
+                            <th>Tempo por Sessão</th>
+                            <th>Data de Geração</th>
+                            <th>Plano</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trainings-table-body">
+                        </tbody>
+                </table>
+            </div>
+            <div id="trainings-loading-spinner" class="spinner"></div>
+        </div>
+    </div>
+
+    <div id="trainingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('trainingModal')">&times;</span>
+            <h2>Detalhes do Plano</h2>
+            <div id="modal-training-details" class="modal-body">
+                </div>
+        </div>
+    </div>
+
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('editUserModal')">&times;</span>
+            <h2>Editar Usuário</h2>
+            <form id="editUserForm">
+                <input type="hidden" id="edit-user-id">
+                <div class="modal-form-group">
+                    <label for="edit-username">Username:</label>
+                    <input type="text" id="edit-username" class="modal-input" required>
+                </div>
+                <div class="modal-form-group">
+                    <label for="edit-email">Email:</label>
+                    <input type="email" id="edit-email" class="modal-input" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="save-button"><i class="fas fa-save"></i> Salvar</button>
+                    <button type="button" class="cancel-button" onclick="closeModal('editUserModal')"><i class="fas fa-times"></i> Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { authService } from './assets/js/auth.js'; // Importar o serviço de autenticação (manter se necessário para o backend)
+        const usersTableBody = document.getElementById('users-table-body');
+        const usersMessageDiv = document.getElementById('users-message');
+        const usersSpinner = document.getElementById('users-loading-spinner');
+
+        const trainingsTableBody = document.getElementById('trainings-table-body');
+        const dataAnalysisMessageDiv = document.getElementById('data-analysis-message');
+        const trainingsSpinner = document.getElementById('trainings-loading-spinner');
+
+        const trainingModal = document.getElementById('trainingModal');
+        const modalTrainingDetails = document.getElementById('modal-training-details');
+
+        const editUserModal = document.getElementById('editUserModal');
+        const editUserForm = document.getElementById('editUserForm');
+        const editUserIdInput = document.getElementById('edit-user-id');
+        const editUsernameInput = document.getElementById('edit-username');
+        const editEmailInput = document.getElementById('edit-email');
+
+        let fetchedTrainings = [];
+
+        // Função para obter o token do localStorage
+        function getAuthToken() {
+            return authService.getToken(); // Supondo que authService tenha um método getToken()
+        }
+
+        function showMessage(element, msg, type) {
+            element.textContent = msg;
+            element.className = `message ${type}`;
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+
+        async function fetchUsers() {
+            usersSpinner.style.display = 'inline-block';
+            usersTableBody.innerHTML = ''; // Limpa a tabela antes de carregar
+            usersMessageDiv.style.display = 'none'; // Esconde mensagens anteriores
+
+            try {
+                const token = getAuthToken();
+                if (!token) {
+                    showMessage(usersMessageDiv, 'Não autenticado. Por favor, faça login.', 'error');
+                    usersSpinner.style.display = 'none';
+                    return;
+                }
+
+                const response = await fetch('http://api-gym-cyan.vercel.app/dashboard/users', {
+                    headers: {
+                        'x-auth-token': token
+                    }
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                }
+                const users = await response.json();
+                renderUsers(users);
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error);
+                showMessage(usersMessageDiv, 'Erro ao carregar usuários: ' + error.message, 'error');
+            } finally {
+                usersSpinner.style.display = 'none';
+            }
+        }
+
+        function renderUsers(users) {
+            usersTableBody.innerHTML = '';
+            if (users.length === 0) {
+                usersTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--gymrats-text-secondary);">Nenhum usuário encontrado.</td></tr>';
+                return;
+            }
+            users.forEach(user => {
+                const row = usersTableBody.insertRow();
+                // Determina a classe de estilo para o status ativo/inativo
+                const statusClass = user.isActive ? 'status-active' : 'status-inactive';
+                const statusText = user.isActive ? 'Ativo' : 'Inativo';
+
+                row.innerHTML = `
+                    <td>${user._id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td> <td class="${statusClass}">${statusText}</td> <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td class="actions">
+                        <button class="edit" onclick="openEditUserModal('${user._id}', '${user.username}', '${user.email}')"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="reset-password" onclick="resetPassword('${user._id}', '${user.email}')"><i class="fas fa-key"></i> Renovar Senha</button>
+                        <button class="delete" onclick="deleteUser('${user._id}')"><i class="fas fa-trash-alt"></i> Deletar</button>
+                        
+                        ${user.role === 'user' ? 
+                            `<button class="make-admin" onclick="updateUserRole('${user._id}', 'admin')"><i class="fas fa-user-shield"></i> Tornar Admin</button>` :
+                            `<button class="remove-admin" onclick="updateUserRole('${user._id}', 'user')"><i class="fas fa-user"></i> Remover Admin</button>`
+                        }
+                        
+                        ${user.isActive ? 
+                            `<button class="deactivate" onclick="updateUserStatus('${user._id}', false)"><i class="fas fa-ban"></i> Desativar</button>` :
+                            `<button class="activate" onclick="updateUserStatus('${user._id}', true)"><i class="fas fa-check-circle"></i> Ativar</button>`
+                        }
+                    </td>
+                `;
+            });
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Tem certeza que deseja deletar este usuário? Isso também deletará todos os treinos e planos de nutrição associados.')) {
+                return;
+            }
+            try {
+                const token = getAuthToken();
+                const response = await fetch(`http://api-gym-cyan.vercel.app/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'x-auth-token': token
+                    }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage(usersMessageDiv, data.message, 'success');
+                    fetchUsers();
+                } else {
+                    throw new Error(data.message || 'Erro ao deletar usuário.');
+                }
+            } catch (error) {
+                console.error('Erro ao deletar usuário:', error);
+                showMessage(usersMessageDiv, 'Erro: ' + error.message, 'error');
+            }
+        }
+
+        function openEditUserModal(userId, currentUsername, currentEmail) {
+            editUserIdInput.value = userId;
+            editUsernameInput.value = currentUsername;
+            editEmailInput.value = currentEmail;
+            editUserModal.style.display = 'flex';
+        }
+
+        editUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const userId = editUserIdInput.value;
+            const newUsername = editUsernameInput.value.trim();
+            const newEmail = editEmailInput.value.trim();
+
+            if (newUsername === '' || newEmail === '') {
+                showMessage(usersMessageDiv, 'Username e Email não podem ser vazios.', 'error');
+                return;
+            }
+
+            try {
+                const token = getAuthToken();
+                const response = await fetch(`http://api-gym-cyan.vercel.app/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ username: newUsername, email: newEmail }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage(usersMessageDiv, data.message, 'success');
+                    closeModal('editUserModal');
+                    fetchUsers();
+                } else {
+                    throw new Error(data.message || 'Erro ao atualizar usuário.');
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar usuário:', error);
+                showMessage(usersMessageDiv, 'Erro: ' + error.message, 'error');
+            }
+        });
+
+        // NOVA FUNÇÃO: Atualizar Role do Usuário
+        async function updateUserRole(userId, newRole) {
+            if (!confirm(`Tem certeza que deseja ${newRole === 'admin' ? 'tornar ADMIN' : 'remover ADMIN de'} este usuário?`)) {
+                return;
+            }
+            try {
+                const token = getAuthToken();
+                const response = await fetch(`http://api-gym-cyan.vercel.app/admin/users/${userId}/role`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ role: newRole }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage(usersMessageDiv, data.message, 'success');
+                    fetchUsers();
+                } else {
+                    throw new Error(data.message || 'Erro ao atualizar role do usuário.');
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar role:', error);
+                showMessage(usersMessageDiv, 'Erro: ' + error.message, 'error');
+            }
+        }
+
+        // NOVA FUNÇÃO: Ativar/Desativar Usuário
+        async function updateUserStatus(userId, isActive) {
+            const actionText = isActive ? 'ativar' : 'desativar';
+            if (!confirm(`Tem certeza que deseja ${actionText} este usuário?`)) {
+                return;
+            }
+            try {
+                const token = getAuthToken();
+                const response = await fetch(`http://api-gym-cyan.vercel.app/admin/users/${userId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({ isActive: isActive }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage(usersMessageDiv, data.message, 'success');
+                    fetchUsers();
+                } else {
+                    throw new Error(data.message || 'Erro ao atualizar status do usuário.');
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar status:', error);
+                showMessage(usersMessageDiv, 'Erro: ' + error.message, 'error');
+            }
+        }
+
+
+        async function resetPassword(userId, userEmail) {
+            if (!confirm(`Tem certeza que deseja iniciar a renovação de senha para ${userEmail}?`)) {
+                return;
+            }
+            try {
+                const token = getAuthToken();
+                const response = await fetch(`http://api-gym-cyan.vercel.app/admin/users/${userId}/reset-password`, {
+                    method: 'POST',
+                    headers: {
+                        'x-auth-token': token
+                    }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showMessage(usersMessageDiv, data.message, 'success');
+                } else {
+                    throw new Error(data.message || 'Erro ao solicitar renovação de senha.');
+                }
+            } catch (error) {
+                console.error('Erro ao solicitar renovação de senha:', error);
+                showMessage(usersMessageDiv, 'Erro: ' + error.message, 'error');
+            }
+        }
+
+        async function fetchTrainings() {
+            trainingsSpinner.style.display = 'inline-block';
+            trainingsTableBody.innerHTML = ''; // Limpa a tabela antes de carregar
+            dataAnalysisMessageDiv.style.display = 'none'; // Esconde mensagens anteriores
+
+            try {
+                const token = getAuthToken();
+                if (!token) {
+                    showMessage(dataAnalysisMessageDiv, 'Não autenticado. Por favor, faça login.', 'error');
+                    trainingsSpinner.style.display = 'none';
+                    return;
+                }
+
+                const response = await fetch('http://api-gym-cyan.vercel.app/dashboard/training-nutrition', {
+                    headers: {
+                        'x-auth-token': token
+                    }
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                }
+                fetchedTrainings = await response.json();
+                renderTrainings(fetchedTrainings);
+            } catch (error) {
+                console.error('Erro ao carregar treinos:', error);
+                showMessage(dataAnalysisMessageDiv, 'Erro ao carregar treinos: ' + error.message, 'error');
+            } finally {
+                trainingsSpinner.style.display = 'none';
+            }
+        }
+
+        function renderTrainings(trainings) {
+            trainingsTableBody.innerHTML = '';
+            if (trainings.length === 0) {
+                trainingsTableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--gymrats-text-secondary);">Nenhum treino encontrado.</td></tr>';
+                return;
+            }
+            trainings.forEach((training, index) => {
+                const row = trainingsTableBody.insertRow();
+                row.innerHTML = `
+                    <td>${training._id}</td>
+                    <td>${training.user ? training.user.username : 'N/A'} (${training.user ? training.user.email : 'Usuário Deletado'})</td>
+                    <td>${training.level}</td>
+                    <td>${training.objective}</td>
+                    <td>${training.frequency}</td>
+                    <td>${training.equipment}</td>
+                    <td>${training.timePerSession}</td>
+                    <td>${new Date(training.dateGenerated).toLocaleDateString()}</td>
+                    <td class="actions">
+                        <button class="view-training" onclick="viewTrainingDetailsByIndex(${index})"><i class="fas fa-eye"></i> Ver Plano</button>
+                    </td>
+                `;
+            });
+        }
+
+        function viewTrainingDetailsByIndex(index) {
+            const training = fetchedTrainings[index];
+            if (!training) {
+                modalTrainingDetails.innerHTML = '<p style="color: var(--status-error-border);">Erro: Plano de treino não encontrado.</p>';
+                trainingModal.style.display = 'flex';
+                return;
+            }
+
+            const trainingPlan = training.plan;
+            modalTrainingDetails.innerHTML = '';
+            document.querySelector('#trainingModal h2').textContent = 'Detalhes do Plano';
+
+            if (!trainingPlan || trainingPlan.length === 0) {
+                modalTrainingDetails.innerHTML = '<p style="color: var(--gymrats-text-secondary);">Nenhum plano de treino ou alimentação disponível.</p>';
+            } else {
+                trainingPlan.forEach(day => {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.classList.add('training-day');
+                    dayDiv.innerHTML = `<h4>${day.dayName}</h4>`;
+
+                    if (day.exercises && Array.isArray(day.exercises) && day.exercises.length > 0) {
+                        document.querySelector('#trainingModal h2').textContent = 'Detalhes do Treino';
+                        const ul = document.createElement('ul');
+                        day.exercises.forEach(exercise => {
+                            const li = document.createElement('li');
+                            li.classList.add('training-exercise');
+                            li.textContent = `${exercise.name} - ${exercise.sets} séries de ${exercise.reps} repetições.`;
+                            if (exercise.notes) {
+                                li.textContent += ` (Notas: ${exercise.notes})`;
+                            }
+                            ul.appendChild(li);
+                        });
+                        dayDiv.appendChild(ul);
+                    }
+                    else if (day.meals && Array.isArray(day.meals) && day.meals.length > 0) {
+                        document.querySelector('#trainingModal h2').textContent = 'Detalhes da Alimentação';
+                        const ul = document.createElement('ul');
+                        day.meals.forEach(meal => {
+                            const mealLi = document.createElement('li');
+                            mealLi.classList.add('meal-item');
+                            mealLi.innerHTML = `<strong><i class="${meal.icon}"></i> ${meal.mealName}:</strong>`;
+                            const foodsUl = document.createElement('ul');
+                            if (meal.foods && Array.isArray(meal.foods) && meal.foods.length > 0) {
+                                meal.foods.forEach(food => {
+                                    const foodLi = document.createElement('li');
+                                    foodLi.textContent = food;
+                                    foodsUl.appendChild(foodLi);
+                                });
+                            } else {
+                                const foodLi = document.createElement('li');
+                                foodLi.textContent = 'Nenhum alimento especificado.';
+                                foodsUl.appendChild(foodLi);
+                            }
+                            mealLi.appendChild(foodsUl);
+                            ul.appendChild(mealLi);
+                        });
+                        dayDiv.appendChild(ul);
+                    } else {
+                        dayDiv.innerHTML += '<p style="color: var(--gymrats-text-secondary);">Nenhum exercício ou refeição para este dia.</p>';
+                    }
+                    modalTrainingDetails.appendChild(dayDiv);
+                });
+            }
+
+            trainingModal.style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == trainingModal) {
+                closeModal('trainingModal');
+            } else if (event.target == editUserModal) {
+                closeModal('editUserModal');
+            }
+        }
+
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].style.display = 'none';
+            }
+
+            const tabButtons = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+
+            document.getElementById(tabName).style.display = 'block';
+            evt.currentTarget.classList.add('active');
+
+            if (tabName === 'users') {
+                fetchUsers();
+            } else if (tabName === 'data-analysis') {
+                fetchTrainings();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchUsers();
+            closeModal('trainingModal');
+            closeModal('editUserModal');
+        });
+    </script>
+</body>
+</html>
