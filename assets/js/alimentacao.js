@@ -1,5 +1,7 @@
 // assets/js/alimentacao.js
 
+import { authService } from './auth.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- Referências aos Elementos do DOM ---
     const nutriSummaryInfo = document.getElementById('nutri-summary-info');
@@ -198,10 +200,12 @@ document.addEventListener('DOMContentLoaded', () => {
         formLoadingOverlay.classList.add('visible');
         
         try {
+            const token = authService.getToken();
             const response = await fetch('https://api-gym-cyan.vercel.app/generate-nutrition-plan', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-auth-token': token
                 },
                 body: JSON.stringify(userInputs),
             });

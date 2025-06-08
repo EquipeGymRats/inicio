@@ -332,9 +332,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Preencher informações de resumo
         // Estes dados vêm do backend ao buscar o treino salvo
-        summaryLevel.textContent = planData.level.charAt(0).toUpperCase() + planData.level.slice(1);
-        summaryObjective.textContent = planData.objective.charAt(0).toUpperCase() + planData.objective.slice(1);
-        summaryFrequency.textContent = `${planData.frequency} vezes por semana`;
+        summaryLevel.textContent = planData.level?.charAt(0).toUpperCase() + planData.level?.slice(1) || "Nível não especificado";
+        summaryObjective.textContent = planData.objective?.charAt(0).toUpperCase() + planData.objective?.slice(1) || "Objetivo não especificado";
+        summaryFrequency.textContent = `${planData.frequency || 0} vezes por semana`;
 
         // Preencher os campos do formulário com os dados do treino anterior
         // Isso é importante para que o usuário veja os inputs preenchidos
@@ -461,7 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 timePerSession: parseInt(timePerSession),
                 plan: currentTrainingPlan.plan // Envia apenas o array 'plan'
             };
-
+            
             const response = await fetch(`${BASE_URL}/training/`, {
                 method: 'POST',
                 headers: {
@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const response = await fetch(`${BASE_URL}/training/generate-training-plan`, {
+            const response = await fetch(`${BASE_URL}/training/generate-treino`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
