@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const response = await fetch(`${BASE_URL}/api/training/`, {
+            const response = await fetch(`${BASE_URL}/training/`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -462,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 plan: currentTrainingPlan.plan // Envia apenas o array 'plan'
             };
 
-            const response = await fetch(`${BASE_URL}/api/training/`, {
+            const response = await fetch(`${BASE_URL}/training/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const response = await fetch(`${BASE_URL}/api/training/generate-training-plan`, {
+            const response = await fetch(`${BASE_URL}/training/generate-training-plan`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

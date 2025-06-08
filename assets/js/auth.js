@@ -5,7 +5,7 @@ const BASE_URL = 'https://api-gym-cyan.vercel.app'; // Sua Base URL do backend
 export const authService = {
     async register(username, email, password) {
         try {
-            const response = await fetch(`${BASE_URL}/api/auth/register`, {
+            const response = await fetch(`${BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ export const authService = {
 
     async login(email, password) {
         try {
-            const response = await fetch(`${BASE_URL}/api/auth/login`, {
+            const response = await fetch(`${BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ export const authService = {
         }
 
         try {
-            const response = await fetch(`${BASE_URL}/api/auth/profile`, {
+            const response = await fetch(`${BASE_URL}/auth/profile`, {
                 method: 'GET',
                 headers: {
                     'x-auth-token': token, // Envia o token no cabeçalho
