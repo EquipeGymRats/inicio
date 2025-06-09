@@ -282,10 +282,10 @@
                 <div class="link-group">
                     <h4>Navegação</h4>
                     <ul>
-                        <li><a href="index.html">Início</a></li>
-                        <li><a href="equipe.html">Quem Somos</a></li>
-                        <li><a href="equipe.html#projeto">Nosso Projeto</a></li>
-                        <li><a href="index.html#contact">Contato</a></li>
+                        <li><a href="index">Início</a></li>
+                        <li><a href="equipe">Quem Somos</a></li>
+                        <li><a href="equipe#projeto">Nosso Projeto</a></li>
+                        <li><a href="index#contact">Contato</a></li>
                     </ul>
                 </div>
             </div>
@@ -296,7 +296,7 @@
     </footer>
 
     <script type="module">
-        import { authService } from './assets/js/auth.js'; // Caminho relativo do login.html para auth.js
+        import { authService } from './assets/js/auth.js'; // Caminho relativo do login para auth.js
 
         document.addEventListener('DOMContentLoaded', () => {
             const loginForm = document.getElementById('login-form');
@@ -310,7 +310,7 @@
             // Chamada inicial para verificar o status de login ao carregar a página
             // Se já estiver logado, redireciona.
             if (authService.isLoggedIn()) {
-                window.location.href = 'treino-personalizado.html';
+                window.location.href = 'treino-personalizado';
             }
 
             function showNotification(message, type) {
@@ -348,7 +348,7 @@
                         showNotification(result.message, 'success');
                         // Redireciona APÓS a notificação ser exibida por um breve período
                         setTimeout(() => {
-                            window.location.href = 'treino-personalizado.html';
+                            window.location.href = 'treino-personalizado';
                         }, 500); // Pequeno delay para a notificação ser visível
                     } else {
                         showNotification(result.message, 'error');
@@ -368,7 +368,7 @@
                         showNotification(result.message, 'success');
                          // Redireciona APÓS a notificação ser exibida por um breve período
                         setTimeout(() => {
-                            window.location.href = 'treino-personalizado.html';
+                            window.location.href = 'treino-personalizado';
                         }, 500); // Pequeno delay
                     } else {
                         showNotification(result.message, 'error');
