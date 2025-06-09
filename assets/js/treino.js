@@ -353,7 +353,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // **MODIFICAÇÃO AQUI:** Esconde o formulário se um treino for carregado ou gerado
         formSection.classList.add('hidden'); // Esconde o formulário
-        formSection.style.filter = 'none'; // Remove o blur (caso tenha sido aplicado)
         loadingSpinner.classList.add('hidden'); // Esconde o spinner
         outputSection.classList.remove('hidden'); // Mostra a seção de output
         saveTrainingBtn.disabled = true; // Desabilita se já estiver salvo
@@ -371,7 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <p>Carregando seu treino anterior...</p>
         `;
-        formSection.style.filter = 'blur(5px)';
         loadingSpinner.classList.remove('hidden');
 
         try {
@@ -490,7 +488,6 @@ document.addEventListener('DOMContentLoaded', () => {
         trainingForm.reset();
         outputSection.classList.add('hidden');
         formSection.classList.remove('hidden'); // Mostra o formulário novamente
-        formSection.style.filter = 'none'; // Remove o blur
         saveTrainingBtn.disabled = false; // Reabilita o botão de salvar
         saveTrainingBtn.textContent = 'Salvar Treino';
         currentTrainingPlan = null; // Limpa o plano atual
@@ -514,7 +511,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const timePerSession = document.getElementById('time-per-session').value;
 
         // Aplica blur ao formulário e mostra o spinner de carregamento
-        formSection.style.filter = 'blur(5px)';
         loadingSpinner.innerHTML = `
             <div class="loading-squares-container">
                 <div class="loading-square"></div>
