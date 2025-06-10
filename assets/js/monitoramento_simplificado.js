@@ -217,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Em vez de forçar uma resolução, pedimos a proporção ideal
                 aspectRatio: { ideal: 9 / 16 },
                 // Podemos sugerir uma altura, mas o aspectRatio é o mais importante
-                height: { ideal: 1280 }
             },
             audio: false
         };
