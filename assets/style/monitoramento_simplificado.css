@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #FFD700; /* Amarelo GymRats */
+    --primary-color: #ffd75d; /* Amarelo GymRats */
     --primary-color-rgb: 255, 215, 0; /* Para usar com opacidade */
     --secondary-color: #0A0A0A; /* Preto GymRats */
     --text-color-light: #FFFFFF;
@@ -124,30 +124,35 @@ body {
     display: flex;
     position: relative;
     width: 100%;
-    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
 }
 
+/* ================================================================== */
+/* INÍCIO DA ALTERAÇÃO 1: Otimização da Exibição das Seções          */
+/* ================================================================== */
 .phase-section {
     width: 100%;
-    min-height: calc(100vh - 70px); /* Ajustar conforme altura do header */
-    display: none;
+    min-height: calc(100vh - 70px);
+    display: none; /* COMEÇA OCULTO E SEM OCUPAR ESPAÇO */
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Centraliza verticalmente */
-    padding: 30px 20px; /* Padding maior para desktop */
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease-in-out, visibility 0.4s linear;
+    justify-content: center;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+    animation: fadeIn 0.5s ease-in-out;
 }
+
 .phase-section.active {
-    display: flex;
-    opacity: 1;
-    visibility: visible;
-    position: relative;
+    display: flex; 
 }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+/* ================================================================== */
+/* FIM DA ALTERAÇÃO 1                                                 */
+/* ================================================================== */
+
 
 .explanation-box {
     background: linear-gradient(145deg, #232323, #1c1c1c);
@@ -236,10 +241,9 @@ body {
 #cameraMonitoringSection {
     justify-content: center;
     align-items: center;
-    padding: 30px;
+    padding: 20px; /* Adicionado padding para garantir espaçamento em telas menores */
     min-height: 100vh;
     position: relative;
-    display: flex;
     flex-direction: column;
 }
 
@@ -257,8 +261,9 @@ body {
 .camera-view-container {
     position: relative;
     width: 100%;
-    max-width: 640px; /* Ajustado para proporção mais quadrada */
-    aspect-ratio: 1/1; /* Proporção quadrada */
+    max-width: 400px; /* Define uma largura máxima para o container no desktop */
+    aspect-ratio: 9 / 16; /* Força a proporção vertical (como um celular) */
+    max-height: 80vh; /* Impede que a câmera fique excessivamente alta em telas grandes */
     background-color: #000;
     border-radius: 20px;
     overflow: hidden;
@@ -303,25 +308,32 @@ body {
     100% { border-image: conic-gradient(var(--primary-color) 100%, transparent 100%) 1; }
 }
 
+
+/* ================================================================== */
+/* INÍCIO DA ALTERAÇÃO 2: Correção do Zoom da Câmera                  */
+/* ================================================================== */
 #userVideoFeed, #guideLinesCanvas {
     position: absolute; 
     top: 0; 
     left: 0; 
     width: 100%; 
     height: 100%; 
-    object-fit: contain; /* Evita o zoom excessivo */
-    object-position: center; /* Centraliza o conteúdo */
+    object-fit: contain; /* ALTERADO: Garante que o vídeo inteiro apareça sem cortar */
+    object-position: center;
 }
+/* ================================================================== */
+/* FIM DA ALTERAÇÃO 2                                                 */
+/* ================================================================== */
+
+
 #userVideoFeed.mirrored { transform: scaleX(-1); }
 #guideLinesCanvas { z-index: 5; }
-
-/* Removido o efeito de explosão para repetição correta */
 
 /* Ilha dinâmica para controles */
 .floating-controls {
     position: relative;
     width: 100%;
-    max-width: 640px; /* Mesmo tamanho da câmera */
+    max-width: 400px; /* Mesmo max-width da câmera para alinhamento */
     padding: 20px 25px;
     background: linear-gradient(145deg, rgba(40, 40, 40, 0.7), rgba(20, 20, 20, 0.7));
     backdrop-filter: blur(15px);
@@ -343,8 +355,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.5);
-    width: 120px; /* Maior */
-    height: 120px; /* Maior */
+    width: 120px;
+    height: 120px;
     background-color: var(--rep-feedback-bg);
     border-radius: 50%;
     display: flex;
@@ -362,7 +374,7 @@ body {
     transform: translate(-50%, -50%) scale(1);
 }
 .correct-rep-feedback i {
-    font-size: 4em; /* Maior */
+    font-size: 4em;
     color: var(--success-rep-color);
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
@@ -421,7 +433,7 @@ body {
 /* Guias visuais para o exercício */
 .shoulder-guide-line {
     position: absolute;
-    height: 4px; /* Linha mais espessa */
+    height: 4px;
     background: linear-gradient(90deg, 
         rgba(var(--blue-accent-rgb), 0.2) 0%, 
         rgba(var(--blue-accent-rgb), 0.9) 50%, 
@@ -429,18 +441,18 @@ body {
     left: 0;
     width: 100%;
     z-index: 6;
-    box-shadow: 0 0 15px rgba(var(--blue-accent-rgb), 0.7); /* Sombra para destacar */
+    box-shadow: 0 0 15px rgba(var(--blue-accent-rgb), 0.7);
 }
 
 .target-angle-guide {
     position: absolute;
-    width: 4px; /* Linha mais espessa */
+    width: 4px;
     background: linear-gradient(180deg, 
         rgba(var(--primary-color-rgb), 0.2) 0%, 
         rgba(var(--primary-color-rgb), 0.9) 50%, 
         rgba(var(--primary-color-rgb), 0.2) 100%);
     z-index: 6;
-    box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.7); /* Sombra para destacar */
+    box-shadow: 0 0 15px rgba(var(--primary-color-rgb), 0.7);
 }
 
 /* Boneco de exemplo */
@@ -704,6 +716,10 @@ body {
         max-width: 800px;
         margin: 0 auto;
     }
+
+    #cameraMonitoringSection {
+        padding: 30px;
+    }
 }
 
 /* Tablets */
@@ -755,21 +771,24 @@ body {
 @media (max-width: 767px) {
     #cameraMonitoringSection {
         padding: 0;
+        height: 100vh; 
     }
     
     .camera-container {
         width: 100%;
-        height: 100vh;
+        height: 100%;
     }
     
     .camera-view-container {
         width: 100%;
+        height: 100%;
         max-width: 100%;
-        height: 100vh;
-        aspect-ratio: auto;
+        max-height: 100vh;
+        aspect-ratio: auto; /* Permite que a câmera ocupe a tela inteira do celular */
         border-radius: 0;
     }
     
+    /* Garantir que a alteração de object-fit se aplique aqui também */
     #userVideoFeed, #guideLinesCanvas {
         object-fit: cover; /* Cobre a tela em mobile */
     }
