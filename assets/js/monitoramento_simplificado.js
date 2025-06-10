@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`Canvas dimensions set: ${videoWidth}x${videoHeight}`);
     }
 
-    async function setupCamera() {
+       async function setupCamera() {
         cameraLoadingIndicator.style.display = 'flex';
         console.log("setupCamera: Iniciando...");
         cameraLoadingIndicator.textContent = 'Carregando Câmera...';
@@ -209,56 +209,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         videoElement.classList.toggle('mirrored', useFrontCamera);
 
-        // ==================================================================
-        // INÍCIO DA ALTERAÇÃO: Constraints da câmera otimizadas
-        // ==================================================================
+        // --- MODIFICAÇÃO PRINCIPAL AQUI ---
+        // Tornando as restrições mais flexíveis para aumentar a compatibilidade
         const constraints = {
-            video: { 
-                facingMode: useFrontCamera ? 'user' : 'environment', 
-                width: { ideal: 1080 },  // Resolução mais modesta e ideal
-                height: { ideal: 1920 }, // para performance.
-                aspectRatio: { ideal: 4 / 3 }
+            video: {
+                facingMode: useFrontCamera ? 'user' : 'environment',
+                // Em vez de forçar uma resolução, pedimos a proporção ideal
+                aspectRatio: { ideal: 9 / 16 },
+                // Podemos sugerir uma altura, mas o aspectRatio é o mais importante
+                height: { ideal: 1280 }
             },
             audio: false
         };
-        // ==================================================================
-        // FIM DA ALTERAÇÃO
-        // ==================================================================
+        // --- FIM DA MODIFICAÇÃO ---
 
         try {
             currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-            console.log("setupCamera: Câmera obtida.");
+            console.log("setupCamera: Câmera obtida com sucesso.");
             videoElement.srcObject = currentStream;
 
-            // Usar 'loadeddata' pode ser mais confiável que 'loadedmetadata' para dimensões
             videoElement.onloadeddata = () => {
                 console.log("setupCamera: Dados do vídeo carregados.");
                 setCanvasDimensions();
                 cameraLoadingIndicator.style.display = 'none';
 
-                if (!pose) {
-                    initializePoseDetection(); // Inicializa se não existir
-                }
-                if (!hands) {
-                    initializeHandsDetection(); // Inicializa detecção de mãos
-                }
+                if (!pose) initializePoseDetection();
+                if (!hands) initializeHandsDetection();
+                
                 if (camera && !camera.isStarted) {
-                    camera.start(); // Reinicia o MediaPipe Camera se já existir mas parado
+                    camera.start();
                 } else if (!camera) {
-                    startCameraFeed(); // Cria e inicia o MediaPipe Camera
+                    startCameraFeed();
                 }
             };
-            videoElement.onerror = (e) => { console.error("setupCamera: Erro no elemento de vídeo:", e); cameraLoadingIndicator.textContent = `Erro: ${e.message || e.name}`; currentStream = null; };
+            videoElement.onerror = (e) => { 
+                console.error("setupCamera: Erro no elemento de vídeo:", e); 
+                cameraLoadingIndicator.textContent = `Erro no player de vídeo.`;
+                currentStream = null; 
+            };
         } catch (error) {
             console.error("setupCamera: Erro ao obter câmera -", error.name, error.message);
-            cameraLoadingIndicator.textContent = `Erro: ${error.name}`;
-            if (error.name === "NotAllowedError") {
+            currentStream = null;
+
+            // --- MELHORIA NO FEEDBACK DE ERRO PARA O USUÁRIO ---
+            if (error.name === "NotReadableError") {
+                 cameraLoadingIndicator.textContent = 'Erro: A câmera já está em uso por outro app? Tente fechar outros programas e recarregar.';
+                 alert('Não foi possível acessar sua câmera. Verifique se ela não está sendo usada por outro aplicativo (Zoom, Discord, etc.) e atualize a página.');
+            } else if (error.name === "NotAllowedError") {
                  cameraLoadingIndicator.textContent = 'Permissão da câmera negada.';
                  alert('Você precisa permitir o acesso à câmera para usar esta funcionalidade.');
             } else {
-                 cameraLoadingIndicator.textContent = `Erro (${error.name}). Tente outra câmera.`;
+                 cameraLoadingIndicator.textContent = `Erro de câmera (${error.name}). Tente trocar de câmera (frontal/traseira).`;
             }
-            currentStream = null;
         }
     }
 

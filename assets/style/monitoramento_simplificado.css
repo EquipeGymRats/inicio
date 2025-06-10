@@ -261,9 +261,9 @@ body {
 .camera-view-container {
     position: relative;
     width: 100%;
-    max-width: 400px; /* Define uma largura máxima para o container no desktop */
-    aspect-ratio: 9 / 16; /* Força a proporção vertical (como um celular) */
-    max-height: 80vh; /* Impede que a câmera fique excessivamente alta em telas grandes */
+    max-width: 400px; 
+    aspect-ratio: 9 / 16; 
+    max-height: 80vh;
     background-color: #000;
     border-radius: 20px;
     overflow: hidden;
@@ -318,7 +318,7 @@ body {
     left: 0; 
     width: 100%; 
     height: 100%; 
-    object-fit: contain; /* ALTERADO: Garante que o vídeo inteiro apareça sem cortar */
+    object-fit: cover; 
     object-position: center;
 }
 /* ================================================================== */
