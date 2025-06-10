@@ -53,20 +53,20 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="example-figure">
             <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <!-- Cabeça -->
-                <circle cx="50" cy="20" r="8" fill="#f2c85e" />
+                <circle cx="50" cy="20" r="8" fill="#ffd75d" />
                 
                 <!-- Corpo -->
-                <line x1="50" y1="28" x2="50" y2="60" stroke="#f2c85e" stroke-width="4" />
+                <line x1="50" y1="28" x2="50" y2="60" stroke="#ffd75d" stroke-width="4" />
                 
                 <!-- Braços - posição inicial -->
                 <g class="arms" data-position="down">
-                    <line x1="50" y1="35" x2="30" y2="45" stroke="#f2c85e" stroke-width="4" class="left-arm" />
-                    <line x1="50" y1="35" x2="70" y2="45" stroke="#f2c85e" stroke-width="4" class="right-arm" />
+                    <line x1="50" y1="35" x2="30" y2="45" stroke="#ffd75d" stroke-width="4" class="left-arm" />
+                    <line x1="50" y1="35" x2="70" y2="45" stroke="#ffd75d" stroke-width="4" class="right-arm" />
                 </g>
                 
                 <!-- Pernas -->
-                <line x1="50" y1="60" x2="40" y2="85" stroke="#f2c85e" stroke-width="4" />
-                <line x1="50" y1="60" x2="60" y2="85" stroke="#f2c85e" stroke-width="4" />
+                <line x1="50" y1="60" x2="40" y2="85" stroke="#ffd75d" stroke-width="4" />
+                <line x1="50" y1="60" x2="60" y2="85" stroke="#ffd75d" stroke-width="4" />
             </svg>
         </div>
     `;
