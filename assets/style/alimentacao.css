@@ -10,8 +10,8 @@
     --gymrats-text-secondary: #B0B0B0;
     --gymrats-highlight-yellow: #ffd75d;
     --gymrats-highlight-yellow-light: rgba(255, 215, 0, 0.2);
-    --gymrats-button-hover: #FFEB3B; /* Amarelo um pouco mais claro para hover */
-    --gymrats-secondary-button-hover: #4A4A4A; /* Cinza escuro para hover do secundário */
+    --gymrats-button-hover: #FFEB3B;
+    --gymrats-secondary-button-hover: #4A4A4A;
 
 
     /* Cores de Macronutrientes */
@@ -46,20 +46,20 @@ html, body {
 
 /* Esconder elementos com a classe .hidden */
 .hidden {
-    display: none !important; /* Força a ocultação imediata para remover do fluxo */
-    opacity: 0; /* Para transição de opacidade quando a transição é permitida */
-    pointer-events: none; /* Impede interação com elementos escondidos */
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Seção Principal da Página de Alimentação */
 .alimentacao-section {
-    padding: 80px 20px;
+    padding: 60px 20px;
     background-color: var(--gymrats-dark-bg);
-    min-height: calc(100vh - 80px); /* Ajustado para deixar espaço para o header/footer */
+    min-height: calc(100vh - 80px);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 40px;
+    gap: 30px;
 }
 
 /* Cabeçalho da Seção (Título e Resumo) */
@@ -70,33 +70,49 @@ html, body {
     margin-bottom: 20px;
 }
 
+.alimentacao-header-info h2,
+.alimentacao-header-info > p:first-of-type {
+    display: none;
+    animation: fadeInHeader 0.5s ease-in-out;
+}
+
+.alimentacao-header-info.plan-generated h2,
+.alimentacao-header-info.plan-generated > p:first-of-type {
+    display: block;
+}
+
+@keyframes fadeInHeader {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .alimentacao-header-info h2 {
     font-family: 'Montserrat', sans-serif;
-    font-size: 3.0em;
+    font-size: 2.5em;
     color: var(--gymrats-highlight-yellow);
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     text-shadow: 0 0 2px var(--gymrats-highlight-yellow), 0 0 4px var(--gymrats-highlight-yellow), 0 0 8px var(--gymrats-highlight-yellow-light)
 }
 
 .alimentacao-header-info p {
-    font-size: 1.2em;
+    font-size: 1.1em;
     color: var(--gymrats-text-secondary);
-    margin-bottom: 25px;
-    line-height: 1.6;
+    margin-bottom: 20px;
+    line-height: 1.5;
 }
 
 .alimentacao-header-info .summary-info {
     background-color: var(--gymrats-medium-bg);
-    padding: 20px 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
     display: inline-block;
-    margin-top: 20px;
+    margin-top: 15px;
     border: 1px solid var(--gymrats-border);
     transition: all 0.3s ease;
-    opacity: 0; /* Começa escondido */
+    opacity: 0;
     pointer-events: none;
 }
 .alimentacao-header-info .summary-info.active {
@@ -104,10 +120,9 @@ html, body {
     pointer-events: auto;
 }
 
-
 .alimentacao-header-info .summary-info p {
-    margin: 5px 0;
-    font-size: 1.1em;
+    margin: 4px 0;
+    font-size: 1em;
     color: var(--gymrats-text-primary);
 }
 
@@ -120,40 +135,28 @@ html, body {
 /* Formulário de Detalhes (Multi-step) */
 .alimentacao-form-section {
     background-color: var(--gymrats-medium-bg);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
     border: 1px solid var(--gymrats-border);
     width: 100%;
-    max-width: 650px;
-    position: relative; /* Para o overlay de carregamento */
-    overflow: hidden; /* Garante que o conteúdo do step não vaze durante a transição */
-    min-height: 450px;
-    /* Centralização com margin auto: */
+    max-width: 550px;
+    position: relative;
+    overflow: hidden;
+    min-height: 480px;
     margin-left: auto; 
     margin-right: auto;
-    /* Removido display:flex e justify-content:center diretamente no section,
-       pois os steps são absolutos dentro e o display:flex é para os steps */
-    transition: opacity 0.5s ease; /* Transição para esconder/mostrar o formulário */
-}
-
-.alimentacao-form-section h3 {
-    font-family: 'Montserrat', sans-serif;
-    color: var(--gymrats-highlight-yellow);
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 2.2em;
-    letter-spacing: 1.5px;
+    transition: opacity 0.5s ease;
 }
 
 /* Indicador de Progresso do Formulário */
 .form-progress-bar {
     display: flex;
-    justify-content: space-between; /* Espaçamento entre os círculos */
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     position: relative;
-    width: 80%; /* Ajuste a largura do container da barra */
+    width: 80%;
     max-width: 300px;
     margin-left: auto;
     margin-right: auto;
@@ -164,14 +167,14 @@ html, body {
     position: absolute;
     height: 3px;
     background-color: var(--gymrats-border);
-    width: 100%; /* Linha base completa */
+    width: 100%;
     z-index: 1;
     left: 0;
 }
 
 .form-progress-bar .progress-step {
-    width: 25px; /* Aumentado para acomodar o número */
-    height: 25px; /* Aumentado para acomodar o número */
+    width: 25px;
+    height: 25px;
     border-radius: 50%;
     background-color: var(--gymrats-border);
     border: 2px solid var(--gymrats-border);
@@ -181,98 +184,113 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--gymrats-text-primary); /* Cor do número */
+    color: var(--gymrats-text-primary);
     font-weight: bold;
-    font-size: 0.9em; /* Tamanho do número */
+    font-size: 0.9em;
 }
 
 .form-progress-bar .progress-step.active {
     background-color: var(--gymrats-highlight-yellow);
     border-color: var(--gymrats-highlight-yellow);
-    transform: scale(1.1); /* Um leve aumento para destaque */
-    color: var(--gymrats-dark-bg); /* Cor do número quando ativo */
+    transform: scale(1.1);
+    color: var(--gymrats-dark-bg);
 }
 
-/* Linha de progresso preenchida */
 .form-progress-bar::after {
     content: '';
     position: absolute;
     height: 3px;
     background: linear-gradient(to right, var(--gymrats-highlight-yellow), var(--gymrats-button-hover));
-    width: 0%; /* Começa com 0% */
+    width: 0%;
     left: 0;
     z-index: 1;
     transition: width 0.6s ease-in-out;
 }
 
-/* Classes para controlar a largura da linha de progresso (serão adicionadas via JS) */
-.form-progress-bar.progress-step-1::after { width: 0%; } /* Corresponde ao step 0 */
-.form-progress-bar.progress-step-2::after { width: calc(50% - 12.5px); } /* Metade do caminho, ajustado pelo raio do círculo */
-.form-progress-bar.progress-step-3::after { width: 100%; } /* Completo */
+.form-progress-bar.progress-step-1::after { width: 0%; }
+.form-progress-bar.progress-step-2::after { width: calc(50% - 12.5px); }
+.form-progress-bar.progress-step-3::after { width: 100%; }
 
-
-/* Estilos para as etapas do formulário */
+/* Animação das Etapas do Formulário */
 .form-step {
-    transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.6s ease-in-out;
-    position: absolute; /* Permite sobreposição e transição de posição */
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 40px;
-    background-color: var(--gymrats-medium-bg);
-    opacity: 0;
-    pointer-events: none;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 450px; /* Garante que a altura do formulário não mude bruscamente */
+    display: none;
+    animation: fadeInStep 0.5s ease-in-out;
 }
-
 .form-step.active {
-    opacity: 1;
-    pointer-events: auto;
-    position: relative; /* Volta para o fluxo normal quando ativo */
-    transform: translateX(0);
+    display: block;
+}
+@keyframes fadeInStep {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Animações de entrada e saída */
-.form-step.leaving-left {
-    transform: translateX(-100%);
-    opacity: 0;
-}
-.form-step.entering-right {
-    transform: translateX(100%);
-    opacity: 0;
-}
-.form-step.active.animate-in {
-    transform: translateX(0);
-    opacity: 1;
+.step-header {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
+.step-header h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6em;
+    color: var(--gymrats-highlight-yellow);
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.step-header p {
+    font-size: 1em;
+    color: var(--gymrats-text-secondary);
+    line-height: 1.5;
+    max-width: 90%;
+    margin: 0 auto;
+}
 
 .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 12px;
 }
 
 .form-group label {
     display: block;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     color: var(--gymrats-text-primary);
+    font-size: 1em;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper .fas {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gymrats-highlight-yellow);
     font-size: 1.1em;
+    transition: color 0.3s ease;
+    pointer-events: none;
 }
 
 .form-input, .form-select, .form-textarea {
     width: 100%;
-    padding: 15px 20px;
-    border-radius: 10px;
+    padding: 12px 15px;
+    border-radius: 8px;
     border: 1px solid var(--gymrats-border);
     background-color: var(--gymrats-light-bg);
     color: var(--gymrats-text-primary);
-    font-size: 1em;
+    font-size: 0.95em;
     transition: all 0.3s ease;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    padding-left: 50px !important;
 }
 
 .form-input::placeholder, .form-textarea::placeholder {
@@ -282,13 +300,20 @@ html, body {
 .form-input:focus, .form-select:focus, .form-textarea:focus {
     outline: none;
     border-color: var(--gymrats-highlight-yellow);
-    box-shadow: 0 0 0 4px var(--gymrats-highlight-yellow-light), inset 0 2px 5px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 3px var(--gymrats-highlight-yellow-light), inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Radio Group (Gênero) */
+.input-wrapper:focus-within .fas {
+    color: var(--gymrats-text-primary);
+}
+
+.input-wrapper textarea.form-input + .fas {
+    top: 20px;
+}
+
 .radio-group {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -301,31 +326,31 @@ html, body {
     background-color: var(--gymrats-light-bg);
     border: 2px solid var(--gymrats-border);
     color: var(--gymrats-text-primary);
-    padding: 15px 30px;
-    border-radius: 10px;
+    padding: 12px 25px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     display: flex;
     align-items: center;
     font-weight: 500;
-    font-size: 1.05em;
-    min-width: 180px;
+    font-size: 1em;
+    min-width: 160px;
     justify-content: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .radio-group label i {
-    margin-right: 10px;
+    margin-right: 8px;
     color: var(--gymrats-highlight-yellow);
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 .radio-group input[type="radio"]:checked + label {
     background-color: var(--gymrats-highlight-yellow);
     border-color: var(--gymrats-highlight-yellow);
     color: var(--gymrats-dark-bg);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(255, 215, 0, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(255, 215, 0, 0.5);
 }
 .radio-group input[type="radio"]:checked + label i {
     color: var(--gymrats-dark-bg);
@@ -333,60 +358,59 @@ html, body {
 
 .radio-group label:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
     border-color: var(--gymrats-highlight-yellow);
 }
 
-/* Botões de Navegação do Formulário */
 .form-navigation-buttons {
     display: flex;
     justify-content: space-between;
-    margin-top: 30px;
-    gap: 15px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
 .form-navigation-buttons .action-button {
     flex: 1;
-    min-width: 150px;
+    min-width: 140px;
 }
 
-/* Estilos de Botão Genéricos */
 .action-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 15px 30px;
-    border-radius: 10px;
-    font-size: 1.1em;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 1em;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     text-decoration: none;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     border: none;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .action-button i {
-    margin-right: 10px;
-    font-size: 1.2em;
+    margin-right: 8px;
+    font-size: 1.1em;
+    transition: transform 0.3s ease;
 }
 
-/* Estilo para o botão primário */
+.action-button:hover i {
+    transform: scale(1.1);
+}
+
 .primary-button {
-    background-color: var(--gymrats-highlight-yellow);
+    background: linear-gradient(145deg, var(--gymrats-button-hover), var(--gymrats-highlight-yellow));
     color: var(--gymrats-dark-bg);
 }
 
 .primary-button:hover {
-    background-color: var(--gymrats-button-hover);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
 }
 
-/* Estilo para o botão secundário */
 .secondary-button {
     background-color: var(--gymrats-light-bg);
     color: var(--gymrats-text-primary);
@@ -397,26 +421,41 @@ html, body {
     background-color: var(--gymrats-secondary-button-hover);
     border-color: var(--gymrats-highlight-yellow);
     color: var(--gymrats-text-primary);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
-/* Overlay de Carregamento (Gerando Plano) */
+#submit-nutrition-form {
+    animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 5px rgba(255, 215, 0, 0.2);
+    }
+    50% {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.7);
+    }
+    100% {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 5px rgba(255, 215, 0, 0.2);
+    }
+}
+
 .form-loading-overlay {
-    position: absolute; /* Para cobrir apenas o formulário */
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(8px); /* Aplica o blur no que está por baixo */
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     z-index: 10;
     opacity: 0;
-    visibility: hidden; /* Controla a visibilidade */
+    visibility: hidden;
     transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
@@ -430,7 +469,6 @@ html, body {
     color: var(--gymrats-text-primary);
 }
 
-/* Spinner animado "Samsung-like" */
 .loading-spinner-circle {
     width: 80px;
     height: 80px;
@@ -454,7 +492,6 @@ html, body {
     100% { border-top-color: var(--gymrats-highlight-yellow); border-right-color: rgba(255, 215, 0, 0.2); border-bottom-color: rgba(255, 215, 0, 0.2); border-left-color: var(--gymrats-highlight-yellow); }
 }
 
-
 .loading-text {
     font-family: 'Montserrat', sans-serif;
     font-size: 1.8em;
@@ -468,116 +505,145 @@ html, body {
     color: var(--gymrats-text-secondary);
 }
 
-
-/* Seção de Saída do Plano Alimentar (Calendário Interativo) */
 .alimentacao-plan-output {
-    background-color: var(--gymrats-medium-bg);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    background: linear-gradient(to bottom, #212121, var(--gymrats-medium-bg));
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
     border: 1px solid var(--gymrats-border);
     width: 100%;
-    max-width: 800px; /* Mantém a largura máxima */
-    /* Removido display:flex, pois 'hidden' já trata isso. */
-    /* Centralização com margin auto: */
+    max-width: 750px;
     margin-left: auto;
     margin-right: auto;
-    transition: opacity 0.5s ease; /* Apenas transição de opacidade */
-    opacity: 0; /* Começa oculto */
+    transition: opacity 0.5s ease;
+    opacity: 0;
     pointer-events: none;
-    /* Ajustado para não ter position absolute mais, pois o formulário que muda para hidden */
-    /* e este passa a ser o elemento visível no fluxo normal */
 }
 
 .alimentacao-plan-output.active {
     opacity: 1;
     pointer-events: auto;
-    /* Remover position:relative e transform:translateX(0) daqui, 
-       eles não são necessários se ele simplesmente aparecer no fluxo */
-    display: flex; /* Adiciona display flex quando ativo para alinhar o conteúdo interno */
+    display: flex;
     flex-direction: column;
     align-items: center;
 }
-
-/* Título dentro da seção de saída */
-.alimentacao-plan-output h3 {
-    font-family: 'Montserrat', sans-serif;
-    color: var(--gymrats-highlight-yellow);
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 2.2em;
-    letter-spacing: 1.5px;
-}
-
 
 .plan-navigation {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    margin-bottom: 30px;
-    padding: 0 15px;
-    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--gymrats-border);
+    gap: 15px;
 }
 
 .plan-navigation .nav-button {
-    background: none;
-    border: none;
-    color: var(--gymrats-highlight-yellow);
-    font-size: 1.2em;
+    background: var(--gymrats-light-bg);
+    border: 1px solid var(--gymrats-border);
+    color: var(--gymrats-text-primary);
+    font-size: 1em;
     cursor: pointer;
-    transition: transform 0.2s ease, color 0.2s ease;
-    padding: 10px 15px;
-    border-radius: 8px;
+    transition: all 0.2s ease;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-weight: bold;
+    justify-content: center;
+    padding: 0;
 }
 
 .plan-navigation .nav-button i {
-    font-size: 1.5em;
+    font-size: 1em;
+    margin: 0;
 }
 
 .plan-navigation .nav-button:hover:not(:disabled) {
-    color: var(--gymrats-text-primary);
-    background-color: rgba(255, 215, 0, 0.1);
-    transform: translateY(-2px);
+    color: var(--gymrats-highlight-yellow);
+    border-color: var(--gymrats-highlight-yellow);
+    transform: scale(1.05);
 }
 
 .plan-navigation .nav-button:disabled {
-    opacity: 0.3;
+    opacity: 0.4;
     cursor: not-allowed;
+    background-color: var(--gymrats-medium-bg);
+}
+
+.day-title-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.day-title-container .fas {
+    font-size: 1.5em;
+    color: var(--gymrats-highlight-yellow);
 }
 
 #current-day-name {
     font-family: 'Montserrat', sans-serif;
-    color: var(--gymrats-text-primary);
-    font-size: 2.5em;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin: 0 20px;
-    flex-grow: 1;
+    color: var(--gymrats-highlight-yellow);
+    font-size: 1.8em;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    margin: 0;
     text-align: center;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
+}
+
+#current-day-name.fade-out {
+    opacity: 0;
+    transform: translateY(5px);
 }
 
 .day-plan-card {
     background-color: var(--gymrats-light-bg);
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
     border: 1px solid var(--gymrats-border);
     width: 100%;
-    /* Removido min-height e height fixos. Deixa-o adaptar ao conteúdo */
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    /* Remover a transição de height se ela estiver causando problemas */
-    /* transition: height 0.5s ease-in-out, padding 0.3s ease, background-color 0.3s ease; */
-    overflow: hidden;
+    gap: 15px;
+    min-height: 400px;
+    overflow-y: auto;
 }
 
+.day-plan-card::-webkit-scrollbar {
+    width: 6px;
+}
+.day-plan-card::-webkit-scrollbar-track {
+    background: transparent;
+}
+.day-plan-card::-webkit-scrollbar-thumb {
+    background-color: var(--gymrats-highlight-yellow);
+    border-radius: 6px;
+}
+
+.ai-disclaimer {
+    width: 100%;
+    max-width: 750px;
+    text-align: center;
+    font-size: 0.8em;
+    color: var(--gymrats-text-secondary);
+    padding: 10px;
+    margin-top: 15px;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.ai-disclaimer i {
+    color: var(--gymrats-highlight-yellow);
+}
 
 .meal-list {
     list-style: none;
@@ -586,68 +652,75 @@ html, body {
 }
 
 .meal-item {
-    background-color: var(--gymrats-dark-bg);
-    padding: 20px 25px;
+    background-color: var(--gymrats-medium-bg);
+    padding: 18px;
     border-radius: 10px;
     margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid var(--gymrats-border);
+    border-top: 3px solid var(--gymrats-highlight-yellow);
 }
 
 .meal-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
 }
 
 .meal-header {
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
+    gap: 12px;
 }
 
 .meal-header i, .meal-header span {
     color: var(--gymrats-highlight-yellow);
-    font-size: 1.5em;
-    margin-right: 15px;
+    font-size: 1.3em;
     flex-shrink: 0;
+    margin: 0;
 }
 
 .meal-header h5 {
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.3em;
+    font-size: 1.1em;
     color: var(--gymrats-text-primary);
     font-weight: 700;
     flex-grow: 1;
 }
 
-.meal-foods {
-    font-size: 1em;
+.meal-summary {
+    font-size: 0.9em;
     color: var(--gymrats-text-secondary);
-    line-height: 1.6;
-    padding-left: calc(1.5em + 15px + 10px);
+    font-style: italic;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--gymrats-border);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
 }
 
-/* Botões de Ação na seção de saída */
+.meal-summary i {
+    color: var(--color-protein);
+    margin-top: 2px;
+}
+
 .plan-actions {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    margin-top: 40px;
+    gap: 15px;
+    margin-top: 30px;
     width: 100%;
     align-items: center;
 }
 
 .plan-actions .action-button {
     width: 100%;
-    max-width: 300px;
+    max-width: 280px;
     margin: 0 auto;
 }
 
-/* Dicas e Curiosidades */
 .nutri-tips-section {
     background-color: var(--gymrats-light-bg);
     border: 1px solid var(--gymrats-border);
@@ -702,7 +775,6 @@ html, body {
     opacity: 0;
 }
 
-/* Toast de Notificação */
 .notification-toast {
     position: fixed;
     bottom: 20px;
@@ -730,6 +802,151 @@ html, body {
 .notification-toast.success { background-color: #28a745; border-color: #28a745; }
 .notification-toast.error { background-color: #dc3545; border-color: #dc3545; }
 
+/* --- ESTILOS DO NOVO MODAL DE REFEIÇÃO --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay:not(.hidden) {
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--gymrats-medium-bg);
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--gymrats-border);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay:not(.hidden) .modal-content {
+    transform: scale(1);
+}
+
+.modal-close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--gymrats-text-secondary);
+    font-size: 2.2em;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.modal-close-button:hover {
+    color: var(--gymrats-highlight-yellow);
+    transform: rotate(90deg);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--gymrats-border);
+}
+
+.modal-header i {
+    font-size: 1.8em;
+    color: var(--gymrats-highlight-yellow);
+}
+
+.modal-header h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5em;
+    color: var(--gymrats-text-primary);
+    margin: 0;
+}
+
+.modal-body .food-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--gymrats-light-bg);
+}
+
+.modal-body .food-item:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.food-item .food-name {
+    font-size: 1.05em;
+    font-weight: 700;
+    color: var(--gymrats-text-primary);
+    margin-bottom: 8px;
+}
+
+.food-macros {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--gymrats-dark-bg);
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.food-macros span {
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+}
+
+.food-macros .calories {
+    color: var(--gymrats-highlight-yellow);
+    font-weight: 700;
+}
+.food-macros .protein {
+    color: var(--color-protein);
+}
+.food-macros .carbs {
+    color: var(--color-carb);
+}
+.food-macros .fat {
+    color: var(--color-fat);
+}
+
+.modal-summary {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--gymrats-border);
+    text-align: right;
+}
+
+.modal-summary p {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--gymrats-text-primary);
+}
+.modal-summary p span {
+    color: var(--gymrats-highlight-yellow);
+}
+
 
 /* Responsividade */
 @media (max-width: 768px) {
@@ -749,13 +966,12 @@ html, body {
     .alimentacao-form-section, .alimentacao-plan-output {
         padding: 25px;
     }
-    
-    .alimentacao-form-section h3 {
-        font-size: 1.8em;
-    }
 
-    .form-step {
-        padding: 25px;
+    .step-header h4 {
+        font-size: 1.4em;
+    }
+    .step-header p {
+        font-size: 0.9em;
     }
 
     .form-group label {
@@ -765,6 +981,7 @@ html, body {
     .form-input, .form-select, .form-textarea {
         padding: 12px 15px;
         font-size: 0.95em;
+        padding-left: 45px !important;
     }
 
     .radio-group {
@@ -784,12 +1001,11 @@ html, body {
     }
 
     .plan-navigation {
-        flex-direction: column;
-        gap: 15px;
+        gap: 10px;
     }
 
     #current-day-name {
-        font-size: 1.8em;
+        font-size: 1.5em;
     }
 
     .plan-actions {
@@ -799,20 +1015,25 @@ html, body {
     .plan-actions .action-button {
         max-width: 100%;
     }
+    
+    .day-plan-card {
+        padding: 20px;
+        min-height: 350px;
+    }
 
     .meal-item {
-        padding: 15px 20px;
+        padding: 12px 15px;
     }
     .meal-header h5 {
-        font-size: 1.1em;
+        font-size: 1em;
     }
     .meal-header i, .meal-header span {
-        font-size: 1.2em;
+        font-size: 1.1em;
         margin-right: 10px;
     }
     .meal-foods {
         font-size: 0.9em;
-        padding-left: calc(1.2em + 10px + 10px);
+        padding-left: 0;
     }
 
     .nutri-tips-section h4 {
@@ -829,7 +1050,6 @@ html, body {
         font-size: 1em;
     }
 
-    /* Reduzir o tamanho do spinner de carregamento em mobile */
     .loading-spinner-circle {
         width: 60px;
         height: 60px;
@@ -854,11 +1074,4 @@ html, body {
         flex: 1;
         max-width: 280px;
     }
-    /* Remover a posição absoluta do formulário em telas maiores se ele deve ser centralizado no fluxo */
-    /* .alimentacao-form-section {
-        position: relative;
-        top: auto;
-        left: auto;
-        transform: none;
-    } */
 }

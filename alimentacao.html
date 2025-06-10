@@ -74,19 +74,32 @@
                     <div class="progress-step" data-step="2"></div>
                     <div class="progress-step" data-step="3"></div>
                 </div>
-                <h3><span id="form-step-title">Dados para o Plano: 1 de 3</span></h3> <form id="nutrition-details-form">
+                <form id="nutrition-details-form">
                     <div class="form-step active" data-step="1">
+                        <div class="step-header">
+                            <h4>Informações Pessoais</h4>
+                            <p>Dados básicos para calcularmos suas necessidades calóricas.</p>
+                        </div>
                         <div class="form-group">
                             <label for="user-weight">Peso (kg):</label>
-                            <input type="number" id="user-weight" class="form-input" placeholder="Ex: 75.5" step="0.1" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-weight-hanging"></i>
+                                <input type="number" id="user-weight" class="form-input" placeholder="Ex: 75.5" step="0.1" required>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="user-height">Altura (cm):</label>
-                            <input type="number" id="user-height" class="form-input" placeholder="Ex: 170" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-ruler-vertical"></i>
+                                <input type="number" id="user-height" class="form-input" placeholder="Ex: 170" required>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="user-age">Idade:</label>
-                            <input type="number" id="user-age" class="form-input" placeholder="Ex: 30" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-birthday-cake"></i>
+                                <input type="number" id="user-age" class="form-input" placeholder="Ex: 30" required>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Gênero:</label>
@@ -101,60 +114,81 @@
                             <button type="button" id="next-step-1" class="action-button primary-button">Próximo <i class="fas fa-arrow-right"></i></button>
                         </div>
                     </div>
-
                     <div class="form-step" data-step="2">
-                         <div class="form-group">
+                        <div class="step-header">
+                            <h4>Seus Objetivos e Rotina</h4>
+                            <p>Qual sua meta principal e seu nível de atividade física.</p>
+                        </div>
+                        <div class="form-group">
                             <label for="activity-level">Nível de Atividade Física:</label>
-                            <select id="activity-level" class="form-select" required>
-                                <option value="">Selecione...</option>
-                                <option value="sedentary">Sedentário (pouco ou nenhum exercício)</option>
-                                <option value="light">Levemente Ativo (exercício leve 1-3 dias/semana)</option>
-                                <option value="moderate">Moderadamente Ativo (exercício moderado 3-5 dias/semana)</option>
-                                <option value="active">Muito Ativo (exercício intenso 6-7 dias/semana)</option>
-                                <option value="very-active">Extremamente Ativo (exercício muito intenso, trabalho físico)</option>
-                            </select>
+                            <div class="input-wrapper">
+                                <i class="fas fa-bolt"></i>
+                                <select id="activity-level" class="form-select" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="sedentary">Sedentário (pouco ou nenhum exercício)</option>
+                                    <option value="light">Levemente Ativo (exercício leve 1-3 dias/semana)</option>
+                                    <option value="moderate">Moderadamente Ativo (exercício moderado 3-5 dias/semana)</option>
+                                    <option value="active">Muito Ativo (exercício intenso 6-7 dias/semana)</option>
+                                    <option value="very-active">Extremamente Ativo (exercício muito intenso, trabalho físico)</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="user-goal">Objetivo:</label>
-                            <select id="user-goal" class="form-select" required>
-                                <option value="">Selecione...</option>
-                                <option value="perda de peso">Perda de Peso</option>
-                                <option value="hipertrofia muscular">Hipertrofia Muscular</option>
-                                <option value="ganho de forca">Ganho de Força</option>
-                                <option value="manutencao">Manutenção</option>
-                                <option value="saude geral">Saúde Geral</option>
-                            </select>
+                            <div class="input-wrapper">
+                                <i class="fas fa-bullseye"></i>
+                                <select id="user-goal" class="form-select" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="perda de peso">Perda de Peso</option>
+                                    <option value="hipertrofia muscular">Hipertrofia Muscular</option>
+                                    <option value="ganho de forca">Ganho de Força</option>
+                                    <option value="manutencao">Manutenção</option>
+                                    <option value="saude geral">Saúde Geral</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="meal-count">Refeições por dia:</label>
-                            <input type="number" id="meal-count" class="form-input" placeholder="Ex: 5" min="1" max="10" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-utensils"></i>
+                                <input type="number" id="meal-count" class="form-input" placeholder="Ex: 5" min="1" max="10" required>
+                            </div>
                         </div>
                         <div class="form-navigation-buttons">
                             <button type="button" id="prev-step-2" class="action-button secondary-button"><i class="fas fa-arrow-left"></i> Anterior</button>
                             <button type="button" id="next-step-2" class="action-button primary-button">Próximo <i class="fas fa-arrow-right"></i></button>
                         </div>
                     </div>
-
                     <div class="form-step" data-step="3">
-                        <div class="form-group">
-                            <label for="diet-type">Tipo de Dieta Preferida:</label>
-                            <select id="diet-type" class="form-select">
-                                <option value="omnivore">Onívora (padrão)</option>
-                                <option value="vegetarian">Vegetariana</option>
-                                <option value="vegan">Vegana</option>
-                                <option value="keto">Cetogênica</option>
-                                <option value="sem gluten">Sem Glúten</option>
-                                <option value="low carb">Low Carb</option>
-                                <option value="outra">Outra (especificar abaixo)</option>
-                            </select>
+                        <div class="step-header">
+                            <h4>Preferências e Restrições</h4>
+                            <p>Informe suas preferências para um plano perfeito para você.</p>
                         </div>
                         <div class="form-group">
-                            <label for="food-restrictions">Restrições ou Alergias Alimentares (Ex: lactose, glúten, frutos do mar):</label>
-                            <textarea id="food-restrictions" class="form-input" rows="3" placeholder="Nenhuma" style="resize: vertical;"></textarea>
+                            <label for="diet-type">Tipo de Dieta Preferida:</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-list-alt"></i>
+                                <select id="diet-type" class="form-select">
+                                    <option value="omnivore">Onívora (padrão)</option>
+                                    <option value="vegetarian">Vegetariana</option>
+                                    <option value="vegan">Vegana</option>
+                                    <option value="keto">Cetogênica</option>
+                                    <option value="sem gluten">Sem Glúten</option>
+                                    <option value="low carb">Low Carb</option>
+                                    <option value="outra">Outra (especificar abaixo)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="food-restrictions">Restrições ou Alergias Alimentares:</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-ban"></i>
+                                <textarea id="food-restrictions" class="form-input" rows="3" placeholder="Ex: lactose, frutos do mar..." style="resize: vertical;"></textarea>
+                            </div>
                         </div>
                         <div class="form-navigation-buttons">
                             <button type="button" id="prev-step-3" class="action-button secondary-button"><i class="fas fa-arrow-left"></i> Anterior</button>
-                            <button type="submit" id="submit-nutrition-form" class="action-button primary-button"><i class="fas fa-paper-plane"></i> Gerar Plano</button>
+                            <button type="submit" id="submit-nutrition-form" class="action-button primary-button"><i class="fas fa-star"></i> Gerar Plano</button>
                         </div>
                     </div>
                 </form>
@@ -167,19 +201,24 @@
             </section>
 
             <section id="nutri-plan-output" class="alimentacao-plan-output hidden">
-                <h3>Seu Plano Alimentar Semanal</h3>
                 <div class="plan-navigation">
-                    <button id="prev-day" class="nav-button"><i class="fas fa-chevron-left"></i> Anterior</button>
-                    <span id="current-day-name" class="current-day-name"></span>
-                    <button id="next-day" class="nav-button">Próximo <i class="fas fa-chevron-right"></i></button>
+                    <button id="prev-day" class="nav-button"><i class="fas fa-chevron-left"></i></button>
+                    <div class="day-title-container">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="current-day-name" class="current-day-name"></span>
+                    </div>
+                    <button id="next-day" class="nav-button"><i class="fas fa-chevron-right"></i></button>
                 </div>
                 <div id="current-day-card" class="day-plan-card">
-                    </div>
-
+                </div>
+                <div class="ai-disclaimer">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Este plano é uma sugestão gerada por IA. Consulte um nutricionista.</span>
+                </div>
                 <div id="nutri-tips-section" class="nutri-tips-section hidden">
                     <h4><i class="fas fa-lightbulb"></i> Dicas Importantes:</h4>
                     <ul id="nutri-tips-list">
-                        </ul>
+                    </ul>
                 </div>
                 <div class="plan-actions">
                     <button id="regenerate-nutri-btn" class="action-button secondary-button"><i class="fas fa-redo"></i> Regerar Plano</button>
@@ -190,6 +229,20 @@
     </main>
 
     <div id="notification-toast" class="notification-toast"></div>
+
+    <div id="meal-details-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="modal-close-button">&times;</button>
+            <div class="modal-header">
+                <i id="modal-meal-icon" class="fas fa-utensils"></i>
+                <h3 id="modal-meal-title">Detalhes da Refeição</h3>
+            </div>
+            <div id="modal-meal-body" class="modal-body">
+                </div>
+            <div id="modal-meal-summary" class="modal-summary">
+                </div>
+        </div>
+    </div>
 
     <script type="module" src="assets/js/alimentacao.js"></script>
     <script type="module" src="assets/js/header.js"></script>
