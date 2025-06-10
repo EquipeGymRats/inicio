@@ -3,7 +3,7 @@
 :root {
    --color-black: #0A0A0A; /* Preto Principal */
    --color-white: #FFFFFF; /* Branco Puro */
-   --color-yellow: #FFD700; /* Amarelo Vibrante */
+   --color-yellow: #ffde2c; /* Amarelo Vibrante */ 
    --color-light-gray: #E0E0E0; /* Cinza Claro (para textos secundários) */
    --color-medium-gray: #1E1E1E; /* Um cinza mais escuro para elementos de fundo */
    --color-dark-gray: #0F0F0F; /* Um cinza muito escuro, quase preto, para detalhes */
@@ -124,6 +124,8 @@
    margin-bottom: 15px; /* Menos margem */
    line-height: 1.2;
    color: var(--color-yellow);
+
+   -webkit-text-stroke: #1f1f1f 1.5px;
    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
   }
   
