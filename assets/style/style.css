@@ -3,7 +3,7 @@
 :root {
    --color-black: #0A0A0A; /* Preto Principal */
    --color-white: #FFFFFF; /* Branco Puro */
-   --color-yellow: #ffde2c; /* Amarelo Vibrante */ 
+   --color-yellow: #f2c85e; /* Amarelo Vibrante f2c85e */ 
    --color-light-gray: #E0E0E0; /* Cinza Claro (para textos secundários) */
    --color-medium-gray: #1E1E1E; /* Um cinza mais escuro para elementos de fundo */
    --color-dark-gray: #0F0F0F; /* Um cinza muito escuro, quase preto, para detalhes */
