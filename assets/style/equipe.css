@@ -234,14 +234,14 @@
         padding: 30px;
         border-radius: 10px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        border: 1px solid var(--color-medium-gray);
+        border: 3px solid #ffffff7b;
         transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
     }
     
     .pillar-item:hover {
         background-color: var(--color-medium-gray);
         transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 12px 25px #ffffff7b;
     }
     
     .pillar-item i {
