@@ -31,102 +31,86 @@ html, body {
 }
 .dashboard-container { display: flex; height: 100vh; }
 
-/* Em assets/style/dashboard-layout.css */
+/* Adicione ao final de assets/style/dashboard-layout.css */
 
-/* --- ESTILOS ATUALIZADOS PARA O FEED SOCIAL --- */
+/* --- PÁGINA HOME --- */
+#home-greeting {
+    color: var(--gymrats-text-primary);
+    font-size: 2.5em;
+    font-family: 'Montserrat', sans-serif;
+}
 
-.feed-container {
-    background-color: var(--gymrats-medium-bg);
+.home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr; /* 3 colunas */
+    gap: 30px;
+}
+
+.home-card {
+    background: var(--gymrats-medium-bg);
     border-radius: 15px;
     padding: 25px;
     border: 1px solid var(--gymrats-border);
-    /* Garante que o container flex ocupe a altura disponível no grid */
-    height: 100%; 
-    max-height: calc(100vh - 200px); /* Define uma altura máxima segura */
+    margin-bottom: 30px;
     display: flex;
     flex-direction: column;
 }
-
-.feed-container h3 {
-    margin: 0 0 20px 0;
-    text-align: center;
-    color: var(--gymrats-text-primary);
-    flex-shrink: 0; /* Impede que o título encolha */
-}
-
-.create-post-form {
-    margin-bottom: 20px;
-    flex-shrink: 0; /* Impede que o formulário encolha */
-}
-
-.create-post-form textarea {
-    width: 100%;
-    height: 80px;
-    background-color: var(--gymrats-dark-bg);
-    border: 1px solid var(--gymrats-border);
-    border-radius: 8px;
-    color: var(--gymrats-text-primary);
-    padding: 10px;
-    font-family: 'Roboto', sans-serif;
-    resize: none;
-    transition: border-color 0.2s;
-}
-.create-post-form textarea:focus {
-    outline: none;
-    border-color: var(--gymrats-highlight-yellow);
-}
-
-.create-post-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-}
-
-.image-upload-label {
-    cursor: pointer;
-    color: var(--gymrats-text-secondary);
-    transition: color 0.2s;
-}
-.image-upload-label:hover {
+.home-card h2 {
+    font-family: 'Montserrat', sans-serif;
     color: var(--gymrats-highlight-yellow);
+    font-size: 1.2em;
+    margin: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.home-card .card-content {
+    color: var(--gymrats-text-secondary);
+    flex-grow: 1;
+    margin-bottom: 20px;
+}
+.home-card .btn-secondary {
+    background-color: var(--gymrats-light-bg);
+    color: var(--gymrats-text-primary);
+    padding: 10px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+.home-card .btn-secondary:hover {
+    background-color: #444;
 }
 
-#feed-posts-container {
-    flex-grow: 1; /* Faz este container ocupar todo o espaço restante */
-    overflow-y: auto; /* Adiciona a barra de rolagem quando necessário */
-    padding-right: 10px; /* Espaço para a barra de rolagem */
-    margin-right: -10px; /* Compensa o padding para manter o alinhamento */
-}
+/* Coluna da Direita */
+.mascote-card { align-items: center; text-align: center; }
+#mascote-image { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; }
+#mascote-level-name { margin: 0; color: var(--gymrats-text-primary); }
 
-/* --- ESTILIZAÇÃO DA BARRA DE ROLAGEM (Scrollbar) --- */
-#feed-posts-container::-webkit-scrollbar {
-    width: 8px;
-}
+.motivacao-card { text-align: center; }
+.motivacao-card i { font-size: 2em; color: var(--gymrats-highlight-yellow); opacity: 0.5; }
+.motivacao-card p { font-size: 1.1em; font-style: italic; color: var(--gymrats-text-secondary); margin: 15px 0 0 0; }
 
-#feed-posts-container::-webkit-scrollbar-track {
-    background: var(--gymrats-dark-bg);
-    border-radius: 10px;
-}
+/* Feed Social */
+.feed-container { background-color: var(--gymrats-medium-bg); border-radius: 15px; padding: 25px; border: 1px solid var(--gymrats-border); max-height: calc(100vh - 120px); display: flex; flex-direction: column; }
+.feed-container h3 { margin: 0 0 20px 0; text-align: center; color: var(--gymrats-text-primary); }
+.create-post-form { margin-bottom: 20px; }
+.create-post-form textarea { width: 100%; height: 80px; background-color: var(--gymrats-dark-bg); border: 1px solid var(--gymrats-border); border-radius: 8px; color: var(--gymrats-text-primary); padding: 10px; font-family: 'Roboto', sans-serif; resize: none; }
+.create-post-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+.image-upload-label { cursor: pointer; color: var(--gymrats-text-secondary); }
+#feed-posts-container { flex-grow: 1; overflow-y: auto; padding-right: 10px; }
 
-#feed-posts-container::-webkit-scrollbar-thumb {
-    background-color: var(--gymrats-highlight-yellow);
-    border-radius: 10px;
-    border: 2px solid var(--gymrats-dark-bg);
-}
-
-#feed-posts-container::-webkit-scrollbar-thumb:hover {
-    background-color: var(--gymrats-button-hover);
-}
-
-/* --- ESTILOS DOS POSTS INDIVIDUAIS (sem alterações, mas mantidos para contexto) --- */
-.feed-post { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--gymrats-border); }
-.feed-post:first-child { padding-top: 0; }
+.feed-post { display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid var(--gymrats-border); }
 .feed-post:last-child { border-bottom: none; }
 .post-author-pic { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
 .post-content p { margin: 0 0 10px 0; color: var(--gymrats-text-primary); white-space: pre-wrap; word-wrap: break-word; }
 .post-content .post-image { max-width: 100%; border-radius: 10px; margin-top: 10px; }
 .post-meta { font-size: 0.8em; color: var(--gymrats-text-secondary); }
+
+/* Responsividade */
+@media(max-width: 1200px) { .home-grid { grid-template-columns: 1fr 1.5fr; } .home-col-right { grid-column: 1 / -1; } }
+@media(max-width: 768px) { .home-grid { grid-template-columns: 1fr; } }
 
 /* ====================================================== */
 /* --- 3. SIDEBAR (NAVEGAÇÃO LATERAL) --- */
