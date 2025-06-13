@@ -3,7 +3,7 @@
 import { authService } from '../auth.js'; // Certifique-se que auth.js está na mesma pasta
 
 // URL do seu backend local. MUITO IMPORTANTE!
-const API_BASE_URL = 'https://api-gym-cyan.vercel.app';
+const API_BASE_URL = 'http://localhost:3000'; // Altere para o endereço correto do seu backend
 
 // Função genérica para fazer requisições à API
 async function request(endpoint, method = 'GET', body = null) {
@@ -56,5 +56,30 @@ export const api = {
     getTrainingLogs: () => request('/training/logs'),
     markWorkoutDone: (dayName) => request('/training/complete-day', 'POST', { dayName }),
     getProgressStats: () => request('/training/stats'), // <<< ADICIONE ESTA LINHA
-    // Adicione outras chamadas de API aqui conforme necessário
+    updateProfile: (formData) => {
+        const token = authService.getToken();
+        return fetch(`${API_BASE_URL}/auth/profile`, {
+            method: 'PUT',
+            headers: { 'x-auth-token': token },
+            body: formData
+        }).then(async response => {
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Erro no servidor.');
+            return data;
+        });
+        
+    },
+    getFeedPosts: () => request('/posts'),
+    createPost: (formData) => {
+        const token = authService.getToken();
+        return fetch(`${API_BASE_URL}/posts`, {
+            method: 'POST',
+            headers: { 'x-auth-token': token }, // Sem 'Content-Type' para FormData
+            body: formData
+        }).then(async response => {
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message);
+            return data;
+        });
+    }
 };

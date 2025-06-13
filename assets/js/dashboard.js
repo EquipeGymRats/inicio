@@ -4,6 +4,8 @@ import { authService } from './auth.js';
 import { api } from './dashboard/apiService.js';
 import { initProgressaoPage } from './dashboard/progressao.js';
 import { LEVELS as allLevels } from './dashboard/levelsConfig.js';
+import { initPerfilPage } from './dashboard/perfil.js';
+import { initHomePage } from './dashboard/home.js'; // <<< ADICIONE ESTA IMPORTAÇÃO
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Seletores Globais de Elementos ---
@@ -46,6 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
             pageContent.appendChild(template.content.cloneNode(true));
             
             switch (pageId) {
+                case 'home':
+                    initHomePage();
+                    break;
                 case 'treino':
                     initTreinoPage();
                     break;
@@ -55,6 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         if(openBtn) openBtn.addEventListener('click', openGoalsModal);
                     });
                     break;
+                case 'perfil': 
+                    initPerfilPage(); 
+                    break;
+                
             }
         } else {
             pageContent.innerHTML = `<h2>Página "${pageId}" não encontrada</h2>`;

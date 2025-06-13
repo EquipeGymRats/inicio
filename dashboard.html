@@ -77,11 +77,52 @@
     <template id="home-template">
         <div class="page-content-wrapper">
             <header class="page-header">
-                <h1>Visão Geral</h1>
-                <p>Seu resumo semanal e motivação para continuar evoluindo.</p>
+                <h1 id="home-greeting">Olá, Usuário!</h1>
+                <p>Pronto para esmagar suas metas hoje?</p>
             </header>
-            <div style="text-align: center; color: var(--gymrats-text-secondary);">
-                <p>Página Home em construção...</p>
+
+            <div class="home-grid">
+                <div class="home-col-left">
+                    <div class="home-card" id="treino-do-dia-card">
+                        <h2><i class="fas fa-dumbbell"></i> Treino do Dia</h2>
+                        <div class="card-content">
+                            </div>
+                        <a href="#treino" class="btn-secondary">Ver Cronograma</a>
+                    </div>
+                    <div class="home-card" id="alimentacao-do-dia-card">
+                        <h2><i class="fas fa-utensils"></i> Alimentação de Hoje</h2>
+                        <div class="card-content">
+                            </div>
+                        <a href="#alimentacao" class="btn-secondary">Ver Plano Completo</a>
+                    </div>
+                </div>
+
+                <div class="home-col-center">
+                    <div class="feed-container">
+                        <h3>Feed da Comunidade</h3>
+                        <div class="create-post-form">
+                            <textarea id="post-text-input" placeholder="Compartilhe seu progresso..."></textarea>
+                            <div class="create-post-actions">
+                                <label for="post-image-input" class="image-upload-label"><i class="fas fa-camera"></i> Foto</label>
+                                <input type="file" id="post-image-input" accept="image/*" style="display: none;">
+                                <button id="submit-post-btn" class="btn-primary">Postar</button>
+                            </div>
+                        </div>
+                        <div id="feed-posts-container">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="home-col-right">
+                    <div class="home-card mascote-card">
+                        <img src="assets/images/levels/level-1.png" alt="Mascote" id="mascote-image">
+                        <h4 id="mascote-level-name">Ratinho de Academia</h4>
+                    </div>
+                    <div class="home-card motivacao-card">
+                        <i class="fas fa-quote-left"></i>
+                        <p id="motivacao-text">Acredite em você e todo o resto virá naturalmente.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </template>
@@ -156,10 +197,83 @@
         <div class="page-content-wrapper">
             <header class="page-header">
                 <h1>Meu Perfil</h1>
-                <p>Gerencie suas informações pessoais e de acesso.</p>
+                <p>Atualize suas informações pessoais, metas e foto de perfil.</p>
             </header>
-            <div style="text-align: center; color: var(--gymrats-text-secondary);">
-                <p>Página de Perfil em construção...</p>
+
+            <div class="profile-container">
+                <form id="profile-form">
+                    <div class="profile-picture-section">
+                        <img src="assets/images/levels/default-level.png" alt="Foto de Perfil" id="profile-pic-preview" class="profile-pic-preview">
+                        <label for="profile-pic-input" class="profile-pic-label">
+                            <i class="fas fa-camera"></i> Trocar Foto
+                        </label>
+                        <input type="file" id="profile-pic-input" name="profilePicture" accept="image/png, image/jpeg, image/webp" style="display: none;">
+                    </div>
+
+                    <hr>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="profile-username">Nome de Usuário</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="profile-username" name="username">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-email">Email</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="profile-email" name="email" disabled title="O email não pode ser alterado.">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-weight">Peso (kg)</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-weight-hanging"></i>
+                                <input type="number" id="profile-weight" name="weight" step="0.1" placeholder="Ex: 75.5">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-height">Altura (cm)</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-ruler-vertical"></i>
+                                <input type="number" id="profile-height" name="height" placeholder="Ex: 180">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-experience">Nível de Experiência</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-layer-group"></i>
+                                <select id="profile-experience" name="experienceLevel">
+                                    <option value="Iniciante">Iniciante</option>
+                                    <option value="Intermediário">Intermediário</option>
+                                    <option value="Avançado">Avançado</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-objective">Objetivo Principal</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-bullseye"></i>
+                                <select id="profile-objective" name="mainObjective">
+                                    <option value="Saúde e Bem-estar">Saúde e Bem-estar</option>
+                                    <option value="Ganho de Massa Muscular">Ganho de Massa Muscular</option>
+                                    <option value="Perda de Peso">Perda de Peso</option>
+                                    <option value="Aumento de Força">Aumento de Força</option>
+                                    <option value="Melhora de Resistência">Melhora de Resistência</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="save-profile-btn" class="btn-primary">
+                            <span class="btn-text">Salvar Alterações</span>
+                            <div class="spinner" style="display: none;"></div>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </template>
