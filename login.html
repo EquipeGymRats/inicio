@@ -307,11 +307,15 @@
             const showLoginBtn = document.getElementById('show-login');
             const notificationToast = document.getElementById('notification-toast');
 
-            // Chamada inicial para verificar o status de login ao carregar a página
-            // Se já estiver logado, redireciona.
+            // --- INÍCIO DA MODIFICAÇÃO ---
+            // Verifica se o usuário já está logado. Se sim, redireciona para a URL de destino ou para a página padrão.
+            // Isso evita que um usuário logado veja a página de login novamente.
             if (authService.isLoggedIn()) {
-                window.location.href = 'treino-personalizado';
+                const redirectUrl = sessionStorage.getItem('redirectUrl');
+                sessionStorage.removeItem('redirectUrl'); // Limpa para não usar em futuros logins
+                window.location.href = redirectUrl || '/';
             }
+            // --- FIM DA MODIFICAÇÃO ---
 
             function showNotification(message, type) {
                 notificationToast.textContent = ''; // Clear previous content
@@ -332,7 +336,6 @@
 
                 setTimeout(() => {
                     notificationToast.classList.remove('show');
-                    // Optional: remove type class after hiding if you want to reuse it with different styles
                     notificationToast.classList.remove(type);
                 }, 3000);
             }
@@ -343,13 +346,18 @@
                     e.preventDefault();
                     const email = document.getElementById('login-email').value;
                     const password = document.getElementById('login-password').value;
-                    const result = await authService.login(email, password); // Usa o serviço de autenticação
+                    const result = await authService.login(email, password);
                     if (result.success) {
                         showNotification(result.message, 'success');
-                        // Redireciona APÓS a notificação ser exibida por um breve período
+                        
+                        // --- INÍCIO DA MODIFICAÇÃO ---
                         setTimeout(() => {
-                            window.location.href = 'treino-personalizado';
-                        }, 500); // Pequeno delay para a notificação ser visível
+                            const redirectUrl = sessionStorage.getItem('redirectUrl');
+                            sessionStorage.removeItem('redirectUrl'); // Limpa após o uso
+                            window.location.href = redirectUrl || '/'; // Redireciona para URL salva ou padrão
+                        }, 500);
+                        // --- FIM DA MODIFICAÇÃO ---
+
                     } else {
                         showNotification(result.message, 'error');
                     }
@@ -363,13 +371,18 @@
                     const username = document.getElementById('register-username').value;
                     const email = document.getElementById('register-email').value;
                     const password = document.getElementById('register-password').value;
-                    const result = await authService.register(username, email, password); // Usa o serviço de autenticação
+                    const result = await authService.register(username, email, password);
                     if (result.success) {
                         showNotification(result.message, 'success');
-                         // Redireciona APÓS a notificação ser exibida por um breve período
+
+                        // --- INÍCIO DA MODIFICAÇÃO ---
                         setTimeout(() => {
-                            window.location.href = 'treino-personalizado';
-                        }, 500); // Pequeno delay
+                            const redirectUrl = sessionStorage.getItem('redirectUrl');
+                            sessionStorage.removeItem('redirectUrl'); // Limpa após o uso
+                            window.location.href = redirectUrl || '/'; // Redireciona para URL salva ou padrão
+                        }, 500);
+                        // --- FIM DA MODIFICAÇÃO ---
+                        
                     } else {
                         showNotification(result.message, 'error');
                     }
@@ -379,23 +392,21 @@
             // Toggle entre formulários de login e cadastro
             if (showRegisterBtn) {
                 showRegisterBtn.addEventListener('click', (e) => {
-                    e.preventDefault(); // Impede o comportamento padrão do link
+                    e.preventDefault(); 
                     loginFormContainer.style.display = 'none';
                     registerFormContainer.style.display = 'block';
-                    // Adiciona animação de "subir" para o formulário de registro
                     registerFormContainer.classList.add('slide-in-up');
-                    loginFormContainer.classList.remove('slide-in-up'); // Remove se houver
+                    loginFormContainer.classList.remove('slide-in-up');
                 });
             }
 
             if (showLoginBtn) {
                 showLoginBtn.addEventListener('click', (e) => {
-                    e.preventDefault(); // Impede o comportamento padrão do link
+                    e.preventDefault();
                     registerFormContainer.style.display = 'none';
                     loginFormContainer.style.display = 'block';
-                    // Adiciona animação de "subir" para o formulário de login
                     loginFormContainer.classList.add('slide-in-up');
-                    registerFormContainer.classList.remove('slide-in-up'); // Remove se houver
+                    registerFormContainer.classList.remove('slide-in-up');
                 });
             }
         });

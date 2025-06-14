@@ -8,6 +8,24 @@ const authDropdown = document.getElementById('auth-dropdown');
 const menuToggle = document.getElementById('menu-toggle'); // O checkbox do menu hambúrguer
 const mainNav = document.getElementById('main-nav'); // A navegação principal
 
+// --- MODIFICAÇÃO ADICIONADA ---
+// Adiciona um event listener ao link de login para salvar a URL atual
+if (loginLink) {
+    loginLink.addEventListener('click', (e) => {
+        // Previne a navegação padrão para podermos salvar a URL primeiro
+        e.preventDefault();
+        
+        // Salva a página atual no sessionStorage se não for a própria página de login
+        if (!window.location.pathname.toLowerCase().includes('login')) {
+            sessionStorage.setItem('redirectUrl', window.location.href);
+        }
+        
+        // Agora, redireciona o usuário para a página de login
+        window.location.href = e.currentTarget.href;
+    });
+}
+// --- FIM DA MODIFICAÇÃO ---
+
 // Função para atualizar o estado do header de autenticação
 async function updateAuthHeader() {
     const isMobile = window.innerWidth <= 768; // Define se é mobile com base no CSS

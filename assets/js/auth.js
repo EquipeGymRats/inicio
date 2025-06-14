@@ -40,7 +40,6 @@ export const authService = {
 
             if (response.ok) {
                 localStorage.setItem('jwtToken', data.token);
-                // Não salvamos mais o username no localStorage aqui!
                 return { success: true, message: data.message || 'Login realizado com sucesso!' };
             } else {
                 return { success: false, message: data.message || 'Credenciais inválidas.' };
@@ -53,8 +52,6 @@ export const authService = {
 
     logout() {
         localStorage.removeItem('jwtToken');
-        // Removemos o userName também, embora ele não seja salvo diretamente
-        localStorage.removeItem('userName'); 
     },
 
     isLoggedIn() {
