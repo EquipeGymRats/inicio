@@ -135,7 +135,7 @@ if (logoutLink) {
             await authService.logout();
             updateAuthHeader();
             // Redirecionar para a página inicial ou de login após o logout
-            window.location.href = 'index'; // Ou para 'login'
+            window.location.href = '/inicio'; // Ou para 'login'
         } catch (error) {
             console.error('Erro ao fazer logout:', error);
             // Mostrar uma mensagem de erro ao usuário
