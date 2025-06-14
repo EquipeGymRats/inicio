@@ -313,7 +313,7 @@
             if (authService.isLoggedIn()) {
                 const redirectUrl = sessionStorage.getItem('redirectUrl');
                 sessionStorage.removeItem('redirectUrl'); // Limpa para não usar em futuros logins
-                window.location.href = redirectUrl || '/';
+                window.location.href = redirectUrl || '/inicio';
             }
             // --- FIM DA MODIFICAÇÃO ---
 
@@ -354,7 +354,7 @@
                         setTimeout(() => {
                             const redirectUrl = sessionStorage.getItem('redirectUrl');
                             sessionStorage.removeItem('redirectUrl'); // Limpa após o uso
-                            window.location.href = redirectUrl || '/'; // Redireciona para URL salva ou padrão
+                            window.location.href = redirectUrl || '/inicio'; // Redireciona para URL salva ou padrão
                         }, 500);
                         // --- FIM DA MODIFICAÇÃO ---
 
@@ -379,7 +379,7 @@
                         setTimeout(() => {
                             const redirectUrl = sessionStorage.getItem('redirectUrl');
                             sessionStorage.removeItem('redirectUrl'); // Limpa após o uso
-                            window.location.href = redirectUrl || '/'; // Redireciona para URL salva ou padrão
+                            window.location.href = redirectUrl || '/inicio'; // Redireciona para URL salva ou padrão
                         }, 500);
                         // --- FIM DA MODIFICAÇÃO ---
                         
