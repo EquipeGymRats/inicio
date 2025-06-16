@@ -82,7 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
         logoutButton.addEventListener('click', (e) => {
             e.preventDefault();
             authService.logout();
-            window.location.href = 'login.html';
+            sessionStorage.setItem('redirectUrl', window.location.href);
+            window.location.href = 'login';
         });
     }
 
@@ -227,8 +228,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.weekCompleted) {
                 startWeeklyCompletionSequence(response);
+                console.log("Todos os treinos da semana concluídos!");
             } else if (response.allDone) {
                 animateXpCounter(response.newXp, response.gainedXp);
+                console.log("Todos os treinos concluídos para esta semana.");
             }
         } catch (error) {
             button.classList.remove('loading');
@@ -261,6 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         completionMessage.style.display = 'none';
         xpGainAnimation.style.display = 'none';
         completionOverlay.classList.add('show');
+        console.log("Iniciando sequência de conclusão semanal...");
         
         await delay(1200);
         
@@ -348,7 +352,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function initializeDashboard() {
         if (!authService.isLoggedIn()) {
-            window.location.href = 'login.html';
+            sessionStorage.setItem('redirectUrl', window.location.href);
+            window.location.href = 'login';
             return;
         }
         try {

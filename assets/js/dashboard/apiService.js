@@ -10,7 +10,8 @@ async function request(endpoint, method = 'GET', body = null) {
     const token = authService.getToken();
     if (!token) {
         console.error("Nenhum token de autenticação encontrado. Redirecionando para login.");
-        window.location.href = 'login.html';
+        sessionStorage.setItem('redirectUrl', window.location.href);
+        window.location.href = 'login';
         throw new Error('Usuário não autenticado.');
     }
 
@@ -32,7 +33,8 @@ async function request(endpoint, method = 'GET', body = null) {
 
         if (response.status === 401) {
             authService.logout();
-            window.location.href = 'login.html';
+            sessionStorage.setItem('redirectUrl', window.location.href);
+            window.location.href = 'login';
             throw new Error('Sessão expirada. Faça login novamente.');
         }
         

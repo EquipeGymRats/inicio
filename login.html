@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Rats: Login ou Cadastro</title>
-    <link rel="stylesheet" href="assets/style/style.css">
     <link rel="stylesheet" href="assets/style/header.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="shortcut icon" type="imagex/png" href="assets/logo.ico">
@@ -12,100 +11,211 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Estilos específicos para a página de login/cadastro */
+        /* Estilos Globais e de Fundo */
+        :root {
+            --color-black: #0A0A0A;
+            --color-white: #FFFFFF;
+            --color-yellow: #ffd75d;
+            --color-light-gray: #E0E0E0;
+            --color-medium-gray: #1E1E1E;
+            --color-dark-gray: #0F0F0F;
+        }
+
+        body {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.948), rgb(0, 0, 0));
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Container de Autenticação */
         .auth-container {
-            max-width: 500px;
-            margin: 80px auto; /* Mantém um bom espaçamento superior e centraliza */
+            max-width: 450px;
+            width: 100%;
+            margin: 40px 20px;
             padding: 40px;
-            background-color: var(--color-medium-gray); /* Fundo do card, cinza escuro */
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7); /* Sombra mais acentuada para modernidade */
-            border: 1px solid rgba(255, 215, 0, 0.1); /* Borda sutil com tom amarelo */
+            background-color: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.2);
             text-align: center;
-            animation: fadeInScale 0.6s ease-out forwards; /* Animação de entrada */
+            animation: fadeInScale 0.6s ease-out forwards;
         }
-        .auth-container h2 {
-            color: var(--color-yellow); /* Título em amarelo vibrante */
+
+        .auth-header {
             margin-bottom: 30px;
-            font-size: 2em; /* Tamanho maior para destaque */
         }
-        .auth-container .form-group {
-            margin-bottom: 20px;
+        
+        .auth-header .logo {
+            font-size: 2.5em;
+            color: var(--color-yellow);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .auth-header p {
+            color: var(--color-light-gray);
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 25px;
             text-align: left;
         }
-        .auth-container label {
+
+        .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: var(--color-white);
-            font-weight: 700;
+            color: var(--color-light-gray);
+            font-weight: 500;
         }
-        .auth-container input[type="text"],
-        .auth-container input[type="email"],
-        .auth-container input[type="password"] {
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-group input {
             width: 100%;
-            padding: 12px;
+            padding: 14px 20px;
+            padding-right: 45px; /* Espaço para o ícone */
             border-radius: 8px;
-            border: 1px solid var(--color-dark-gray); /* Borda mais escura */
-            background-color: var(--color-black); /* Fundo do input preto */
+            border: 1px solid var(--color-medium-gray);
+            background-color: var(--color-dark-gray);
             color: var(--color-white);
             font-size: 1em;
             box-sizing: border-box;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transição suave no foco */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        .auth-container input[type="text"]:focus,
-        .auth-container input[type="email"]:focus,
-        .auth-container input[type="password"]:focus {
-            border-color: var(--color-yellow); /* Borda amarela no foco */
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3); /* Sombra amarela suave no foco */
-            outline: none; /* Remove o outline padrão do navegador */
+
+        .form-group input:focus {
+            border-color: var(--color-yellow);
+            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.2);
+            outline: none;
         }
-        .auth-container button {
+        
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: var(--color-light-gray);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .password-toggle:hover {
+            color: var(--color-yellow);
+        }
+
+        .btn {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border-radius: 8px;
             border: none;
-            background-color: var(--color-yellow);
-            color: var(--color-black);
             font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease; /* Adiciona transform para efeito de clique */
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .auth-container button:hover {
-            background-color: #e6c200; /* Amarelo um pouco mais escuro */
-            transform: translateY(-2px); /* Efeito de "levantar" no hover */
+
+        .btn-primary {
+            background-color: var(--color-yellow);
+            color: var(--color-black);
         }
-        .auth-container button:active {
-            transform: translateY(0); /* Efeito de "clique" */
+        
+        .btn-primary:hover {
+            background-color: #e6c200;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
         }
+
+        /* Botão Google */
+        .google-login-btn {
+            background-color: var(--color-white);
+            color: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .google-login-btn img {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .google-login-btn:hover {
+            background-color: #f5f5f5;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Separador */
+        .separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--color-light-gray);
+            margin: 25px 0;
+            font-weight: 500;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--color-medium-gray);
+        }
+
+        .separator:not(:empty)::before {
+            margin-right: .5em;
+        }
+
+        .separator:not(:empty)::after {
+            margin-left: .5em;
+        }
+
         .toggle-form {
-            margin-top: 20px;
+            margin-top: 25px;
             color: var(--color-light-gray);
             cursor: pointer;
             transition: color 0.3s ease;
         }
+        
         .toggle-form:hover {
             color: var(--color-yellow);
-            text-decoration: underline; /* Adiciona underline no hover */
+            text-decoration: underline;
         }
 
-        /* Animação para o card de autenticação */
         @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* Estilos para a notificação flutuante */
+        /* Notificação */
         .notification-toast {
             position: fixed;
             top: 20px;
-            right: 20px; /* Alinhado à direita */
+            right: 20px;
             background-color: #333;
             color: white;
             padding: 15px 25px;
@@ -113,8 +223,9 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-            z-index: 1000; /* Garante que fique acima de outros elementos */
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transform: translateX(120%);
+            z-index: 1000;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -123,66 +234,27 @@
         .notification-toast.show {
             opacity: 1;
             visibility: visible;
+            transform: translateX(0);
         }
+        
+        .notification-toast.success { background-color: #28a745; }
+        .notification-toast.error { background-color: #dc3545; }
+        .notification-toast i { font-size: 1.2em; }
 
-        .notification-toast.success {
-            background-color: #28a745; /* Verde para sucesso */
-        }
-
-        .notification-toast.error {
-            background-color: #dc3545; /* Vermelho para erro */
-        }
-
-        .notification-toast i {
-            font-size: 1.2em;
-        }
-
-        /* Responsividade para o container de autenticação */
-        @media (max-width: 768px) {
-            .auth-container {
-                margin: 40px 20px; /* Reduz margem em telas menores */
-                padding: 30px 20px;
-            }
-            .auth-container h2 {
-                font-size: 1.8em;
-            }
-            .auth-container button {
-                font-size: 1em;
-                padding: 10px;
-            }
-            .notification-toast {
-                width: auto;
-                left: 10px; /* Ajusta para ficar mais próximo da borda em telas menores */
-                right: 10px; /* Ajusta para ficar mais próximo da borda em telas menores */
-                transform: translateX(0); /* Remove a transformação se não for centralizado */
-                text-align: center;
-                flex-direction: row; /* Mantém a linha para ícone e texto */
-            }
-        }
         @media (max-width: 480px) {
             .auth-container {
                 margin: 20px 15px;
-                padding: 25px 15px;
-            }
-            .auth-container h2 {
-                font-size: 1.6em;
-            }
-            .auth-container label {
-                font-size: 0.9em;
-            }
-            .auth-container input {
-                padding: 10px;
-                font-size: 0.9em;
-            }
-            .notification-toast {
-                top: 10px; /* Ainda mais para cima em telas muito pequenas */
-                padding: 10px 15px;
+                padding: 30px 20px;
+                background-color: transparent;
+                backdrop-filter: none;
+                border: none;
+                box-shadow: none;
             }
         }
     </style>
 </head>
 <body>
-   <header class="main-header">
+    <header class="main-header">
     <div class="container header-content">
         <div class="logo-area">
           <h1 class="logo"><a href="/inicio">GYM RATS</a></h1>
@@ -207,27 +279,30 @@
           <i class="fas fa-bars"></i>
         </div>
         <div class="dropdown-nav" id="dropdownNav">
-          <a href="#features-buttons"><i class="fas fa-star"></i> Funcionalidades</a>
+          <a href="/inicio#features-buttons"><i class="fas fa-star"></i> Funcionalidades</a>
           <a href="equipe"><i class="fas fa-users"></i> Equipe</a>
           <a href="equipe#aboutProject"><i class="fas fa-info-circle"></i> Sobre Nós</a>
-          <a href="#contact"><i class="fas fa-envelope"></i> Contato</a>
+          <a href="/inicio#contact"><i class="fas fa-envelope"></i> Contato</a>
         </div>
 
         <nav class="main-nav">
           <ul>
-              <li><a href="#features-buttons">Funcionalidades</a></li>
+              <li><a href="/inicio#features-buttons">Funcionalidades</a></li>
               <li><a href="equipe">Equipe</a></li>
               <li><a href="equipe#aboutProject">Sobre Nós</a></li>
-              <li><a href="#contact">Contato</a></li>
+              <li><a href="/inicio#contact">Contato</a></li>
           </ul>
         </nav>
     </div>
-  </header>
+    </header>
 
     <main>
-        <section class="auth-container">
+        <div class="auth-container">
             <div id="login-form-container">
-                <h2>Faça Login</h2>
+                <div class="auth-header">
+                    <h1 class="logo">Login</h1>
+                    <p>Acesse sua conta para continuar</p>
+                </div>
                 <form id="login-form">
                     <div class="form-group">
                         <label for="login-email">Email:</label>
@@ -235,15 +310,26 @@
                     </div>
                     <div class="form-group">
                         <label for="login-password">Senha:</label>
-                        <input type="password" id="login-password" required>
+                        <div class="input-wrapper">
+                            <input type="password" id="login-password" required>
+                            <span class="password-toggle"><i class="fas fa-eye"></i></span>
+                        </div>
                     </div>
-                    <button type="submit">Entrar</button>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                    <div class="separator">OU</div>
+                    <button type="button" id="google-login-btn" class="btn google-login-btn">
+                        <img src="https://www.vectorlogo.zone/logos/google/google-icon.svg" alt="Google icon">
+                        <span>Entrar com Google</span>
+                    </button>
                 </form>
                 <p class="toggle-form" id="show-register">Não tem uma conta? Crie agora!</p>
             </div>
 
             <div id="register-form-container" style="display: none;">
-                <h2>Crie sua Conta</h2>
+                <div class="auth-header">
+                    <h1 class="logo">Cadastro</h1>
+                    <p>Crie sua conta para começar</p>
+                </div>
                 <form id="register-form">
                     <div class="form-group">
                         <label for="register-username">Nome de Usuário:</label>
@@ -255,48 +341,22 @@
                     </div>
                     <div class="form-group">
                         <label for="register-password">Senha:</label>
-                        <input type="password" id="register-password" required>
+                        <div class="input-wrapper">
+                            <input type="password" id="register-password" required>
+                            <span class="password-toggle"><i class="fas fa-eye"></i></span>
+                        </div>
                     </div>
-                    <button type="submit">Cadastrar</button>
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
                 </form>
                 <p class="toggle-form" id="show-login">Já tem uma conta? Faça login!</p>
             </div>
-        </section>
+        </div>
     </main>
-
+    
     <div id="notification-toast" class="notification-toast"></div>
-
-    <footer class="main-footer">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3 class="brand-name">GYM RATS</h3>
-                <p class="brand-tagline">Sua jornada fitness começa aqui.</p>
-                <div class="social-links">
-                    <a href="https://www.facebook.com/projetogymrats" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/projetogymrats" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.linkedin.com/company/projetogymrats" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="https://www.youtube.com/@projetogymrats" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                </div>
-            </div>
-            <div class="footer-links-single">
-                <div class="link-group">
-                    <h4>Navegação</h4>
-                    <ul>
-                        <li><a href="/inicio">Início</a></li>
-                        <li><a href="equipe">Quem Somos</a></li>
-                        <li><a href="equipe#projeto">Nosso Projeto</a></li>
-                        <li><a href="contact">Contato</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom-bar">
-            <p>© 2025 Projeto Gym Rats. Todos os direitos reservados. Desenvolvido para a 16ª FETEPS.</p>
-        </div>
-    </footer>
-
+    
     <script type="module">
-        import { authService } from './assets/js/auth.js'; // Caminho relativo do login para auth.js
+        import { authService } from './assets/js/auth.js';
 
         document.addEventListener('DOMContentLoaded', () => {
             const loginForm = document.getElementById('login-form');
@@ -305,132 +365,97 @@
             const registerFormContainer = document.getElementById('register-form-container');
             const showRegisterBtn = document.getElementById('show-register');
             const showLoginBtn = document.getElementById('show-login');
+            const googleLoginBtn = document.getElementById('google-login-btn');
             const notificationToast = document.getElementById('notification-toast');
+            const passwordToggles = document.querySelectorAll('.password-toggle');
 
-            // --- INÍCIO DA MODIFICAÇÃO ---
-            // Verifica se o usuário já está logado. Se sim, redireciona para a URL de destino ou para a página padrão.
-            // Isso evita que um usuário logado veja a página de login novamente.
             if (authService.isLoggedIn()) {
                 const redirectUrl = sessionStorage.getItem('redirectUrl');
-                sessionStorage.removeItem('redirectUrl'); // Limpa para não usar em futuros logins
-                window.location.href = redirectUrl || '/inicio';
+                sessionStorage.removeItem('redirectUrl');
+                window.location.href = redirectUrl || '/dashboard.html';
             }
-            // --- FIM DA MODIFICAÇÃO ---
 
             function showNotification(message, type) {
-                notificationToast.textContent = ''; // Clear previous content
+                notificationToast.innerHTML = '';
                 const icon = document.createElement('i');
-                if (type === 'success') {
-                    icon.className = 'fas fa-check-circle';
-                } else if (type === 'error') {
-                    icon.className = 'fas fa-times-circle';
-                }
+                icon.className = `fas ${type === 'success' ? 'fa-check-circle' : 'fa-times-circle'}`;
                 const textSpan = document.createElement('span');
                 textSpan.textContent = message;
-
-                notificationToast.appendChild(icon);
-                notificationToast.appendChild(textSpan);
-
-                notificationToast.className = 'notification-toast show';
-                notificationToast.classList.add(type);
-
+                notificationToast.append(icon, textSpan);
+                notificationToast.className = `notification-toast show ${type}`;
                 setTimeout(() => {
                     notificationToast.classList.remove('show');
-                    notificationToast.classList.remove(type);
-                }, 3000);
+                }, 4000);
             }
 
-            // Event Listener para o formulário de login
-            if (loginForm) {
-                loginForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const email = document.getElementById('login-email').value;
-                    const password = document.getElementById('login-password').value;
-                    const result = await authService.login(email, password);
-                    if (result.success) {
-                        showNotification(result.message, 'success');
-                        
-                        // --- INÍCIO DA MODIFICAÇÃO ---
-                        setTimeout(() => {
-                            const redirectUrl = sessionStorage.getItem('redirectUrl');
-                            sessionStorage.removeItem('redirectUrl'); // Limpa após o uso
-                            window.location.href = redirectUrl || '/inicio'; // Redireciona para URL salva ou padrão
-                        }, 500);
-                        // --- FIM DA MODIFICAÇÃO ---
-
+            passwordToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const passwordInput = toggle.previousElementSibling;
+                    const icon = toggle.querySelector('i');
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
                     } else {
-                        showNotification(result.message, 'error');
+                        passwordInput.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
                     }
                 });
-            }
+            });
 
-            // Event Listener para o formulário de registro
-            if (registerForm) {
-                registerForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const username = document.getElementById('register-username').value;
-                    const email = document.getElementById('register-email').value;
-                    const password = document.getElementById('register-password').value;
-                    const result = await authService.register(username, email, password);
-                    if (result.success) {
-                        showNotification(result.message, 'success');
+            loginForm?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const result = await authService.login(email, password);
+                if (result.success) {
+                    showNotification(result.message || 'Login bem-sucedido!', 'success');
+                    setTimeout(() => {
+                        const redirectUrl = sessionStorage.getItem('redirectUrl');
+                        sessionStorage.removeItem('redirectUrl');
+                        window.location.href = redirectUrl || '/dashboard.html';
+                    }, 500);
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            });
 
-                        // --- INÍCIO DA MODIFICAÇÃO ---
-                        setTimeout(() => {
-                            const redirectUrl = sessionStorage.getItem('redirectUrl');
-                            sessionStorage.removeItem('redirectUrl'); // Limpa após o uso
-                            window.location.href = redirectUrl || '/inicio'; // Redireciona para URL salva ou padrão
-                        }, 500);
-                        // --- FIM DA MODIFICAÇÃO ---
-                        
-                    } else {
-                        showNotification(result.message, 'error');
-                    }
-                });
-            }
+            registerForm?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('register-username').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const result = await authService.register(username, email, password);
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    setTimeout(() => {
+                        const redirectUrl = sessionStorage.getItem('redirectUrl');
+                        sessionStorage.removeItem('redirectUrl');
+                        window.location.href = redirectUrl || '/dashboard.html';
+                    }, 500);
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            });
 
-            // Toggle entre formulários de login e cadastro
-            if (showRegisterBtn) {
-                showRegisterBtn.addEventListener('click', (e) => {
-                    e.preventDefault(); 
-                    loginFormContainer.style.display = 'none';
-                    registerFormContainer.style.display = 'block';
-                    registerFormContainer.classList.add('slide-in-up');
-                    loginFormContainer.classList.remove('slide-in-up');
-                });
-            }
+            googleLoginBtn?.addEventListener('click', () => {
+                // A lógica de login do Google será adicionada aqui.
+                // Por enquanto, podemos mostrar uma notificação de "em breve".
+                showNotification('Login com Google em desenvolvimento!', 'info');
+            });
+            
+            showRegisterBtn?.addEventListener('click', () => {
+                loginFormContainer.style.display = 'none';
+                registerFormContainer.style.display = 'block';
+            });
 
-            if (showLoginBtn) {
-                showLoginBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    registerFormContainer.style.display = 'none';
-                    loginFormContainer.style.display = 'block';
-                    loginFormContainer.classList.add('slide-in-up');
-                    registerFormContainer.classList.remove('slide-in-up');
-                });
-            }
+            showLoginBtn?.addEventListener('click', () => {
+                registerFormContainer.style.display = 'none';
+                loginFormContainer.style.display = 'block';
+            });
         });
-
-        // Adicionar algumas animações de transição para o toggle de formulário
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes slideInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            .slide-in-up {
-                animation: slideInUp 0.4s ease-out forwards;
-            }
-        `;
-        document.head.appendChild(style);
     </script>
-
-    <script type="module" src="assets/js/script.js"></script>
+    <script type="module" src="assets/js/header.js"></script>
 </body>
 </html>
