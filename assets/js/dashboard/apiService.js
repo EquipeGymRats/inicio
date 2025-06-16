@@ -1,87 +1,94 @@
-// assets/js/apiService.js
+// assets/js/dashboard/apiService.js
 
-import { authService } from '../auth.js'; // Certifique-se que auth.js está na mesma pasta
+// O authService é essencial para pegarmos o token de autenticação.
+import { authService } from '../auth.js';
 
-// URL do seu backend local. MUITO IMPORTANTE!
-const API_BASE_URL = 'https://api-gym-cyan.vercel.app'; // Altere para o endereço correto do seu backend https://api-gym-cyan.vercel.app
+// A URL base da sua API. Altere se for diferente.
+const API_BASE_URL = 'https://api-gym-cyan.vercel.app';
 
-// Função genérica para fazer requisições à API
+/**
+ * Função genérica para fazer requisições JSON para a API.
+ * @param {string} endpoint - O endpoint da API (ex: '/posts').
+ * @param {string} method - O método HTTP (GET, POST, etc.).
+ * @param {object} body - O corpo da requisição para métodos POST/PUT.
+ * @returns {Promise<any>} - A resposta da API em JSON.
+ */
 async function request(endpoint, method = 'GET', body = null) {
     const token = authService.getToken();
     if (!token) {
-        console.error("Nenhum token de autenticação encontrado. Redirecionando para login.");
-        sessionStorage.setItem('redirectUrl', window.location.href);
-        window.location.href = 'login';
+        // Se não houver token, redireciona para a página de login.
+        window.location.href = 'login.html';
         throw new Error('Usuário não autenticado.');
     }
 
     const options = {
         method,
         headers: {
-            'Content-Type': 'application/json',
-            'x-auth-token': token // Header correto conforme seu middleware
+            'x-auth-token': token
         }
     };
 
-    if (body) {
+    if (body && method !== 'GET') {
+        options.headers['Content-Type'] = 'application/json';
         options.body = JSON.stringify(body);
     }
 
-    try {
-        console.log(`Fazendo requisição: ${method} ${API_BASE_URL}${endpoint}`); // Log para debug
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
 
-        if (response.status === 401) {
-            authService.logout();
-            sessionStorage.setItem('redirectUrl', window.location.href);
-            window.location.href = 'login';
-            throw new Error('Sessão expirada. Faça login novamente.');
-        }
-        
-        const responseData = await response.json();
-
-        if (!response.ok) {
-            throw new Error(responseData.message || 'Ocorreu um erro na requisição.');
-        }
-
-        return responseData;
-
-    } catch (error) {
-        console.error(`Falha na requisição para ${endpoint}:`, error);
-        throw error; // Propaga o erro para ser tratado na função que chamou
+    if (response.status === 401) {
+        authService.logout();
+        window.location.href = 'login.html';
+        throw new Error('Sessão expirada. Faça login novamente.');
     }
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ocorreu um erro na requisição.');
+    }
+
+    return response.json();
 }
 
-// Objeto que exporta todas as funções de comunicação com a API
-export const api = {
-    getWorkouts: () => request('/training'),
-    getTrainingLogs: () => request('/training/logs'),
-    markWorkoutDone: (dayName) => request('/training/complete-day', 'POST', { dayName }),
-    getProgressStats: () => request('/training/stats'), // <<< ADICIONE ESTA LINHA
-    updateProfile: (formData) => {
-        const token = authService.getToken();
-        return fetch(`${API_BASE_URL}/auth/profile`, {
-            method: 'PUT',
-            headers: { 'x-auth-token': token },
-            body: formData
-        }).then(async response => {
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || 'Erro no servidor.');
-            return data;
-        });
-        
-    },
-    getFeedPosts: () => request('/posts'),
-    createPost: (formData) => {
-        const token = authService.getToken();
-        return fetch(`${API_BASE_URL}/posts`, {
-            method: 'POST',
-            headers: { 'x-auth-token': token }, // Sem 'Content-Type' para FormData
-            body: formData
-        }).then(async response => {
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message);
-            return data;
-        });
+
+/**
+ * Função específica para requisições com upload de arquivo (FormData).
+ * @param {string} endpoint - O endpoint da API.
+ * @param {string} method - O método HTTP.
+ * @param {FormData} formData - O objeto FormData com os dados do formulário.
+ * @returns {Promise<any>} - A resposta da API em JSON.
+ */
+async function requestWithFile(endpoint, method = 'POST', formData) {
+    const token = authService.getToken();
+    // if (!token) {
+    //     window.location.href = 'login.html';
+    //     throw new Error('Usuário não autenticado.');
+    // }
+
+    const options = {
+        method,
+        headers: {
+            'x-auth-token': token
+            // OBS: Não definimos 'Content-Type', o navegador faz isso automaticamente para FormData.
+        },
+        body: formData
+    };
+
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    
+    // ... (tratamento de erro similar à função 'request')
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro no envio do formulário.');
     }
+
+    return response.json();
+}
+
+
+// Exportamos um objeto com os métodos da nossa API de forma organizada.
+export const api = {
+    getFeedPosts: () => request('/posts'),
+    createPost: (formData) => requestWithFile('/posts', 'POST', formData),
+    getCurrentUser: () => request('/auth/profile') // <-- ADICIONE ESTA LINHA
+    // Futuramente, adicionaremos mais métodos aqui (getWorkouts, etc.)
 };

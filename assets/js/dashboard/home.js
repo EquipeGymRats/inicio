@@ -1,157 +1,127 @@
-// assets/js/home.js
+// assets/js/dashboard/home.js
 import { api } from './apiService.js';
-import { authService } from '../auth.js';
+
+let postsContainer;
 
 /**
- * Renderiza o conteúdo do card de treino do dia.
- * @param {object} plan - O plano de treino do usuário.
+ * Renderiza o esqueleto (skeleton loader) enquanto os posts carregam.
  */
-function renderTodayWorkout(plan) {
-    const container = document.querySelector('#treino-do-dia-card .card-content');
-    if (!container) return;
+function renderSkeletonLoader() {
+    if (!postsContainer) return;
 
-    if (!plan || !plan.plan || plan.plan.length === 0) {
-        container.innerHTML = '<p>Nenhum plano de treino ativo. Gere um novo para começar!</p>';
-        return;
-    }
-
-    // Mapeia o índice do dia da semana para o nome correspondente em português
-    const dayMap = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
-    const todayIndex = new Date().getDay();
-    const todayName = dayMap[todayIndex];
-
-    const todayWorkout = plan.plan.find(day => day.dayName.toLowerCase() === todayName.toLowerCase());
-
-    if (todayWorkout && todayWorkout.exercises.length > 0) {
-        let exercisesHtml = '<ul style="padding-left: 0; list-style: none; margin: 0;">';
-        // Mostra no máximo 3 exercícios para manter o card limpo
-        todayWorkout.exercises.slice(0, 3).forEach(ex => {
-            exercisesHtml += `<li style="margin-bottom: 8px;">- ${ex.name} (${ex.setsReps})</li>`;
-        });
-        if (todayWorkout.exercises.length > 3) {
-            exercisesHtml += `<li style="margin-top: 10px;">... e mais!</li>`;
-        }
-        exercisesHtml += '</ul>';
-        container.innerHTML = exercisesHtml;
-    } else {
-        container.innerHTML = `
-            <div style="text-align: center; padding: 20px 0;">
-                <i class="fas fa-couch" style="font-size: 2em; opacity: 0.7;"></i>
-                <p style="margin-top: 10px;">Hoje é dia de descanso!</p>
+    let skeletonHTML = '';
+    for (let i = 0; i < 3; i++) {
+        skeletonHTML += `
+            <div class="feed-post skeleton">
+                <div class="post-author"><div class="author-avatar skeleton-box"></div><div class="author-info"><strong class="skeleton-box skeleton-text-short"></strong><span class="skeleton-box skeleton-text-very-short"></span></div></div>
+                <p class="skeleton-box skeleton-text-long"></p><p class="skeleton-box skeleton-text-medium"></p>
             </div>
         `;
     }
+    const composerHTML = document.getElementById('home-template').content.querySelector('.feed-composer').outerHTML;
+    postsContainer.innerHTML = composerHTML + skeletonHTML;
 }
 
 /**
  * Renderiza um único post no feed.
- * @param {object} post - O objeto do post.
- * @param {boolean} prepend - Se o post deve ser adicionado no início da lista.
  */
 function renderPost(post, prepend = false) {
-    const postsContainer = document.getElementById('feed-posts-container');
-    if(!postsContainer) return;
-
+    if (!postsContainer) return;
+    
     const postElement = document.createElement('div');
     postElement.className = 'feed-post';
-    postElement.innerHTML = `
-        <img src="${post.user.profilePicture}" alt="${post.user.username}" class="post-author-pic">
-        <div class="post-content">
-            <p><strong>${post.user.username}</strong></p>
-            <p>${post.text}</p>
-            ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Post image" class="post-image">` : ''}
-            <div class="post-meta">${new Date(post.createdAt).toLocaleString('pt-BR')}</div>
+
+    const user = post.user || { profilePicture: 'assets/img/default-avatar.png', username: 'Usuário' };
+
+    const postAuthorHTML = `
+        <div class="post-author">
+            <img src="${user.profilePicture}" alt="Avatar de ${user.username}" class="author-avatar">
+            <div class="author-info">
+                <strong>${user.username}</strong>
+                <span>@${user.username.toLowerCase()}</span>
+            </div>
         </div>
     `;
+    
+    const postImageHTML = post.imageUrl ? `<div class="post-image-container"><img src="${post.imageUrl}" alt="Imagem do post" class="post-image"></div>` : '';
+
+    postElement.innerHTML = `${postAuthorHTML}<p>${post.text}</p>${postImageHTML}<span class="post-timestamp">${new Date(post.createdAt).toLocaleString('pt-BR')}</span>`;
 
     if (prepend) {
-        postsContainer.prepend(postElement);
+        postsContainer.insertBefore(postElement, postsContainer.children[1]);
     } else {
         postsContainer.appendChild(postElement);
     }
 }
 
+/**
+ * Adiciona os listeners de evento para a criação de posts.
+ * @param {object} user - O objeto do usuário logado.
+ */
+function setupComposer(user) {
+    const composerForm = document.querySelector('.feed-composer');
+    if (!composerForm) return;
 
-// Função principal que inicializa a página Home
-export async function initHomePage() {
-    console.log("Iniciando a Página Home...");
-    
-    // --- Carregamento de Dados em Paralelo ---
-    try {
-        const [user, posts, workoutPlan] = await Promise.all([
-            authService.getUserProfile(),
-            api.getFeedPosts(),
-            api.getWorkouts().catch(e => {
-                console.warn("Nenhum plano de treino encontrado, continuando...");
-                return null; // Retorna nulo se não houver plano, evitando que a página quebre
-            })
-        ]);
-
-        // 1. Personaliza a saudação e o mascote
-        if(user) {
-            document.getElementById('home-greeting').textContent = `Olá, ${user.username}!`;
-            document.getElementById('mascote-image').src = user.levelInfo.currentLevel.image;
-            document.getElementById('mascote-level-name').textContent = user.levelInfo.currentLevel.name;
-        }
-
-        // 2. Renderiza o Treino do Dia
-        renderTodayWorkout(workoutPlan);
-
-        // 3. Renderiza o feed
-        const postsContainer = document.getElementById('feed-posts-container');
-        postsContainer.innerHTML = ''; // Limpa antes de renderizar
-        posts.forEach(post => renderPost(post));
-
-    } catch (error) {
-        console.error("Erro ao carregar dados da Home Page:", error);
-        // Pode adicionar uma mensagem de erro na UI aqui se desejar
+    // ATUALIZADO: Atualiza o avatar no composer com a foto do usuário
+    const composerAvatar = composerForm.querySelector('.composer-avatar');
+    if (user && user.profilePicture) {
+        composerAvatar.src = user.profilePicture;
     }
 
-    // --- Lógica para Criar Post ---
-    const submitBtn = document.getElementById('submit-post-btn');
-    const textInput = document.getElementById('post-text-input');
-    const imageInput = document.getElementById('post-image-input');
-
-    // Remove event listener antigo para evitar duplicação se a página for recarregada
-    submitBtn.replaceWith(submitBtn.cloneNode(true));
-    document.getElementById('submit-post-btn').addEventListener('click', async () => {
-        if (!textInput.value.trim()) {
-            alert("Escreva algo para postar!");
-            return;
-        }
+    const textArea = composerForm.querySelector('textarea');
+    const publishBtn = composerForm.querySelector('.btn-primary');
+    const fileInput = document.getElementById('file-input');
+    
+    publishBtn.addEventListener('click', async () => {
+        if (!textArea.value.trim()) return alert("Escreva algo para publicar!");
 
         const formData = new FormData();
-        formData.append('text', textInput.value);
-        if (imageInput.files[0]) {
-            formData.append('postImage', imageInput.files[0]);
-        }
-        
-        try {
-            submitBtn.disabled = true; // Desabilita o botão durante o envio
-            const newPost = await api.createPost(formData);
-            renderPost(newPost, true); // Adiciona o novo post no topo do feed
+        formData.append('text', textArea.value);
+        if (fileInput.files[0]) formData.append('postImage', fileInput.files[0]);
 
-            // Limpa os campos
-            textInput.value = '';
-            imageInput.value = null;
+        publishBtn.disabled = true;
+        publishBtn.textContent = 'Publicando...';
+
+        try {
+            const newPost = await api.createPost(formData);
+            renderPost(newPost, true);
+            textArea.value = '';
+            fileInput.value = '';
         } catch (error) {
-            alert(`Erro ao postar: ${error.message}`);
+            alert(`Erro ao publicar: ${error.message}`);
         } finally {
-            submitBtn.disabled = false; // Reabilita o botão
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'Publicar';
         }
     });
+}
 
-    // --- Lógica da Mensagem Motivacional ---
-    const motivationalMessages = [
-        "A dor que você sente hoje é a força que você sentirá amanhã.",
-        "O corpo alcança o que a mente acredita.",
-        "Não pare quando estiver cansado. Pare quando terminar.",
-        "Cada treino é um passo a mais na sua jornada.",
-        "Seu único limite é você."
-    ];
-    const motivacaoEl = document.getElementById('motivacao-text');
-    if (motivacaoEl) {
-        const randomIndex = Math.floor(Math.random() * motivationalMessages.length);
-        motivacaoEl.textContent = motivationalMessages[randomIndex];
+/**
+ * Função principal que inicializa a página Home. (REFEITA)
+ */
+export async function initHomePage() {
+    postsContainer = document.querySelector('.card-feed .scrollable-content');
+    if (!postsContainer) return console.error("Container do feed não encontrado.");
+
+    renderSkeletonLoader();
+    
+    try {
+        // Busca os dados do usuário e os posts em paralelo para mais performance
+        const [user, posts] = await Promise.all([
+            api.getCurrentUser(),
+            api.getFeedPosts()
+        ]);
+        
+        // Limpa o esqueleto e renderiza os posts reais
+        const composerHTML = document.getElementById('home-template').content.querySelector('.feed-composer').outerHTML;
+        postsContainer.innerHTML = composerHTML;
+        posts.forEach(post => renderPost(post));
+
+        // Configura a área de criação de post com os dados do usuário
+        setupComposer(user);
+
+    } catch (error) {
+        console.error("Erro ao carregar a página Home:", error);
+        postsContainer.innerHTML += `<p style="padding: 20px; text-align: center;">Não foi possível carregar o conteúdo.</p>`;
     }
 }

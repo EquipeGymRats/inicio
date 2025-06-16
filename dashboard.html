@@ -5,15 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Gym Rats</title>
     <link rel="shortcut icon" type="imagex/png" href="assets/logo.ico">
+    
     <link rel="stylesheet" href="assets/style/dashboard-layout.css">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <div class="overlay"></div>
+
     <div class="dashboard-container">
         
         <aside class="sidebar">
@@ -25,22 +27,11 @@
                 <a href="#home" class="nav-item active"><i class="fas fa-home"></i> <span>Home</span></a>
                 <a href="#treino" class="nav-item"><i class="fas fa-dumbbell"></i> <span>Meu Treino</span></a>
                 <a href="#alimentacao" class="nav-item"><i class="fas fa-utensils"></i> <span>Alimentação</span></a>
-                <a href="#progressao" class="nav-item"><i class="fas fa-chart-line"></i> <span>Progressão</span></a>
-                <a href="#perfil" class="nav-item"><i class="fas fa-user"></i> <span>Perfil</span></a>
+                <a href="#progressao" class="nav-item"><i class="fas fa-chart-pie"></i> <span>Progressão</span></a>
+                <a href="#perfil" class="nav-item"><i class="fas fa-user-circle"></i> <span>Perfil</span></a>
             </nav>
 
             <div class="sidebar-footer">
-                <div class="user-xp-container" id="open-goals-modal-sidebar" title="Ver Metas">
-                    <div class="user-xp">
-                        <i class="fas fa-star"></i>
-                        <span>XP:</span>
-                        <strong id="xp-value">0</strong>
-                    </div>
-                    <div class="xp-progress-bar">
-                        <div id="xp-progress-bar-inner" class="xp-progress-bar-inner"></div>
-                        <span id="xp-percentage" class="xp-percentage">0%</span>
-                    </div>
-                </div>
                 <a href="#" id="logout-button" title="Sair">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
@@ -48,103 +39,108 @@
         </aside>
 
         <main class="main-content" id="page-content">
+             <button class="menu-toggle" aria-label="Abrir menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            
             </main>
         
     </div>
 
-    <div class="completion-overlay" id="completion-overlay">
-        <div class="completion-content">
-            <i class="fas fa-check-circle" id="completion-icon"></i>
-            <p id="completion-message" class="typing-effect"></p>
-            <div class="xp-gain" id="xp-gain-animation">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="goals-modal">
-        <div class="modal-content goals-modal-content">
-            <span class="modal-close-button" id="close-goals-modal">&times;</span>
-            <h2>Suas Metas de Progresso</h2>
-            <div class="goals-list-container" id="goals-list-container">
-                </div>
-        </div>
-    </div>
-
     <template id="home-template">
         <div class="page-content-wrapper">
-            <header class="page-header">
-                <h1 id="home-greeting">Olá, Usuário!</h1>
-                <p>Pronto para esmagar suas metas hoje?</p>
-            </header>
+    <header class="page-header">
+        <h1>Sua Visão Geral</h1>
+        <p>Tudo o que você precisa para seu dia, em um só lugar.</p>
+    </header>
 
-            <div class="home-grid">
-                <div class="home-col-left">
-                    <div class="home-card" id="treino-do-dia-card">
-                        <h2><i class="fas fa-dumbbell"></i> Treino do Dia</h2>
-                        <div class="card-content">
-                            </div>
-                        <a href="#treino" class="btn-secondary">Ver Cronograma</a>
-                    </div>
-                    <div class="home-card" id="alimentacao-do-dia-card">
-                        <h2><i class="fas fa-utensils"></i> Alimentação de Hoje</h2>
-                        <div class="card-content">
-                            </div>
-                        <a href="#alimentacao" class="btn-secondary">Ver Plano Completo</a>
-                    </div>
-                </div>
+    <div class="home-grid">
 
-                <div class="home-col-center">
-                    <div class="feed-container">
-                        <h3>Feed da Comunidade</h3>
-                        <div class="create-post-form">
-                            <textarea id="post-text-input" placeholder="Compartilhe seu progresso..."></textarea>
-                            <div class="create-post-actions">
-                                <label for="post-image-input" class="image-upload-label"><i class="fas fa-camera"></i> Foto</label>
-                                <input type="file" id="post-image-input" accept="image/*" style="display: none;">
-                                <button id="submit-post-btn" class="btn-primary">Postar</button>
-                            </div>
+        <div class="dashboard-card card-treino">
+            <div class="card-header"><i class="fas fa-dumbbell" style="color: #e74c3c;"></i><h3>Treino do Dia</h3></div>
+            <div class="card-content"><h4>Peito & Tríceps</h4><p>Seu foco hoje é em força e volume. Bom treino!</p></div>
+            <div class="card-footer"><button class="btn btn-secondary">Cronograma</button><button class="btn btn-primary">Concluir Treino</button></div>
+        </div>
+
+        <div class="dashboard-card card-alimentacao">
+            <div class="card-header"><i class="fas fa-utensils" style="color: #2ecc71;"></i><h3>Alimentação</h3></div>
+            <div class="card-content"><h4>Foco em Proteínas</h4><p>Meta de hoje: <strong>180g de proteína</strong> e <strong>3200 kcal</strong>.</p><a href="#alimentacao" class="card-link">Ver detalhes &rarr;</a></div>
+        </div>
+
+        <div class="dashboard-card card-feed">
+            <div class="card-header"><i class="fas fa-users" style="color: #3498db;"></i><h3>Feed da Comunidade</h3></div>
+            <div class="card-content scrollable-content">
+                <div class="feed-composer">
+                    <img src="" alt="Seu avatar" class="composer-avatar">
+                    <div class="composer-input-area">
+                        <textarea placeholder="No que você está pensando?" rows="3"></textarea>
+                        <div class="composer-actions">
+                            <label for="file-input" class="btn btn-icon" title="Anexar imagem">
+                                <i class="fas fa-paperclip"></i>
+                            </label>
+                            <input type="file" id="file-input" accept="image/*" style="display: none;">
+                            
+                            <button class="btn btn-primary">Publicar</button>
                         </div>
-                        <div id="feed-posts-container">
-                            </div>
                     </div>
                 </div>
 
-                <div class="home-col-right">
-                    <div class="home-card mascote-card">
-                        <img src="assets/images/levels/level-1.png" alt="Mascote" id="mascote-image">
-                        <h4 id="mascote-level-name">Ratinho de Academia</h4>
+                <div class="feed-post">
+                    <div class="post-author">
+                        <img src="https://i.pravatar.cc/40?img=25" alt="Avatar" class="author-avatar">
+                        <div class="author-info">
+                            <strong>Ana Clara</strong>
+                            <span>@fitGirl_22</span>
+                        </div>
                     </div>
-                    <div class="home-card motivacao-card">
-                        <i class="fas fa-quote-left"></i>
-                        <p id="motivacao-text">Acredite em você e todo o resto virá naturalmente.</p>
+                    <p>Completou o desafio de 30 dias de cardio. Missão dada é missão cumprida!</p>
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop" alt="Post com imagem" class="post-image">
+                    <span class="post-timestamp">- 48 min atrás</span>
+                </div>
+
+                <div class="feed-post">
+                    <div class="post-author">
+                        <img src="https://i.pravatar.cc/40?img=14" alt="Avatar" class="author-avatar">
+                        <div class="author-info">
+                            <strong>Carlos Souza</strong>
+                            <span>@marombaMaster</span>
+                        </div>
                     </div>
+                    <p>Atingiu um novo PR no agachamento: 140kg! 🔥 Sem dor, sem ganho!</p>
+                    <span class="post-timestamp">- 2 horas atrás</span>
                 </div>
             </div>
         </div>
+
+        <div class="dashboard-card card-mascote">
+             <div class="card-header"><i class="fas fa-pastafarianism" style="color: #9b59b6;"></i><h3>Mascote</h3></div>
+            <div class="card-content mascote-content"><img src="" alt="Mascote Gym Rats"><h4>CyberRat</h4></div>
+        </div>
+
+        <div class="dashboard-card card-frase">
+            <div class="card-content"><i class="fas fa-quote-left quote-icon"></i><p class="quote-text">A disciplina é a ponte entre metas e realizações.</p></div>
+        </div>
+    </div>
+</div>
     </template>
 
     <template id="treino-template">
         <div class="page-content-wrapper">
             <header class="page-header">
-                <h1>Meu Plano de Treino</h1>
-                <p>Marque os treinos que você concluir para acompanhar seu progresso e ganhar XP!</p>
+                <h1>Meu Treino</h1>
+                <p>Aqui você visualizará e gerenciará seu plano de treino.</p>
             </header>
-            <div class="workout-days-grid" id="workout-grid">
-                <div class="spinner-container" id="treino-loading-spinner"><div class="spinner"></div></div>
-            </div>
+            <h2 style="text-align: center; margin-top: 50px;">Página em Construção...</h2>
         </div>
     </template>
     
     <template id="alimentacao-template">
         <div class="page-content-wrapper">
             <header class="page-header">
-                <h1>Plano Alimentar</h1>
+                <h1>Minha Alimentação</h1>
                 <p>Sua dieta personalizada para alcançar seus objetivos.</p>
             </header>
-            <div style="text-align: center; color: var(--gymrats-text-secondary);">
-                <p>Página de Alimentação em construção...</p>
-            </div>
+            <h2 style="text-align: center; margin-top: 50px;">Página em Construção...</h2>
         </div>
     </template>
     
@@ -154,39 +150,7 @@
                 <h1>Sua Progressão</h1>
                 <p>Acompanhe sua jornada, celebre suas vitórias e mantenha o foco!</p>
             </header>
-            <div class="stats-cards-grid">
-                <div class="stat-card">
-                    <i class="fas fa-fire-alt"></i>
-                    <div class="stat-info">
-                        <span class="stat-value" id="streak-value">0</span>
-                        <span class="stat-label">Dias em Sequência</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-dumbbell"></i>
-                    <div class="stat-info">
-                        <span class="stat-value" id="total-workouts-value">0</span>
-                        <span class="stat-label">Total de Treinos</span>
-                    </div>
-                </div>
-                <button class="stat-card goal-card" id="open-goals-modal-progress">
-                    <i class="fas fa-trophy"></i>
-                    <div class="stat-info">
-                        <span class="stat-value" id="goal-level-name">Carregando...</span>
-                        <span class="stat-label">Meta Atual</span>
-                    </div>
-                </button>
-            </div>
-            <div class="charts-grid">
-                <div class="chart-container">
-                    <h3>Treinos por Semana</h3>
-                    <canvas id="weekly-chart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>Frequência de Treinos</h3>
-                    <canvas id="frequency-chart"></canvas>
-                </div>
-            </div>
+            <h2 style="text-align: center; margin-top: 50px;">Página em Construção...</h2>
         </div>
     </template>
 
@@ -196,82 +160,7 @@
                 <h1>Meu Perfil</h1>
                 <p>Atualize suas informações pessoais, metas e foto de perfil.</p>
             </header>
-
-            <div class="profile-container">
-                <form id="profile-form">
-                    <div class="profile-picture-section">
-                        <img src="assets/images/levels/default-level.png" alt="Foto de Perfil" id="profile-pic-preview" class="profile-pic-preview">
-                        <label for="profile-pic-input" class="profile-pic-label">
-                            <i class="fas fa-camera"></i> Trocar Foto
-                        </label>
-                        <input type="file" id="profile-pic-input" name="profilePicture" accept="image/png, image/jpeg, image/webp" style="display: none;">
-                    </div>
-
-                    <hr>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="profile-username">Nome de Usuário</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-user"></i>
-                                <input type="text" id="profile-username" name="username">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-email">Email</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-envelope"></i>
-                                <input type="email" id="profile-email" name="email" disabled title="O email não pode ser alterado.">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-weight">Peso (kg)</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-weight-hanging"></i>
-                                <input type="number" id="profile-weight" name="weight" step="0.1" placeholder="Ex: 75.5">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-height">Altura (cm)</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-ruler-vertical"></i>
-                                <input type="number" id="profile-height" name="height" placeholder="Ex: 180">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-experience">Nível de Experiência</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-layer-group"></i>
-                                <select id="profile-experience" name="experienceLevel">
-                                    <option value="Iniciante">Iniciante</option>
-                                    <option value="Intermediário">Intermediário</option>
-                                    <option value="Avançado">Avançado</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-objective">Objetivo Principal</label>
-                            <div class="input-with-icon">
-                                <i class="fas fa-bullseye"></i>
-                                <select id="profile-objective" name="mainObjective">
-                                    <option value="Saúde e Bem-estar">Saúde e Bem-estar</option>
-                                    <option value="Ganho de Massa Muscular">Ganho de Massa Muscular</option>
-                                    <option value="Perda de Peso">Perda de Peso</option>
-                                    <option value="Aumento de Força">Aumento de Força</option>
-                                    <option value="Melhora de Resistência">Melhora de Resistência</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" id="save-profile-btn" class="btn-primary">
-                            <span class="btn-text">Salvar Alterações</span>
-                            <div class="spinner" style="display: none;"></div>
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <h2 style="text-align: center; margin-top: 50px;">Página em Construção...</h2>
         </div>
     </template>
 
