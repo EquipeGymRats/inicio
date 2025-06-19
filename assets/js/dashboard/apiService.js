@@ -4,7 +4,7 @@
 import { authService } from '../auth.js';
 
 // A URL base da sua API. Altere se for diferente.
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://api-gym-cyan.vercel.app';
 
 /**
  * Função genérica para fazer requisições JSON para a API.
