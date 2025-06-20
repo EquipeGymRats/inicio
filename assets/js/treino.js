@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Variáveis Globais ---
     let currentTrainingPlan = null;
     let currentDayIndex = 0;
-    const BASE_URL = 'https://api-gym-cyan.vercel.app'; // URL do seu backend
+    const BASE_URL = 'http://localhost:3000'; // URL do seu backend
 
     // Inicializa o Modal de Exercícios (cria uma vez para reutilizar)
     initExerciseModal();
@@ -230,14 +230,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // <<< 1. MODIFICAÇÃO: Incluir a assinatura no objeto a ser salvo
+        // O currentTrainingPlan já terá a assinatura vinda da API
         const trainingToSave = {
             level: currentTrainingPlan.level,
             objective: currentTrainingPlan.objective,
             frequency: currentTrainingPlan.frequency,
             equipment: currentTrainingPlan.equipment,
             timePerSession: currentTrainingPlan.timePerSession,
-            plan: currentTrainingPlan.plan
+            plan: currentTrainingPlan.plan,
+            signature: currentTrainingPlan.signature // << Envia a assinatura recebida
         };
+
+        if (!trainingToSave.signature) {
+            showToast("Erro: Assinatura de integridade não encontrada. Tente gerar o treino novamente.", 5000);
+            return;
+        }
 
         try {
             const response = await fetch(`${BASE_URL}/training/`, {
@@ -254,7 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveTrainingBtn.disabled = true;
                 saveTrainingBtn.textContent = 'Treino Salvo!';
             } else {
-                throw new Error((await response.json()).message || 'Erro do servidor ao salvar.');
+                const errorData = await response.json();
+                throw new Error(errorData.error || errorData.message || 'Erro do servidor ao salvar.');
             }
         } catch (error) {
             showToast(`Erro ao salvar treino: ${error.message}`, 5000);

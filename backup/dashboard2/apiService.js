@@ -3,7 +3,7 @@
 import { authService } from '../auth.js'; // Certifique-se que auth.js está na mesma pasta
 
 // URL do seu backend local. MUITO IMPORTANTE!
-const API_BASE_URL = 'https://api-gym-cyan.vercel.app'; // Altere para o endereço correto do seu backend https://api-gym-cyan.vercel.app
+const API_BASE_URL = 'http://localhost:3000'; // Altere para o endereço correto do seu backend http://localhost:3000
 
 // Função genérica para fazer requisições à API
 async function request(endpoint, method = 'GET', body = null) {

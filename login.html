@@ -58,6 +58,13 @@
             animation: fadeInScale 0.6s ease-out forwards;
         }
 
+        .google-btn-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
         .auth-header {
             margin-bottom: 30px;
         }
@@ -319,10 +326,7 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Entrar</button>
                     <div class="separator">OU</div>
-                    <button type="button" id="google-login-btn" class="btn google-login-btn">
-                        <img src="https://www.vectorlogo.zone/logos/google/google-icon.svg" alt="Google icon">
-                        <span>Entrar com Google</span>
-                    </button>
+                    <div id="google-login-btn" class="google-btn-container"></div>
                 </form>
                 <p class="toggle-form" id="show-register">Não tem uma conta? Crie agora!</p>
             </div>
@@ -349,6 +353,8 @@
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Cadastrar</button>
+                    <div class="separator">OU</div>
+                    <div id="google-register-btn" class="google-btn-container"></div>
                 </form>
                 <p class="toggle-form" id="show-login">Já tem uma conta? Faça login!</p>
             </div>
@@ -442,38 +448,42 @@
             });
 
             function handleGoogleCredentialResponse(response) {
-    // A 'response' contém o JWT do Google
-        const googleToken = response.credential;
-
-        // Chama o nosso serviço para validar no backend
-        authService.loginWithGoogle(googleToken).then(result => {
-            if (result.success) {
-                showNotification('Login com Google bem-sucedido!', 'success');
-                setTimeout(() => {
-                    const redirectUrl = sessionStorage.getItem('redirectUrl');
-                    sessionStorage.removeItem('redirectUrl');
-                    window.location.href = redirectUrl || '/inicio';
-                }, 500);
-            } else {
-                showNotification(result.message, 'error');
+                const googleToken = response.credential;
+                authService.loginWithGoogle(googleToken).then(result => {
+                    if (result.success) {
+                        showNotification('Login com Google bem-sucedido!', 'success');
+                        setTimeout(() => {
+                            const redirectUrl = sessionStorage.getItem('redirectUrl');
+                            sessionStorage.removeItem('redirectUrl');
+                            window.location.href = redirectUrl || '/dashboard.html'; // Corrigido para dashboard
+                        }, 500);
+                    } else {
+                        showNotification(result.message, 'error');
+                    }
+                });
             }
-        });
-    }
 
-    // Inicialização do Google Sign-In
-    window.onload = function () {
-        google.accounts.id.initialize({
-            client_id: "461681522805-dqqcv5as36rffbohlafvoof343f1bnng.apps.googleusercontent.com",
-            callback: handleGoogleCredentialResponse // Função a ser chamada no sucesso
-        });
+            // Inicialização do Google Sign-In - ATUALIZADA
+            window.onload = function () {
+                google.accounts.id.initialize({
+                    client_id: "461681522805-dqqcv5as36rffbohlafvoof343f1bnng.apps.googleusercontent.com", //
+                    callback: handleGoogleCredentialResponse //
+                });
 
-        // Renderiza o botão do Google ou anexa a um botão existente
-        google.accounts.id.renderButton(
-            document.getElementById('google-login-btn'),
-            { theme: "outline", size: "large", type: 'standard', text: 'signin_with' } // Customização do botão
-        );
-        google.accounts.id.prompt(); // Exibe o pop-up "One Tap" para usuários recorrentes
-    }
+                // Renderiza o botão no formulário de LOGIN
+                google.accounts.id.renderButton(
+                    document.getElementById('google-login-btn'),
+                    { theme: "outline", size: "large", type: 'standard', text: 'signin_with', width: '300' } //
+                );
+
+                // Renderiza o botão no formulário de CADASTRO
+                google.accounts.id.renderButton(
+                    document.getElementById('google-register-btn'),
+                    { theme: "outline", size: "large", type: 'standard', text: 'signup_with', width: '300' }
+                );
+
+                google.accounts.id.prompt(); //
+            }
 
             
             showRegisterBtn?.addEventListener('click', () => {

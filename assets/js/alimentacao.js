@@ -2,9 +2,27 @@
 
 import { authService } from './auth.js';
 
+const api = {
+    getNutritionPlan: async () => {
+        const token = authService.getToken();
+        // A URL deve corresponder à sua URL de produção/desenvolvimento
+        return fetch('http://localhost:3000/nutrition', { headers: { 'x-auth-token': token } });
+    },
+    saveNutritionPlan: async (planData) => {
+        const token = authService.getToken();
+        return fetch('http://localhost:3000/nutrition', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+            body: JSON.stringify(planData)
+        });
+    }
+};
+
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- Referências aos Elementos do DOM ---
     const alimentacaoHeaderInfo = document.querySelector('.alimentacao-header-info');
+    const saveNutriBtn = document.getElementById('save-nutri-btn'); // <<< NOVO
     const nutriSummaryInfo = document.getElementById('nutri-summary-info');
     const nutriObjectiveSpan = document.getElementById('nutri-objective');
     const nutriLevelSpan = document.getElementById('nutri-level');
@@ -51,8 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     let currentStep = 0;
-    let nutritionPlanData = [];
-    let globalTipsData = [];
+    let nutritionPlanData = []; // Apenas o array `plan`
+    let globalTipsData = []; // Apenas o array `tips`
+    let fullPlanResponse = null; // Armazena a resposta completa da IA (com assinatura)
     let currentDayIndex = 0;
 
     const dayNames = [
@@ -105,6 +124,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Funções de Coleta e Validação ---
 
+        function renderPlan(planObject, isNew = false) {
+        nutritionPlanData = planObject.plan;
+        globalTipsData = planObject.tips;
+
+        // Preenche o cabeçalho de resumo com base nas entradas do usuário
+        const inputs = planObject.userInputs;
+        if (inputs && nutriObjectiveSpan && nutriLevelSpan && nutriCaloriesSpan) {
+            nutriObjectiveSpan.textContent = inputs.goal || 'N/A';
+            nutriLevelSpan.textContent = inputs.activityLevel || 'N/A';
+
+            // Calcula e exibe as calorias (lógica de cálculo idêntica à do backend)
+            const bmr = (10 * inputs.weight) + (6.25 * inputs.height) - (5 * inputs.age) + (inputs.gender === 'Masculino' ? 5 : -161);
+            const factors = { 'sedentário': 1.2, 'levemente ativo': 1.375, 'moderadamente ativo': 1.55, 'muito ativo': 1.725, 'extremamente ativo': 1.9 };
+            const tdee = bmr * (factors[inputs.activityLevel] || 1.2);
+            let targetCalories = tdee;
+            if (inputs.goal === 'perda de peso') targetCalories -= 500;
+            if (inputs.goal.includes('hipertrofia') || inputs.goal.includes('forca')) targetCalories += 300;
+            nutriCaloriesSpan.textContent = Math.round(targetCalories);
+        }
+
+        alimentacaoHeaderInfo.classList.add('plan-generated');
+        nutriSummaryInfo.classList.add('active');
+        
+        displayDayPlan(0); // Mostra o primeiro dia do plano
+        displayGlobalTips(); // Mostra as dicas gerais
+
+        // Esconde o formulário e exibe a área do plano
+        nutriFormSection.classList.add('hidden');
+        nutriPlanOutput.classList.remove('hidden');
+        nutriPlanOutput.classList.add('active');
+
+        // Controla a visibilidade e estado do botão de salvar
+        if (isNew) {
+            saveNutriBtn.classList.remove('hidden');
+            saveNutriBtn.disabled = false;
+            saveNutriBtn.innerHTML = '<i class="fas fa-save"></i> Salvar Plano';
+        } else {
+            // Se o plano foi carregado, não precisa salvar de novo
+            saveNutriBtn.classList.add('hidden');
+        }
+    }
+
     function getUserInputs() {
         const genderInput = document.querySelector('input[name="gender"]:checked');
         const selectedGender = genderInput ? (genderInput.value === 'male' ? 'Masculino' : 'Feminino') : '';
@@ -147,9 +208,9 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingText.textContent = "Gerando seu plano alimentar inteligente...";
         formLoadingOverlay.classList.add('visible');
         
-        try {
+                try {
             const token = authService.getToken();
-            const response = await fetch('https://api-gym-cyan.vercel.app/generate-nutrition-plan', {
+            const response = await fetch('http://localhost:3000/generate-nutrition-plan', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
                 body: JSON.stringify(userInputs),
@@ -157,37 +218,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Erro ao gerar o plano no servidor.');
+                throw new Error(errorData.error || 'Erro no servidor ao gerar plano.');
             }
 
             const data = await response.json();
             
-            if (data.plan && Array.isArray(data.plan) && data.plan.length > 0) {
-                nutritionPlanData = data.plan; 
-                globalTipsData = data.tips || [];
+            // Armazena a resposta completa para poder salvar depois
+            fullPlanResponse = {
+                userInputs,
+                plan: data.plan,
+                tips: data.tips,
+                signature: data.signature // A assinatura é crucial para o salvamento
+            };
+            
+            // Chama a função de renderização, indicando que é um plano novo
+            renderPlan({ userInputs, plan: data.plan, tips: data.tips }, true); 
+            showToast('Plano gerado com sucesso! Não se esqueça de salvar.', 'success');
 
-                localStorage.setItem('gymrats_objetivo', userInputs.goal);
-                localStorage.setItem('gymrats_nivel', userInputs.activityLevel);
-                
-                const bmr = calculateBMR(userInputs.weight, userInputs.height, userInputs.age, userInputs.gender);
-                const tdee = calculateTDEE(bmr, userInputs.activityLevel);
-                let adjustedCalories = userInputs.goal === 'perda de peso' ? tdee - 500 : (userInputs.goal.includes('hipertrofia') || userInputs.goal.includes('forca') ? tdee + 300 : tdee);
-                localStorage.setItem('gymrats_calorias', Math.round(adjustedCalories).toString());
-
-                updateSummaryInfoDisplay(userInputs, Math.round(adjustedCalories));
-                
-                formLoadingOverlay.classList.remove('visible');
-                nutriFormSection.classList.add('hidden');
-                alimentacaoHeaderInfo.classList.add('plan-generated');
-                nutriSummaryInfo.classList.add('active'); 
-                displayDayPlan(0);
-                displayGlobalTips();
-                nutriPlanOutput.classList.remove('hidden');
-                nutriPlanOutput.classList.add('active');
-                showToast('Plano alimentar gerado com sucesso!', 'success');
-            } else {
-                throw new Error("A IA não retornou um plano válido.");
-            }
         } catch (error) {
             console.error("Erro na requisição ou processamento:", error);
             showToast(error.message || 'Erro ao gerar plano.', 'error');
@@ -249,6 +296,34 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDayIndex = dayIndex;
     }
 
+    async function saveCurrentPlan() {
+            if (!fullPlanResponse) {
+                showToast('Nenhum plano novo para salvar.', 'error');
+                return;
+            }
+
+            saveNutriBtn.disabled = true;
+            saveNutriBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+
+            try {
+                const response = await api.saveNutritionPlan(fullPlanResponse);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Erro desconhecido ao salvar.');
+                }
+                
+                showToast('Plano salvo com sucesso!', 'success');
+                saveNutriBtn.innerHTML = '<i class="fas fa-check"></i> Salvo!';
+                // Esconde o botão após o sucesso para evitar cliques repetidos
+                setTimeout(() => saveNutriBtn.classList.add('hidden'), 2000);
+
+            } catch (error) {
+                showToast(`Erro ao salvar: ${error.message}`, 'error');
+                saveNutriBtn.disabled = false;
+                saveNutriBtn.innerHTML = '<i class="fas fa-save"></i> Salvar Plano';
+            }
+        }
+
     function displayGlobalTips() {
         nutriTipsList.innerHTML = '';
         if (globalTipsData.length > 0) {
@@ -258,6 +333,36 @@ document.addEventListener('DOMContentLoaded', () => {
             nutriTipsSection.classList.remove('hidden');
         } else {
             nutriTipsSection.classList.add('hidden');
+        }
+    }
+
+    async function loadInitialData() {
+        if (!authService.isLoggedIn()) {
+            showToast('Faça login para ver ou criar um plano de alimentação.', 'info');
+            return;
+        }
+        
+        formLoadingOverlay.classList.add('visible');
+        try {
+            const response = await api.getNutritionPlan();
+
+            if (response.ok) {
+                // Se a resposta for OK (200), significa que um plano foi encontrado
+                const savedPlan = await response.json();
+                renderPlan(savedPlan, false); // false = não é um plano novo
+                showToast('Seu plano salvo foi carregado!', 'success');
+            } else if (response.status === 404) {
+                // 404 significa que o usuário não tem plano salvo, então mostramos o formulário
+                console.log('Nenhum plano salvo encontrado. Exibindo formulário de criação.');
+            } else {
+                // Outros erros de servidor
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Erro ao carregar seus dados.');
+            }
+        } catch (error) {
+            showToast(`Erro ao carregar dados: ${error.message}`, 'error');
+        } finally {
+            formLoadingOverlay.classList.remove('visible');
         }
     }
 
@@ -315,19 +420,25 @@ document.addEventListener('DOMContentLoaded', () => {
     submitNutritionFormBtn?.addEventListener('click', e => { e.preventDefault(); if (validateCurrentStepInputs(2)) generateNutritionPlanWithGemini(); });
     prevDayBtn?.addEventListener('click', () => currentDayIndex > 0 && displayDayPlan(currentDayIndex - 1));
     nextDayBtn?.addEventListener('click', () => currentDayIndex < nutritionPlanData.length - 1 && displayDayPlan(currentDayIndex + 1));
+
+     nutritionDetailsForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateNutritionPlanWithGemini();
+    });
+
+    saveNutriBtn.addEventListener('click', saveCurrentPlan); // <<< NOVO
     
-    regenerateNutriBtn?.addEventListener('click', () => {
-        showStep(0);
-        nutriFormSection.classList.remove('hidden');
+    regenerateNutriBtn.addEventListener('click', () => {
+        // Mostra o formulário novamente
         nutriPlanOutput.classList.add('hidden');
+        nutriPlanOutput.classList.remove('active');
+        nutriFormSection.classList.remove('hidden');
         alimentacaoHeaderInfo.classList.remove('plan-generated');
-        nutriSummaryInfo.classList.remove('active');
-        nutriTipsSection.classList.add('hidden');
-        showToast('Formulário resetado.', 'info');
+        
+        // Reseta o formulário e as variáveis de estado
+        showStep(0);
         nutritionDetailsForm.reset();
-        ['gymrats_objetivo', 'gymrats_nivel', 'gymrats_calorias'].forEach(item => localStorage.removeItem(item));
-        nutritionPlanData = [];
-        globalTipsData = [];
+        fullPlanResponse = null; // <<< ADICIONADO: Limpa a resposta anterior
     });
 
     currentDayCard.addEventListener('click', (event) => {
@@ -350,4 +461,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Inicialização ---
     showStep(0);
+    loadInitialData(); // <<< CHAMADA INICIAL PARA VERIFICAR PLANO SALVO
 });

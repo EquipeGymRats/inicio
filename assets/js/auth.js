@@ -1,6 +1,6 @@
 // assets/js/auth.js
 
-const BASE_URL = 'https://api-gym-cyan.vercel.app'; // Sua Base URL do backend
+const BASE_URL = 'http://localhost:3000'; // Sua Base URL do backend
 
 export const authService = {
     async register(username, email, password) {
