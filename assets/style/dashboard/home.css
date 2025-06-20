@@ -1,0 +1,349 @@
+/* ===== Home Page Specific Styles ===== */
+
+/* Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.sidebar-toggle-desktop {
+    background: none;
+    color: var(--color-light-gray);
+    font-size: 1.5rem;
+}
+
+.header-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-profile .profile-info {
+    text-align: right;
+}
+
+.header-profile .profile-info .username {
+    font-weight: 600;
+    color: var(--color-white);
+}
+
+.header-profile .profile-info .focus {
+    font-size: 0.85rem;
+    color: var(--color-light-gray);
+}
+
+.header-profile .profile-photo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-medium-gray);
+}
+
+/* Mascot Section */
+.mascot-section {
+    background-color: var(--color-dark-gray);
+    border: 1px solid var(--color-medium-gray);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.mascot-info h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.xp-bar {
+    width: 100%;
+    height: 20px;
+    background-color: var(--color-medium-gray);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.xp-bar-fill {
+    height: 100%;
+    background-color: var(--color-yellow);
+    border-radius: 10px;
+    transition: width 0.5s ease-in-out;
+}
+
+.xp-bar-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--color-black);
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+/* Home Grid Layout */
+.home-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* <<< MODIFICAÇÃO: Padrão de 1 coluna para mobile */
+    gap: 1.5rem;
+}
+
+/* <<< MODIFICAÇÃO: Layout de 3 colunas para telas maiores */
+@media (min-width: 992px) {
+    .home-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+
+/* Specific Card Styles */
+.workout-card .exercise-list {
+    list-style: none;
+    padding: 0;
+}
+
+.workout-card .exercise-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-medium-gray);
+}
+.workout-card .exercise-list li:last-child {
+    border-bottom: none;
+}
+
+.nutrition-card .nutrition-summary p {
+    margin-bottom: 0.5rem;
+}
+.nutrition-card .nutrition-summary span {
+    font-weight: 600;
+    color: var(--color-white);
+}
+
+
+/* Feed Card Styles */
+.feed-card {
+    height: 70vh; /* Força o card do feed a ter uma altura fixa e padrão */
+}
+
+.post-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.post-form textarea {
+    background-color: var(--color-medium-gray);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: var(--color-light-gray);
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.post-form .form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file-upload {
+    padding: 0.5rem 1rem;
+    background-color: var(--color-medium-gray);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+.file-upload:hover {
+    background-color: #2a2a2a;
+}
+.file-upload input[type="file"] {
+    display: none;
+}
+
+.feed-posts .post {
+    border-bottom: 1px solid var(--color-medium-gray);
+    padding: 1.5rem 0;
+}
+.feed-posts .post:last-child {
+    border-bottom: none;
+}
+.feed-posts .post:first-child {
+    padding-top: 0;
+}
+
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.post-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.post-author-info .author-name {
+    font-weight: 600;
+    color: var(--color-white);
+}
+
+.post-author-info .post-date {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.post-content p {
+    margin-bottom: 1rem;
+    white-space: pre-wrap; /* To respect newlines */
+}
+
+.post-image {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+/* Post Skeleton */
+.post-skeleton {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--color-medium-gray);
+}
+.post-skeleton:last-child {
+    border-bottom: none;
+}
+.post-skeleton-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-details {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Controla o espaço entre a tag e o ícone */
+}
+
+
+.file-upload-container {
+    display: flex;
+    align-items: center; /* Alinha na vertical */
+    gap: 1rem; /* Espaço entre o botão e o nome do arquivo */
+}
+
+/* Estilo para o label parecer um botão */
+.file-upload-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--color-medium-gray);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+.file-upload-button:hover {
+    background-color: #2a2a2a;
+}
+
+/* Container para o nome do arquivo e seu ícone */
+.file-name-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #aaa;
+    /* Adiciona um limite para o container não crescer demais */
+    max-width: calc(100% - 100px); /* Ajuste conforme necessário */
+}
+
+.remove-file-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background-color: #4a4a4a;
+    color: var(--color-light-gray);
+    border: none;
+    border-radius: 50%; /* Deixa o botão redondo */
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    transition: background-color 0.2s ease;
+    margin-left: 0.5rem; /* Um pequeno espaço à esquerda */
+}
+
+.remove-file-btn:hover {
+    background-color: #ff4d4d; /* Cor de perigo ao passar o mouse */
+    color: var(--color-white);
+}
+
+/* Classe para o texto do nome do arquivo para controlar o tamanho */
+.file-name-text {
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#workout-status-tag {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    text-transform: uppercase;
+}
+
+#workout-status-tag.status-pending {
+    background-color: var(--color-orange);
+    color: var(--color-black);
+}
+
+#workout-status-tag.status-completed {
+    background-color: var(--color-green);
+    color: var(--color-white);
+}
+
+/* MODIFICAÇÃO: Estilo para o botão quando o treino está concluído */
+.btn.completed {
+    background-color: var(--color-green);
+    color: var(--color-white);
+    cursor: default;
+}
+
+.btn.completed:hover {
+    filter: brightness(1); /* Remove o efeito de hover */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .main-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .sidebar-toggle-desktop {
+        display: block; /* Show the hamburger on mobile-sized main content */
+    }
+}
+
+@media (min-width: 769px) and (max-width: 991px) { /* <<< MODIFICAÇÃO: Ajuste para tablets */
+    .home-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+
+
+@media (min-width: 769px) {
+    .sidebar-toggle-desktop {
+        display: none; /* Hide hamburger on larger screens */
+    }
+}

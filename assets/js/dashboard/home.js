@@ -1,200 +1,310 @@
-// assets/js/dashboard/home.js
-import { api } from './apiService.js';
-
 /**
- * ATUALIZADO: Recebe o container da página para garantir que os seletores funcionem nos elementos corretos.
- * @param {object} todayData - Os dados do treino de hoje ou de descanso.
- * @param {HTMLElement} pageContainer - O elemento principal da página atual.
+ * home.js
+ * Lógica da página Home.
+ * Busca dados da API e renderiza os componentes da página.
+ * ESTA VERSÃO FOI CORRIGIDA PARA USAR authService.getUserProfile().
  */
-function renderTodayWorkout(todayData, pageContainer) {
-    // Busca os elementos DENTRO do container da página, não no documento inteiro.
-    const workoutCardContent = pageContainer.querySelector('.card-treino .card-content');
-    const workoutCardFooter = pageContainer.querySelector('.card-treino .card-footer');
-    const workoutCardHeader = pageContainer.querySelector('.card-treino .card-header h3');
 
-    if (!workoutCardContent || !workoutCardFooter || !workoutCardHeader) {
-        console.error("Elementos do card de treino não encontrados no container da página.");
-        return;
+import { api } from '../apiService.js';
+import { authService } from '../auth.js'; // Importa o serviço de autenticação
+
+// Variável para armazenar os dados do treino atual, incluindo o dayName
+let currentWorkout = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadAllData();
+    setupEventListeners();
+});
+
+function loadAllData() {
+    loadUserProfile();
+    loadTodayWorkout();
+    loadTodayNutrition();
+    loadFeed();
+}
+
+function setupEventListeners() {
+    const postForm = document.getElementById('post-form');
+    if (postForm) {
+        postForm.addEventListener('submit', handlePostCreation);
+    }
+    const completeWorkoutBtn = document.getElementById('complete-workout-btn');
+    if (completeWorkoutBtn) {
+        completeWorkoutBtn.addEventListener('click', handleWorkoutCompletion);
     }
 
-    if (todayData.isRestDay) {
-        workoutCardHeader.textContent = 'Dia de Descanso';
-        workoutCardContent.innerHTML = `<p>${todayData.message || 'Aproveite para recarregar as energias!'}</p>`;
-        workoutCardFooter.style.display = 'none';
-        return;
+    // <<< INÍCIO DA NOVA LÓGICA >>>
+    const fileInput = document.getElementById('post-image');
+    const fileNameDisplay = document.getElementById('file-name-display');
+
+    if (fileInput && fileNameDisplay) {
+        fileInput.addEventListener('change', () => {
+            // Limpa qualquer conteúdo anterior (nome do arquivo, botão 'x')
+            fileNameDisplay.innerHTML = '';
+
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+
+                // Cria o HTML para o ícone e o nome do arquivo
+                const fileInfoHtml = `<i class="fa-solid fa-paperclip"></i> <span class="file-name-text">${fileName}</span>`;
+                
+                // Cria o botão de remover dinamicamente
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-file-btn';
+                removeBtn.type = 'button'; // Importante para não submeter o formulário
+                removeBtn.innerHTML = '&times;'; // O 'x' para fechar
+
+                // Adiciona o evento de clique ao botão de remover
+                removeBtn.addEventListener('click', () => {
+                    // Limpa o valor do input de arquivo (ESSA É A AÇÃO PRINCIPAL)
+                    fileInput.value = ''; 
+                    // Limpa o container do nome do arquivo na tela
+                    fileNameDisplay.innerHTML = '';
+                });
+
+                // Adiciona o ícone, o nome e o botão ao container
+                fileNameDisplay.innerHTML = fileInfoHtml;
+                fileNameDisplay.appendChild(removeBtn);
+
+            }
+        });
     }
+    // <<< FIM DA NOVA LÓGICA >>>
+}
+// --- Funções de Carregamento e Renderização ---
 
-    if (todayData.workout && todayData.workout.exercises.length > 0) {
-        const { exercises } = todayData.workout;
-        const focusGroup = exercises[0]?.muscleGroups[0] || 'Geral';
-        workoutCardHeader.textContent = `Treino do Dia: ${focusGroup}`;
-        const exercisesToShow = exercises.slice(0, 4);
+async function loadUserProfile() {
+    const headerProfile = document.getElementById('header-profile');
+    const mascotSection = document.getElementById('mascot-section');
 
-        const exerciseListHTML = exercisesToShow.map(exercise => {
-            const setsRepsHTML = exercise.sets && exercise.reps 
-                ? `<span class="workout-sets-reps">${exercise.sets}x${exercise.reps}</span>`
-                : '';
-            return `
-                <li>
-                    <i class="fas fa-angle-right"></i>
-                    <span class="workout-exercise-name" title="Clique para ver o nome completo">${exercise.name}</span>
-                    ${setsRepsHTML}
-                </li>
-            `;
-        }).join('');
-        
-        workoutCardContent.innerHTML = `
-            <h4>Foco em ${todayData.objective || 'seu objetivo'}.</h4>
-            <ul class="workout-list">
-                ${exerciseListHTML}
+    try {
+        // CORREÇÃO APLICADA: Usando authService.getUserProfile()
+        const user = await authService.getUserProfile();
+
+        // Renderiza os componentes com os dados recebidos da API real
+        renderUserProfile(user);
+        renderMascot(user);
+        // Salva os dados no cache para carregamentos futuros mais rápidos
+        localStorage.setItem('userProfile', JSON.stringify(user));
+    } catch (error) {
+        console.error('Erro ao buscar perfil do usuário:', error);
+        // Tenta carregar do cache em caso de erro na API
+        const cachedUser = JSON.parse(localStorage.getItem('userProfile'));
+        if (cachedUser) {
+            renderUserProfile(cachedUser);
+            renderMascot(cachedUser);
+        } else {
+            headerProfile.innerHTML = '<p class="error-msg">Não foi possível carregar o perfil.</p>';
+            mascotSection.innerHTML = '';
+        }
+    }
+}
+
+function renderUserProfile(user) {
+    const headerProfile = document.getElementById('header-profile');
+    headerProfile.innerHTML = `
+        <div class="profile-info">
+            <div class="username">Olá, ${user.username.split(' ')[0]}</div>
+            <div class="focus">Foco: ${user.mainObjective || 'Não definido'}</div>
+        </div>
+        <img src="${user.profilePicture}" alt="Foto do Perfil" class="profile-photo">
+    `;
+}
+
+function renderMascot(user) {
+    const mascotSection = document.getElementById('mascot-section');
+    
+    const currentLevel = user.levelInfo.currentLevel;
+    const nextLevel = user.levelInfo.nextLevel;
+    
+    let xpForThisLevel = currentLevel.minXp;
+    let xpForNextLevel = nextLevel ? nextLevel.minXp : user.xp;
+    
+    let totalXpNeededForNext = nextLevel ? xpForNextLevel - xpForThisLevel : 1;
+    let xpGainedInThisLevel = user.xp - xpForThisLevel;
+
+    const xpPercentage = Math.min((xpGainedInThisLevel / totalXpNeededForNext) * 100, 100);
+
+    mascotSection.innerHTML = `
+        <div class="mascot-info">
+            <h3>${currentLevel.name}</h3>
+            <div class="xp-bar">
+                <div class="xp-bar-fill" style="width: ${xpPercentage}%"></div>
+                <span class="xp-bar-text">${user.xp} / ${nextLevel ? xpForNextLevel : 'MAX'} XP</span>
+            </div>
+        </div>
+    `;
+}
+
+async function loadTodayWorkout() {
+    const workoutContent = document.getElementById('workout-content');
+    try {
+        const workout = await api.getTodayWorkout();
+        currentWorkout = workout; 
+
+        if (workout.isRestDay) {
+            workoutContent.innerHTML = `<h4>${workout.message}</h4>`;
+            document.getElementById('complete-workout-btn').style.display = 'none';
+            document.getElementById('workout-status-tag').style.display = 'none';
+            return;
+        }
+
+        // CORREÇÃO: Trocado workout.name por workout.dayName para exibir o título correto.
+        workoutContent.innerHTML = `
+            <h4>${workout.dayName}</h4>
+            <ul class="exercise-list">
+                ${workout.exercises.map(ex => `<li>${ex.name} - ${ex.setsReps}</li>`).join('')}
             </ul>
         `;
-        
-        const workoutList = workoutCardContent.querySelector('.workout-list');
-        if (workoutList) {
-            workoutList.addEventListener('click', (event) => {
-                const clickedLi = event.target.closest('li');
-                if (clickedLi) {
-                    const nameSpan = clickedLi.querySelector('.workout-exercise-name');
-                    if (nameSpan) {
-                        nameSpan.classList.toggle('expanded');
-                    }
-                }
-            });
-        }
-
-        workoutCardFooter.style.display = 'flex';
-        const primaryBtn = workoutCardFooter.querySelector('.btn-primary');
-        if (primaryBtn) {
-            primaryBtn.style.display = 'block';
-        }
-
-    } else {
-        workoutCardHeader.textContent = 'Treino Pendente';
-        workoutCardContent.innerHTML = `<p>Seu treino para hoje ainda não foi configurado.</p>`;
-        workoutCardFooter.style.display = 'none';
-    }
-}
-
-/**
- * ATUALIZADO: Recebe o container da página.
- * @param {HTMLElement} pageContainer - O elemento principal da página atual.
- */
-function renderSkeletonLoader(pageContainer) {
-    const postsContainer = pageContainer.querySelector('.card-feed .scrollable-content');
-    if (!postsContainer) return;
-
-    let skeletonHTML = '';
-    for (let i = 0; i < 3; i++) {
-        skeletonHTML += `<div class="feed-post skeleton"><div class="post-author"><div class="author-avatar skeleton-box"></div><div class="author-info"><strong class="skeleton-box skeleton-text-short"></strong><span class="skeleton-box skeleton-text-very-short"></span></div></div><p class="skeleton-box skeleton-text-long"></p><p class="skeleton-box skeleton-text-medium"></p></div>`;
-    }
-    // Usa o template do documento para pegar o composer, pois ele é estático
-    const composerHTML = document.getElementById('home-template').content.querySelector('.feed-composer').outerHTML;
-    postsContainer.innerHTML = composerHTML + skeletonHTML;
-}
-
-/**
- * ATUALIZADO: Recebe o container da página.
- * @param {object} post - O objeto do post a ser renderizado.
- * @param {HTMLElement} pageContainer - O elemento principal da página atual.
- * @param {boolean} prepend - Se o post deve ser adicionado no início.
- */
-function renderPost(post, pageContainer, prepend = false) {
-    const postsContainer = pageContainer.querySelector('.card-feed .scrollable-content');
-    if (!postsContainer) return;
-    
-    const postElement = document.createElement('div');
-    postElement.className = 'feed-post';
-
-    const user = post.user || { profilePicture: 'assets/img/default-avatar.png', username: 'Usuário' };
-    const postAuthorHTML = `<div class="post-author"><img src="${user.profilePicture}" alt="Avatar de ${user.username}" class="author-avatar"><div class="author-info"><strong>${user.username}</strong><span>@${user.username.toLowerCase()}</span></div></div>`;
-    const postImageHTML = post.imageUrl ? `<div class="post-image-container"><img src="${post.imageUrl}" alt="Imagem do post" class="post-image"></div>` : '';
-
-    postElement.innerHTML = `${postAuthorHTML}<p>${post.text}</p>${postImageHTML}<span class="post-timestamp">${new Date(post.createdAt).toLocaleString('pt-BR')}</span>`;
-
-    if (prepend) {
-        postsContainer.insertBefore(postElement, postsContainer.children[1]);
-    } else {
-        postsContainer.appendChild(postElement);
-    }
-}
-
-/**
- * ATUALIZADO: Recebe o container da página.
- * @param {object} user - O objeto do usuário logado.
- * @param {HTMLElement} pageContainer - O elemento principal da página atual.
- */
-function setupComposer(user, pageContainer) {
-    const composerForm = pageContainer.querySelector('.feed-composer');
-    if (!composerForm) return;
-
-    const composerAvatar = composerForm.querySelector('.composer-avatar');
-    if (user && user.profilePicture) {
-        composerAvatar.src = user.profilePicture;
-    }
-
-    const textArea = composerForm.querySelector('textarea');
-    const publishBtn = composerForm.querySelector('.btn-primary');
-    const fileInput = pageContainer.querySelector('#file-input');
-    
-    publishBtn.addEventListener('click', async () => {
-        if (!textArea.value.trim()) return alert("Escreva algo para publicar!");
-        const formData = new FormData();
-        formData.append('text', textArea.value);
-        if (fileInput.files[0]) formData.append('postImage', fileInput.files[0]);
-
-        publishBtn.disabled = true;
-        publishBtn.textContent = 'Publicando...';
-
-        try {
-            const newPost = await api.createPost(formData);
-            newPost.user = { username: user.username, profilePicture: user.profilePicture };
-            renderPost(newPost, pageContainer, true); // Passa o container para a função de renderização
-            textArea.value = '';
-            fileInput.value = '';
-        } catch (error) {
-            alert(`Erro ao publicar: ${error.message}`);
-        } finally {
-            publishBtn.disabled = false;
-            publishBtn.textContent = 'Publicar';
-        }
-    });
-}
-
-/**
- * Função principal que inicializa a página Home. (REFEITA COM CORREÇÃO DE ESCOPO)
- */
-export async function initHomePage() {
-    // Pega a referência do container que foi efetivamente adicionado à página.
-    const pageContainer = document.querySelector('.page-content-wrapper');
-    if (!pageContainer) return console.error("Container de conteúdo da página (.page-content-wrapper) não encontrado.");
-
-    renderSkeletonLoader(pageContainer);
-    
-    try {
-        const [user, posts, todayWorkout] = await Promise.all([
-            api.getCurrentUser(),
-            api.getFeedPosts(),
-            api.getTodayWorkout().catch(error => {
-                console.warn("Não foi possível carregar o treino do dia:", error.message);
-                return { isRestDay: true, message: "Não foi possível carregar o treino." };
-            })
-        ]);
-        
-        // Passa o container para as funções de renderização
-        renderTodayWorkout(todayWorkout, pageContainer);
-        
-        const postsContainer = pageContainer.querySelector('.card-feed .scrollable-content');
-        if(postsContainer){
-            const composerHTML = document.getElementById('home-template').content.querySelector('.feed-composer').outerHTML;
-            postsContainer.innerHTML = composerHTML;
-            posts.forEach(post => renderPost(post, pageContainer));
-        }
-
-        setupComposer(user, pageContainer);
+        updateWorkoutCardUI(workout);
 
     } catch (error) {
-        console.error("Erro ao carregar a página Home:", error);
-        pageContainer.innerHTML = `<p style="padding: 20px; text-align: center;">Não foi possível carregar o conteúdo.</p>`;
+        console.error('Erro ao buscar treino do dia:', error);
+        workoutContent.innerHTML = '<p class="error-msg">Não foi possível carregar o treino.</p>';
+    }
+}
+
+
+function updateWorkoutCardUI(workout) {
+    const statusTag = document.getElementById('workout-status-tag');
+    const completeBtn = document.getElementById('complete-workout-btn');
+    
+    completeBtn.style.display = 'inline-flex';
+    statusTag.style.display = 'inline-block';
+
+    if (workout.isCompleted) {
+        statusTag.textContent = 'Concluído';
+        statusTag.className = 'status-tag status-completed';
+        completeBtn.innerHTML = `<i class="fa-solid fa-check"></i> Concluído`;
+        completeBtn.classList.add('completed');
+        completeBtn.disabled = true;
+    } else {
+        statusTag.textContent = 'Pendente';
+        statusTag.className = 'status-tag status-pending';
+        completeBtn.innerHTML = 'Concluir Treino';
+        completeBtn.classList.remove('completed');
+        completeBtn.disabled = false;
+    }
+}
+
+async function handleWorkoutCompletion() {
+    if (!currentWorkout || !currentWorkout.dayName) {
+        alert('Informações do treino não carregadas. Tente recarregar a página.');
+        return;
+    }
+
+    const completeBtn = document.getElementById('complete-workout-btn');
+    
+    completeBtn.disabled = true;
+    completeBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Salvando...`;
+
+    try {
+        const response = await api.completeTodayWorkout(currentWorkout.dayName);
+        alert(response.message); 
+
+        // Atualiza a UI para o estado "Concluído" imediatamente para feedback visual
+        currentWorkout.isCompleted = true;
+        updateWorkoutCardUI(currentWorkout);
+        
+        // Recarrega o perfil para atualizar a barra de XP
+        loadUserProfile();
+
+    } catch (error) {
+        console.error('Erro ao concluir o treino:', error);
+        alert(error.message || 'Não foi possível concluir o treino. Tente novamente.');
+        completeBtn.disabled = false;
+        completeBtn.innerHTML = 'Concluir Treino'; // Reverte o botão em caso de erro
+    }
+}
+
+async function loadTodayNutrition() {
+    const nutritionContent = document.getElementById('nutrition-content');
+    try {
+        const nutritionPlan = await api.getTodayNutrition();
+        const userInputs = nutritionPlan.userInputs;
+        nutritionContent.innerHTML = `
+            <div class="nutrition-summary">
+                <p>Seu plano atual é focado em <strong>${userInputs.goal}</strong>.</p>
+                <p>Tipo de dieta: <strong>${userInputs.dietType}</strong></p>
+            </div>
+        `;
+    } catch (error) {
+        console.error('Info: Nenhum plano de nutrição encontrado para o usuário.', error.message);
+        nutritionContent.innerHTML = '<p class="error-msg">Você ainda não tem um plano alimentar. Crie o seu na seção "Alimentação"!</p>';
+    }
+}
+
+async function loadFeed() {
+    const feedPostsContainer = document.getElementById('feed-posts');
+    try {
+        const posts = await api.getFeedPosts();
+        renderFeed(posts);
+    } catch (error) {
+        console.error('Erro ao buscar feed:', error);
+        feedPostsContainer.innerHTML = '<p class="error-msg">Não foi possível carregar o feed.</p>';
+    }
+}
+
+function renderFeed(posts) {
+    const feedPostsContainer = document.getElementById('feed-posts');
+    if (posts.length === 0) {
+        feedPostsContainer.innerHTML = '<p>Ainda não há posts na comunidade. Seja o primeiro!</p>';
+        return;
+    }
+    feedPostsContainer.innerHTML = posts.map(createPostHtml).join('');
+}
+
+function createPostHtml(post) {
+    const postDate = new Date(post.createdAt);
+    const formattedDate = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(postDate);
+
+    return `
+        <div class="post">
+            <div class="post-header">
+                <img src="${post.user.profilePicture}" alt="Avatar" class="post-avatar">
+                <div class="post-author-info">
+                    <div class="author-name">${post.user.username}</div>
+                    <div class="post-date">${formattedDate}</div>
+                </div>
+            </div>
+            <div class="post-content">
+                <p>${post.text}</p>
+                ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Imagem do post" class="post-image">` : ''}
+            </div>
+        </div>
+    `;
+}
+
+async function handlePostCreation(event) {
+    event.preventDefault();
+    const form = event.target;
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.innerHTML;
+
+    submitButton.disabled = true;
+    submitButton.innerHTML = 'Postando...';
+    
+    const formData = new FormData(form);
+
+    try {
+        const newPost = await api.createPost(formData);
+        const feedContainer = document.getElementById('feed-posts');
+        const newPostHtml = createPostHtml(newPost);
+        document.getElementById('file-name-display').textContent = ''; // <<< ADICIONE ESTA LINHA
+        form.reset(); // Limpa o formulário
+        
+        if (feedContainer.innerHTML.includes('Ainda não há posts')) {
+            feedContainer.innerHTML = newPostHtml;
+        } else {
+            feedContainer.insertAdjacentHTML('afterbegin', newPostHtml);
+        }
+        
+        form.reset();
+    } catch (error) {
+        console.error('Erro ao criar post:', error);
+        alert('Falha ao criar o post. Tente novamente.');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalButtonText;
     }
 }
