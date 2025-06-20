@@ -412,17 +412,25 @@ html, body {
     background: linear-gradient(to right, var(--gymrats-light-bg) 8%, var(--gymrats-border) 18%, var(--gymrats-light-bg) 33%);
     background-size: 800px 104px;
     position: relative;
+    color: transparent !important; /* Esconde o texto */
+}
+
+/* NOVO: Garante que a imagem do esqueleto fique invisível */
+.skeleton img {
+    visibility: hidden;
 }
 
 .skeleton-box {
     border-radius: 8px;
-    background-color: var(--gymrats-light-bg); /* Cor base */
+    background-color: var(--gymrats-light-bg);
 }
 
-.skeleton .post-author {
-    margin-bottom: 15px;
+.skeleton .author-avatar,
+.skeleton.composer-avatar { /* ATUALIZADO: Aplica o estilo ao avatar do composer também */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
 }
-
 .skeleton .author-avatar {
     width: 38px;
     height: 38px;
@@ -455,4 +463,68 @@ html, body {
 .skeleton-text-medium {
     width: 70%;
     height: 1em;
+}
+
+/* ------------------------------------ */
+/* 8. ESTILOS DO CARD DE TREINO DO DIA  */
+/* ------------------------------------ */
+
+.card-treino .card-content {
+    justify-content: flex-start; 
+    gap: 15px;
+}
+
+.workout-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.workout-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 5px; /* Aumentado o padding para melhor toque */
+    border-bottom: 1px solid var(--gymrats-border);
+    cursor: pointer; /* Indica que o item é clicável */
+    transition: background-color 0.2s ease;
+}
+.workout-list li:hover {
+    background-color: var(--gymrats-medium-bg);
+}
+
+.workout-list li:last-child {
+    border-bottom: none;
+}
+
+.workout-list .fa-angle-right {
+    color: var(--gymrats-highlight-yellow);
+    font-size: 0.8em;
+}
+
+/* ATUALIZADO: Layout fluido com Flexbox e Ellipsis */
+.workout-exercise-name {
+    flex: 1 1 0;              /* Ocupa o espaço disponível, pode encolher, base zero */
+    min-width: 0;             /* TRUQUE ESSENCIAL: Permite que o item encolha e o ellipsis funcione */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s ease; /* Transição suave */
+}
+
+/* NOVO: Classe para o estado expandido */
+.workout-exercise-name.expanded {
+    white-space: normal;      /* Permite a quebra de linha, mostrando o texto completo */
+    overflow: visible;
+}
+
+.workout-sets-reps {
+    color: var(--gymrats-text-secondary);
+    background-color: var(--gymrats-medium-bg);
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    font-weight: bold;
+    flex-shrink: 0; 
 }

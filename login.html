@@ -372,7 +372,7 @@
             if (authService.isLoggedIn()) {
                 const redirectUrl = sessionStorage.getItem('redirectUrl');
                 sessionStorage.removeItem('redirectUrl');
-                window.location.href = redirectUrl || '/dashboard.html';
+                window.location.href = redirectUrl || '/inicio';
             }
 
             function showNotification(message, type) {
@@ -414,7 +414,7 @@
                     setTimeout(() => {
                         const redirectUrl = sessionStorage.getItem('redirectUrl');
                         sessionStorage.removeItem('redirectUrl');
-                        window.location.href = redirectUrl || '/dashboard.html';
+                        window.location.href = redirectUrl || '/inicio';
                     }, 500);
                 } else {
                     showNotification(result.message, 'error');
@@ -432,7 +432,7 @@
                     setTimeout(() => {
                         const redirectUrl = sessionStorage.getItem('redirectUrl');
                         sessionStorage.removeItem('redirectUrl');
-                        window.location.href = redirectUrl || '/dashboard.html';
+                        window.location.href = redirectUrl || '/inicio';
                     }, 500);
                 } else {
                     showNotification(result.message, 'error');

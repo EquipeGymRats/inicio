@@ -4,7 +4,7 @@
 import { authService } from '../auth.js';
 
 // A URL base da sua API. Altere se for diferente.
-const API_BASE_URL = 'https://api-gym-cyan.vercel.app';
+const API_BASE_URL = 'http://localhost:3000';
 
 /**
  * Função genérica para fazer requisições JSON para a API.
@@ -17,7 +17,7 @@ async function request(endpoint, method = 'GET', body = null) {
     const token = authService.getToken();
     if (!token) {
         // Se não houver token, redireciona para a página de login.
-        window.location.href = 'login.html';
+        window.location.href = 'login';
         throw new Error('Usuário não autenticado.');
     }
 
@@ -37,7 +37,7 @@ async function request(endpoint, method = 'GET', body = null) {
 
     if (response.status === 401) {
         authService.logout();
-        window.location.href = 'login.html';
+        window.location.href = 'login';
         throw new Error('Sessão expirada. Faça login novamente.');
     }
 
@@ -59,10 +59,10 @@ async function request(endpoint, method = 'GET', body = null) {
  */
 async function requestWithFile(endpoint, method = 'POST', formData) {
     const token = authService.getToken();
-    // if (!token) {
-    //     window.location.href = 'login.html';
-    //     throw new Error('Usuário não autenticado.');
-    // }
+    if (!token) {
+        window.location.href = 'login';
+        throw new Error('Usuário não autenticado.');
+    }
 
     const options = {
         method,
@@ -89,6 +89,7 @@ async function requestWithFile(endpoint, method = 'POST', formData) {
 export const api = {
     getFeedPosts: () => request('/posts'),
     createPost: (formData) => requestWithFile('/posts', 'POST', formData),
-    getCurrentUser: () => request('/auth/profile') // <-- ADICIONE ESTA LINHA
-    // Futuramente, adicionaremos mais métodos aqui (getWorkouts, etc.)
+    getCurrentUser: () => request('/auth/profile'),
+    getTrainingPlan: () => request('/training'), // <-- Esta ainda pode ser útil para a página "Meu Treino"
+    getTodayWorkout: () => request('/training/today') // <-- ADICIONE ESTA LINHA OTIMIZADA
 };
