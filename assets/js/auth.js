@@ -27,6 +27,30 @@ export const authService = {
         }
     },
 
+     async loginWithGoogle(googleToken) {
+        try {
+            const response = await fetch(`${BASE_URL}/auth/google-signin`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: googleToken }),
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                // Armazena o token da NOSSA aplicação, não o do Google
+                localStorage.setItem('jwtToken', data.token);
+                return { success: true, message: 'Login com Google bem-sucedido!' };
+            } else {
+                return { success: false, message: data.message || 'Falha no login com Google.' };
+            }
+        } catch (error) {
+            console.error('Erro de rede no login com Google:', error);
+            return { success: false, message: 'Erro de conexão.' };
+        }
+    },
+
     async login(email, password) {
         try {
             const response = await fetch(`${BASE_URL}/auth/login`, {

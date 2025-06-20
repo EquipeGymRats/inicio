@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="google-signin-client_id" content="461681522805-dqqcv5as36rffbohlafvoof343f1bnng.apps.googleusercontent.com">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         /* Estilos Globais e de Fundo */
         :root {
@@ -439,11 +441,40 @@
                 }
             });
 
-            googleLoginBtn?.addEventListener('click', () => {
-                // A lógica de login do Google será adicionada aqui.
-                // Por enquanto, podemos mostrar uma notificação de "em breve".
-                showNotification('Login com Google em desenvolvimento!', 'info');
-            });
+            function handleGoogleCredentialResponse(response) {
+    // A 'response' contém o JWT do Google
+        const googleToken = response.credential;
+
+        // Chama o nosso serviço para validar no backend
+        authService.loginWithGoogle(googleToken).then(result => {
+            if (result.success) {
+                showNotification('Login com Google bem-sucedido!', 'success');
+                setTimeout(() => {
+                    const redirectUrl = sessionStorage.getItem('redirectUrl');
+                    sessionStorage.removeItem('redirectUrl');
+                    window.location.href = redirectUrl || '/inicio';
+                }, 500);
+            } else {
+                showNotification(result.message, 'error');
+            }
+        });
+    }
+
+    // Inicialização do Google Sign-In
+    window.onload = function () {
+        google.accounts.id.initialize({
+            client_id: "461681522805-dqqcv5as36rffbohlafvoof343f1bnng.apps.googleusercontent.com",
+            callback: handleGoogleCredentialResponse // Função a ser chamada no sucesso
+        });
+
+        // Renderiza o botão do Google ou anexa a um botão existente
+        google.accounts.id.renderButton(
+            document.getElementById('google-login-btn'),
+            { theme: "outline", size: "large", type: 'standard', text: 'signin_with' } // Customização do botão
+        );
+        google.accounts.id.prompt(); // Exibe o pop-up "One Tap" para usuários recorrentes
+    }
+
             
             showRegisterBtn?.addEventListener('click', () => {
                 loginFormContainer.style.display = 'none';
