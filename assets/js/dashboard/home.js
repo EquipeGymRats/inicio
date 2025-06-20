@@ -74,63 +74,48 @@ function setupEventListeners() {
 // --- Funções de Carregamento e Renderização ---
 
 async function loadUserProfile() {
-    const headerProfile = document.getElementById('header-profile');
-    const mascotSection = document.getElementById('mascot-section');
-
     try {
-        // CORREÇÃO APLICADA: Usando authService.getUserProfile()
         const user = await authService.getUserProfile();
-
-        // Renderiza os componentes com os dados recebidos da API real
-        renderUserProfile(user);
-        renderMascot(user);
-        // Salva os dados no cache para carregamentos futuros mais rápidos
+        renderProfileCard(user); // Chama a nova função de renderização
         localStorage.setItem('userProfile', JSON.stringify(user));
     } catch (error) {
         console.error('Erro ao buscar perfil do usuário:', error);
-        // Tenta carregar do cache em caso de erro na API
         const cachedUser = JSON.parse(localStorage.getItem('userProfile'));
         if (cachedUser) {
-            renderUserProfile(cachedUser);
-            renderMascot(cachedUser);
+            renderProfileCard(cachedUser);
         } else {
-            headerProfile.innerHTML = '<p class="error-msg">Não foi possível carregar o perfil.</p>';
-            mascotSection.innerHTML = '';
+            document.getElementById('profile-card').innerHTML = '<p class="error-msg">Não foi possível carregar o perfil.</p>';
         }
     }
 }
 
-function renderUserProfile(user) {
-    const headerProfile = document.getElementById('header-profile');
-    headerProfile.innerHTML = `
-        <div class="profile-info">
-            <div class="username">Olá, ${user.username.split(' ')[0]}</div>
-            <div class="focus">Foco: ${user.mainObjective || 'Não definido'}</div>
-        </div>
-        <img src="${user.profilePicture}" alt="Foto do Perfil" class="profile-photo">
-    `;
-}
-
-function renderMascot(user) {
-    const mascotSection = document.getElementById('mascot-section');
+function renderProfileCard(user) {
+    const profileCard = document.getElementById('profile-card');
     
-    const currentLevel = user.levelInfo.currentLevel;
-    const nextLevel = user.levelInfo.nextLevel;
+    const levelInfo = user.levelInfo;
+    const nextLevel = levelInfo.nextLevel;
     
-    let xpForThisLevel = currentLevel.minXp;
+    let xpForThisLevel = levelInfo.currentLevel.minXp;
     let xpForNextLevel = nextLevel ? nextLevel.minXp : user.xp;
-    
     let totalXpNeededForNext = nextLevel ? xpForNextLevel - xpForThisLevel : 1;
     let xpGainedInThisLevel = user.xp - xpForThisLevel;
-
     const xpPercentage = Math.min((xpGainedInThisLevel / totalXpNeededForNext) * 100, 100);
 
-    mascotSection.innerHTML = `
-        <div class="mascot-info">
-            <h3>${currentLevel.name}</h3>
-            <div class="xp-bar">
-                <div class="xp-bar-fill" style="width: ${xpPercentage}%"></div>
-                <span class="xp-bar-text">${user.xp} / ${nextLevel ? xpForNextLevel : 'MAX'} XP</span>
+    profileCard.innerHTML = `
+        <img src="${user.profilePicture}" alt="Foto do Perfil" class="profile-card-avatar">
+        
+        <div class="profile-card-info">
+            <div class="profile-card-header">
+                <span class="profile-card-username">Olá, ${user.username.split(' ')[0]}!</span>
+                <span class="profile-card-objective">Foco: ${user.mainObjective || 'Não definido'}</span>
+            </div>
+            
+            <div class="profile-card-xp">
+                <h3 class="profile-card-xp-title">${levelInfo.currentLevel.name}</h3>
+                <div class="xp-bar">
+                    <div class="xp-bar-fill" style="width: ${xpPercentage}%"></div>
+                    <span class="xp-bar-text">${user.xp} / ${nextLevel ? xpForNextLevel : 'MAX'} XP</span>
+                </div>
             </div>
         </div>
     `;
@@ -261,11 +246,16 @@ function createPostHtml(post) {
     return `
         <div class="post">
             <div class="post-header">
-                <img src="${post.user.profilePicture}" alt="Avatar" class="post-avatar">
-                <div class="post-author-info">
-                    <div class="author-name">${post.user.username}</div>
-                    <div class="post-date">${formattedDate}</div>
+                <div class="post-author-details">
+                    <img src="${post.user.profilePicture}" alt="Avatar" class="post-avatar">
+                    <div class="post-author-info">
+                        <div class="author-name">${post.user.username}</div>
+                        <div class="post-date">${formattedDate}</div>
+                    </div>
                 </div>
+                <button class="post-options-btn">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
             </div>
             <div class="post-content">
                 <p>${post.text}</p>

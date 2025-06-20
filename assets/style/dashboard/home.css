@@ -86,17 +86,71 @@
 /* Home Grid Layout */
 .home-grid {
     display: grid;
-    grid-template-columns: 1fr; /* <<< MODIFICAÇÃO: Padrão de 1 coluna para mobile */
+    grid-template-columns: 1fr;
     gap: 1.5rem;
 }
 
-/* <<< MODIFICAÇÃO: Layout de 3 colunas para telas maiores */
+/* Layout de 3 colunas para telas maiores */
 @media (min-width: 992px) {
     .home-grid {
-        grid-template-columns: repeat(3, 1fr);
+        /* A coluna do meio (2fr) terá o dobro da largura das laterais (1fr) */
+        grid-template-columns: 1fr 2fr 1fr;
     }
 }
 
+/* ===== NOVO CARD DE PERFIL UNIFICADO ===== */
+
+.profile-card {
+    background-color: var(--color-dark-gray);
+    border: 1px solid var(--color-medium-gray);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* Espaço entre a foto e as informações */
+}
+
+.profile-card-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid var(--color-yellow);
+    object-fit: cover;
+}
+
+.profile-card-info {
+    flex-grow: 1; /* Faz esta div ocupar todo o espaço restante */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Espaço entre a saudação e a barra de XP */
+}
+
+.profile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.profile-card-username {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-white);
+}
+
+.profile-card-objective {
+    font-size: 0.9rem;
+    color: var(--color-light-gray);
+    font-style: italic;
+}
+
+.profile-card-xp-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* O estilo do .xp-bar e filhos pode ser mantido como está */
 
 /* Specific Card Styles */
 .workout-card .exercise-list {
@@ -108,6 +162,7 @@
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--color-medium-gray);
 }
+
 .workout-card .exercise-list li:last-child {
     border-bottom: none;
 }
@@ -115,16 +170,13 @@
 .nutrition-card .nutrition-summary p {
     margin-bottom: 0.5rem;
 }
+
 .nutrition-card .nutrition-summary span {
     font-weight: 600;
     color: var(--color-white);
 }
 
 
-/* Feed Card Styles */
-.feed-card {
-    height: 70vh; /* Força o card do feed a ter uma altura fixa e padrão */
-}
 
 .post-form {
     display: flex;
@@ -150,37 +202,91 @@
     align-items: center;
 }
 
-.file-upload {
+/* Container para o botão de upload e o nome do arquivo */
+.file-upload-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Estilo para o label parecer um botão */
+.file-upload-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     padding: 0.5rem 1rem;
     background-color: var(--color-medium-gray);
     border-radius: 8px;
     cursor: pointer;
     transition: var(--transition-smooth);
 }
-.file-upload:hover {
+.file-upload-button:hover {
     background-color: #2a2a2a;
 }
-.file-upload input[type="file"] {
-    display: none;
+
+/* Container para o nome do arquivo, seu ícone e o botão de remover */
+.file-name-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #aaa;
+    max-width: calc(100% - 100px);
 }
+.file-name-text {
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.remove-file-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background-color: #4a4a4a;
+    color: var(--color-light-gray);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    transition: background-color 0.2s ease;
+    margin-left: 0.5rem;
+}
+.remove-file-btn:hover {
+    background-color: #ff4d4d;
+    color: var(--color-white);
+}
+
+/* ===== ESTÉTICA DOS POSTS - V2 (MAIS CLEAN) ===== */
 
 .feed-posts .post {
-    border-bottom: 1px solid var(--color-medium-gray);
-    padding: 1.5rem 0;
+    /* Efeito "card-dentro-do-card" */
+    background-color: var(--color-medium-gray);
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem; /* Espaçamento entre os cards de post */
 }
 .feed-posts .post:last-child {
-    border-bottom: none;
+    margin-bottom: 0;
 }
-.feed-posts .post:first-child {
-    padding-top: 0;
-}
-
 
 .post-header {
     display: flex;
+    justify-content: space-between; /* Alinha o autor à esquerda e o botão à direita */
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+/* Novo container para avatar e nome */
+.post-author-details {
+    display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 1rem;
 }
 
 .post-avatar {
@@ -200,15 +306,40 @@
     color: #888;
 }
 
+/* Novo botão de 'mais opções' */
+.post-options-btn {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.post-options-btn:hover {
+    background-color: #2a2a2a;
+    color: var(--color-white);
+}
+
 .post-content p {
     margin-bottom: 1rem;
-    white-space: pre-wrap; /* To respect newlines */
+    white-space: pre-wrap;
+    line-height: 1.6; 
 }
 
 .post-image {
-    max-width: 100%;
-    border-radius: 8px;
+    max-width: 100%; /* A imagem agora ocupa a largura do 'inner card' */
+    display: block;
     margin-top: 1rem;
+    border-radius: 8px; /* Bordas mais sutis para a imagem */
+    object-fit: cover;
 }
 
 /* Post Skeleton */
@@ -323,7 +454,7 @@
 .btn.completed:hover {
     filter: brightness(1); /* Remove o efeito de hover */
 }
-
+/* ===== Home Page Specific Styles ===== */
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .main-header {
@@ -331,19 +462,18 @@
     }
 
     .sidebar-toggle-desktop {
-        display: block; /* Show the hamburger on mobile-sized main content */
+        display: block;
     }
 }
 
-@media (min-width: 769px) and (max-width: 991px) { /* <<< MODIFICAÇÃO: Ajuste para tablets */
+@media (min-width: 769px) and (max-width: 991px) {
     .home-grid {
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
 }
 
-
 @media (min-width: 769px) {
     .sidebar-toggle-desktop {
-        display: none; /* Hide hamburger on larger screens */
+        display: none;
     }
 }
