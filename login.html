@@ -455,7 +455,7 @@
                         setTimeout(() => {
                             const redirectUrl = sessionStorage.getItem('redirectUrl');
                             sessionStorage.removeItem('redirectUrl');
-                            window.location.href = redirectUrl || 'dashboard.html'; // Corrigido para dashboard
+                            window.location.href = redirectUrl || 'home.html'; // Corrigido para dashboard
                         }, 500);
                     } else {
                         showNotification(result.message, 'error');
