@@ -52,7 +52,7 @@ async function request(endpoint, method = 'GET', body = null, isFormData = false
             if (response.status === 401 || response.status === 403) {
                 console.error('Não autorizado. Token inválido ou expirado. Deslogando...');
                 authService.logout(); // Chama a função de logout centralizada
-                window.location.href = '/login.html'; // Redireciona para a página de login
+                window.location.href = 'login.html'; // Redireciona para a página de login
             }
             const errorData = await response.json();
             throw new Error(errorData.message || `Erro ${response.status}`);

@@ -29,7 +29,7 @@ export async function registerAndSubscribe() {
 
     try {
         // 1. Registra o Service Worker
-        const registration = await navigator.serviceWorker.register('/sw.js');
+        const registration = await navigator.serviceWorker.register('/inicio/sw.js');
         console.log('Service Worker registrado com sucesso:', registration);
 
         // 2. Pede permissão para notificações

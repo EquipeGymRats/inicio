@@ -65,7 +65,7 @@ export const authService = {
 
     logout() {
         localStorage.removeItem('jwtToken');
-        window.location.href = '/login.html'; // Redireciona ao deslogar
+        window.location.href = 'login.html'; // Redireciona ao deslogar
     },
 
     isLoggedIn() {
