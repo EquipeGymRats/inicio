@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano Alimentar - Gym Rats</title>
+    
+    <link rel="stylesheet" href="assets/style/dashboard/global.css">
+    <link rel="stylesheet" href="assets/style/dashboard/sidebar.css">
+    <link rel="stylesheet" href="assets/style/dashboard/nutrition-plan.css">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/logo.ico">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+<body>
+    <div class="dashboard-container">
+       <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">
+                    <i class="fa-solid fa-dumbbell"></i>
+                    <span>Gym Rats</span>
+                </a>
+                <button class="sidebar-toggle-mobile" id="sidebar-toggle-mobile">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="home.html" class="nav-link active"><i class="fa-solid fa-house"></i> <span>Início</span></a></li>
+                    <li><a href="my-training.html" class="nav-link"><i class="fa-solid fa-person-running"></i> <span>Meu Treino</span></a></li>
+                    <li><a href="nutrition-plan.html" class="nav-link"><i class="fa-solid fa-utensils"></i> <span>Alimentação</span></a></li>
+                    <li><a href="progress.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> <span>Progressão</span></a></li>
+                    <li><a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> <span>Configurações</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-button" id="logout-btn">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <button class="sidebar-toggle-desktop" id="sidebar-toggle-desktop">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </header>
+
+            <section id="nutrition-overview" class="nutrition-overview">
+                </section>
+            
+            <div class="plan-container">
+                <div id="day-tabs" class="day-tabs">
+                    </div>
+
+                <div id="day-content-container" class="day-content-container">
+                    </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="assets/js/auth.js"></script>
+    <script type="module" src="assets/js/apiService.js"></script>
+    <script type="module" src="assets/js/dashboard/sidebar.js"></script>
+    <script type="module" src="assets/js/dashboard/nutrition-plan.js"></script>
+</body>
+</html>

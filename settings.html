@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - Gym Rats</title>
+    
+    <link rel="stylesheet" href="assets/style/dashboard/global.css">
+    <link rel="stylesheet" href="assets/style/dashboard/sidebar.css">
+    <link rel="stylesheet" href="assets/style/dashboard/settings.css">
+    <link rel="shortcut icon" type="imagex/png" href="assets/logo.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">
+                    <i class="fa-solid fa-dumbbell"></i>
+                    <span>Gym Rats</span>
+                </a>
+                <button class="sidebar-toggle-mobile" id="sidebar-toggle-mobile">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="home.html" class="nav-link active"><i class="fa-solid fa-house"></i> <span>Início</span></a></li>
+                    <li><a href="my-training.html" class="nav-link"><i class="fa-solid fa-person-running"></i> <span>Meu Treino</span></a></li>
+                    <li><a href="nutrition-plan.html" class="nav-link"><i class="fa-solid fa-utensils"></i> <span>Alimentação</span></a></li>
+                    <li><a href="progress.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> <span>Progressão</span></a></li>
+                    <li><a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> <span>Configurações</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-button" id="logout-btn">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <button class="sidebar-toggle-desktop" id="sidebar-toggle-desktop">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h1>Configurações do Perfil</h1>
+            </header>
+
+            <div class="settings-content">
+                <form id="settings-form" novalidate>
+                    <div class="form-section profile-picture-section">
+                        <img src="https://placehold.co/150x150" alt="Foto do Perfil" id="profile-picture-preview" class="profile-picture-preview">
+                        <div class="picture-actions">
+                            <label for="profile-picture-input" class="btn btn-secondary">Alterar Foto</label>
+                            <input type="file" id="profile-picture-input" name="profilePicture" accept="image/*" style="display: none;">
+                            <p class="input-hint">Use uma imagem quadrada para melhores resultados.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>Informações Pessoais</h2>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="username-input">Nome de Usuário</label>
+                                <input type="text" id="username-input" name="username" required>
+                            </div>
+                             <div class="form-group">
+                                <label for="email-input">Email</label>
+                                <input type="email" id="email-input" name="email" disabled>
+                                <p class="input-hint">O e-mail não pode ser alterado.</p>
+                            </div>
+                            <div class="form-group">
+                                <label for="weight-input">Peso (kg)</label>
+                                <input type="number" id="weight-input" name="weight" step="0.1" placeholder="Ex: 75.5">
+                            </div>
+                            <div class="form-group">
+                                <label for="height-input">Altura (cm)</label>
+                                <input type="number" id="height-input" name="height" placeholder="Ex: 180">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>Metas e Experiência</h2>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="objective-select">Objetivo Principal</label>
+                                <select id="objective-select" name="mainObjective">
+                                    <option value="Ganho de Massa Muscular">Ganho de Massa Muscular</option>
+                                    <option value="Perda de Peso">Perda de Peso</option>
+                                    <option value="Aumento de Força">Aumento de Força</option>
+                                    <option value="Melhora de Resistência">Melhora de Resistência</option>
+                                    <option value="Saúde e Bem-estar">Saúde e Bem-estar</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="experience-select">Nível de Experiência</label>
+                                <select id="experience-select" name="experienceLevel">
+                                    <option value="Iniciante">Iniciante</option>
+                                    <option value="Intermediário">Intermediário</option>
+                                    <option value="Avançado">Avançado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions-footer">
+                        <button type="submit" class="btn btn-primary" id="save-button">Salvar Alterações</button>
+                        <div id="form-feedback" class="feedback-message"></div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="assets/js/auth.js"></script>
+    <script type="module" src="assets/js/apiService.js"></script>
+    <script type="module" src="assets/js/dashboard/sidebar.js"></script>
+    <script type="module" src="assets/js/dashboard/settings.js"></script>
+</body>
+</html>

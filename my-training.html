@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Treino - Gym Rats</title>
+    
+    <link rel="stylesheet" href="assets/style/dashboard/global.css">
+    <link rel="stylesheet" href="assets/style/dashboard/sidebar.css">
+    <link rel="stylesheet" href="assets/style/dashboard/my-training.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">
+                    <i class="fa-solid fa-dumbbell"></i>
+                    <span>Gym Rats</span>
+                </a>
+                <button class="sidebar-toggle-mobile" id="sidebar-toggle-mobile">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="home.html" class="nav-link active"><i class="fa-solid fa-house"></i> <span>Início</span></a></li>
+                    <li><a href="my-training.html" class="nav-link"><i class="fa-solid fa-person-running"></i> <span>Meu Treino</span></a></li>
+                    <li><a href="nutrition-plan.html" class="nav-link"><i class="fa-solid fa-utensils"></i> <span>Alimentação</span></a></li>
+                    <li><a href="progress.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> <span>Progressão</span></a></li>
+                    <li><a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> <span>Configurações</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-button" id="logout-btn">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <button class="sidebar-toggle-desktop" id="sidebar-toggle-desktop">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </header>
+
+            <section id="plan-overview" class="plan-overview">
+                <div class="overview-header">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <h1>Meu Plano de Treino</h1>
+                </div>
+                <div id="overview-details" class="overview-details">
+                    </div>
+            </section>
+
+            <section id="schedule-grid" class="schedule-grid">
+                </section>
+        </main>
+    </div>
+
+    <div id="feedback-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="feedback-modal-title">Como foi o seu treino?</h2>
+            <p>Seu feedback nos ajuda a criar um plano cada vez melhor para você.</p>
+            <div id="feedback-modal-body" class="feedback-modal-body">
+                <div class="star-rating">
+                    <i class="fa-regular fa-star" data-value="1" title="Muito Fácil"></i>
+                    <i class="fa-regular fa-star" data-value="2" title="Fácil"></i>
+                    <i class="fa-regular fa-star" data-value="3" title="Na Medida"></i>
+                    <i class="fa-regular fa-star" data-value="4" title="Difícil"></i>
+                    <i class="fa-regular fa-star" data-value="5" title="Muito Difícil"></i>
+                </div>
+                <textarea id="feedback-notes" class="feedback-textarea" placeholder="Observações (opcional)..." maxlength="500"></textarea>
+                <button id="submit-feedback-btn" class="button-primary">Enviar Feedback</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="workout-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+            <h2 id="modal-title"></h2>
+            <div id="modal-body" class="modal-body">
+                </div>
+        </div>
+    </div>
+
+    <div id="card-check-animation" class="card-check-animation" style="display: none;">
+    <i class="fa-solid fa-circle-check"></i>
+    </div>
+
+    <div id="fullscreen-celebration" class="fullscreen-overlay" style="display: none;">
+        <div class="celebration-content">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+            <h2 id="celebration-text" class="celebration-text"></h2>
+            <p id="celebration-xp" class="celebration-xp"></p>
+        </div>
+    </div>
+
+    <script type="module" src="assets/js/auth.js"></script>
+    <script type="module" src="assets/js/apiService.js"></script>
+    <script type="module" src="assets/js/dashboard/sidebar.js"></script>
+    <script type="module" src="assets/js/dashboard/my-training.js"></script>
+</body>
+</html>

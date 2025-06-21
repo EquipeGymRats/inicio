@@ -6,11 +6,11 @@ const api = {
     getNutritionPlan: async () => {
         const token = authService.getToken();
         // A URL deve corresponder à sua URL de produção/desenvolvimento
-        return fetch('http://localhost:3000/nutrition', { headers: { 'x-auth-token': token } });
+        return fetch('https://api-gym-cyan.vercel.app/nutrition', { headers: { 'x-auth-token': token } });
     },
     saveNutritionPlan: async (planData) => {
         const token = authService.getToken();
-        return fetch('http://localhost:3000/nutrition', {
+        return fetch('https://api-gym-cyan.vercel.app/nutrition', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
             body: JSON.stringify(planData)
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
                 try {
             const token = authService.getToken();
-            const response = await fetch('http://localhost:3000/generate-nutrition-plan', {
+            const response = await fetch('https://api-gym-cyan.vercel.app/generate-nutrition-plan', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
                 body: JSON.stringify(userInputs),

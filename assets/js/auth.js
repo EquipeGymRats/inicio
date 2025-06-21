@@ -1,22 +1,18 @@
 // assets/js/auth.js
 
-const BASE_URL = 'http://localhost:3000'; // Sua Base URL do backend
+const BASE_URL = 'https://api-gym-cyan.vercel.app'; // Sua Base URL do backend
 
 export const authService = {
     async register(username, email, password) {
         try {
             const response = await fetch(`${BASE_URL}/auth/register`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password }),
             });
             const data = await response.json();
-
             if (response.ok) {
                 localStorage.setItem('jwtToken', data.token);
-                // Não salvamos mais o username no localStorage aqui!
                 return { success: true, message: data.message || 'Conta criada e logado com sucesso!' };
             } else {
                 return { success: false, message: data.message || 'Erro ao criar conta.' };
@@ -31,15 +27,11 @@ export const authService = {
         try {
             const response = await fetch(`${BASE_URL}/auth/google-signin`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: googleToken }),
             });
             const data = await response.json();
-
             if (response.ok) {
-                // Armazena o token da NOSSA aplicação, não o do Google
                 localStorage.setItem('jwtToken', data.token);
                 return { success: true, message: 'Login com Google bem-sucedido!' };
             } else {
@@ -55,13 +47,10 @@ export const authService = {
         try {
             const response = await fetch(`${BASE_URL}/auth/login`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             });
             const data = await response.json();
-
             if (response.ok) {
                 localStorage.setItem('jwtToken', data.token);
                 return { success: true, message: data.message || 'Login realizado com sucesso!' };
@@ -76,38 +65,25 @@ export const authService = {
 
     logout() {
         localStorage.removeItem('jwtToken');
+        window.location.href = '/login.html'; // Redireciona ao deslogar
     },
 
     isLoggedIn() {
         return !!localStorage.getItem('jwtToken');
     },
 
-    // Nova função para buscar o perfil do usuário do backend
     async getUserProfile() {
         const token = this.getToken();
-        if (!token) {
-            return null; // Não há token, não pode buscar o perfil
-        }
-
+        if (!token) return null;
         try {
             const response = await fetch(`${BASE_URL}/auth/profile`, {
                 method: 'GET',
-                headers: {
-                    'x-auth-token': token, // Envia o token no cabeçalho
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'x-auth-token': token, 'Content-Type': 'application/json' },
             });
-
             if (response.ok) {
-                const userProfile = await response.json();
-                return userProfile; // Retorna o objeto de perfil (id, username, email)
-            } else if (response.status === 401 || response.status === 403) {
-                // Token inválido ou expirado, faz logout
-                this.logout();
-                console.warn('Token expirado ou inválido. Realizando logout.');
-                return null;
+                return await response.json();
             } else {
-                console.error('Erro ao buscar perfil do usuário:', await response.text());
+                this.logout();
                 return null;
             }
         } catch (error) {
@@ -115,17 +91,39 @@ export const authService = {
             return null;
         }
     },
-
-    // A função getUserName agora busca do perfil, não do localStorage diretamente
-    // Pode ser síncrona se apenas precisar do que está no localStorage
-    // Mas para ser consistente com a nova abordagem, a chamaremos de profile.username
-    // Se quiser o username diretamente, chame getUserProfile().username
-    async getUserName() {
-        const profile = await this.getUserProfile();
-        return profile ? profile.username : null; // Retorna o username do perfil ou null se não houver perfil
-    },
     
     getToken() {
         return localStorage.getItem('jwtToken');
+    },
+
+    // ==================================================================
+    // <<< FUNÇÃO QUE FALTAVA, ADICIONADA AQUI CORRETAMENTE >>>
+    // ==================================================================
+    async updateUserProfile(formData) {
+        const token = this.getToken();
+        if (!token) {
+            return { success: false, message: 'Usuário não autenticado.' };
+        }
+
+        try {
+            // Ao enviar FormData, não definimos o 'Content-Type'. O navegador faz isso.
+            const response = await fetch(`${BASE_URL}/auth/profile`, {
+                method: 'PUT',
+                headers: { 'x-auth-token': token },
+                body: formData,
+            });
+
+            const data = await response.json();
+            
+            if (response.ok) {
+                // Retorna o objeto de sucesso com a mensagem e o usuário atualizado
+                return { success: true, message: data.message || 'Perfil atualizado!', user: data };
+            } else {
+                return { success: false, message: data.message || 'Erro ao atualizar perfil.' };
+            }
+        } catch (error) {
+            console.error('Erro de rede ao atualizar perfil:', error);
+            return { success: false, message: 'Erro de conexão.' };
+        }
     }
 };

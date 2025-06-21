@@ -5,74 +5,64 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-}
-
-.sidebar-toggle-desktop {
-    background: none;
-    color: var(--color-light-gray);
-    font-size: 1.5rem;
-}
-
-.header-profile {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.header-profile .profile-info {
-    text-align: right;
-}
-
-.header-profile .profile-info .username {
-    font-weight: 600;
-    color: var(--color-white);
-}
-
-.header-profile .profile-info .focus {
-    font-size: 0.85rem;
-    color: var(--color-light-gray);
-}
-
-.header-profile .profile-photo {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--color-medium-gray);
-}
-
-/* Mascot Section */
-.mascot-section {
-    background-color: var(--color-dark-gray);
-    border: 1px solid var(--color-medium-gray);
-    border-radius: 12px;
-    padding: 1.5rem;
     margin-bottom: 1.5rem;
 }
 
-.mascot-info h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
+/* === CARD DE PERFIL ATUALIZADO === */
+.profile-card {
+    background-color: var(--color-dark-gray);
+    border: 1px solid var(--color-medium-gray);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
 }
-
+.profile-card-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 4px solid var(--color-medium-gray);
+    object-fit: cover;
+    transition: border-color 0.3s ease;
+    flex-shrink: 0;
+}
+.profile-card-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.profile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+.profile-card-username {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-white);
+}
+.profile-card-objective {
+    font-size: 0.9rem;
+    color: var(--color-light-gray);
+    font-style: italic;
+}
 .xp-bar {
     width: 100%;
-    height: 20px;
+    height: 24px;
     background-color: var(--color-medium-gray);
     border-radius: 10px;
     overflow: hidden;
     position: relative;
 }
-
 .xp-bar-fill {
     height: 100%;
     background-color: var(--color-yellow);
     border-radius: 10px;
     transition: width 0.5s ease-in-out;
 }
-
 .xp-bar-text {
     position: absolute;
     top: 50%;
@@ -83,108 +73,162 @@
     font-size: 0.8rem;
 }
 
+/* Nova seção do mascote DENTRO do card de perfil */
+.profile-card-mascot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+.profile-mascot-image {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+}
+.profile-mascot-level {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ccc;
+    text-align: center;
+}
+
+
 /* Home Grid Layout */
 .home-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.5rem;
 }
-
-/* Layout de 3 colunas para telas maiores */
 @media (min-width: 992px) {
     .home-grid {
-        /* A coluna do meio (2fr) terá o dobro da largura das laterais (1fr) */
         grid-template-columns: 1fr 2fr 1fr;
     }
 }
-
-/* ===== NOVO CARD DE PERFIL UNIFICADO ===== */
-
-.profile-card {
-    background-color: var(--color-dark-gray);
-    border: 1px solid var(--color-medium-gray);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+.header-details {
     display: flex;
     align-items: center;
-    gap: 1.5rem; /* Espaço entre a foto e as informações */
+    gap: 0.75rem;
 }
 
-.profile-card-avatar {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    border: 2px solid var(--color-yellow);
-    object-fit: cover;
-}
-
-.profile-card-info {
-    flex-grow: 1; /* Faz esta div ocupar todo o espaço restante */
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem; /* Espaço entre a saudação e a barra de XP */
-}
-
-.profile-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-}
-
-.profile-card-username {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--color-white);
-}
-
-.profile-card-objective {
-    font-size: 0.9rem;
-    color: var(--color-light-gray);
-    font-style: italic;
-}
-
-.profile-card-xp-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-/* O estilo do .xp-bar e filhos pode ser mantido como está */
-
-/* Specific Card Styles */
+/* Workout Card */
 .workout-card .exercise-list {
     list-style: none;
     padding: 0;
 }
-
 .workout-card .exercise-list li {
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--color-medium-gray);
 }
-
 .workout-card .exercise-list li:last-child {
     border-bottom: none;
 }
-
-.nutrition-card .nutrition-summary p {
-    margin-bottom: 0.5rem;
-}
-
-.nutrition-card .nutrition-summary span {
+#workout-status-tag {
+    font-size: 0.8rem;
     font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    text-transform: uppercase;
+    color: var(--color-black);
+}
+#workout-status-tag.status-pending {
+    background-color: var(--color-orange);
+}
+#workout-status-tag.status-completed {
+    background-color: var(--color-green);
     color: var(--color-white);
 }
 
+/* Nutrition Card */
+.nutrition-card .card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+#nutrition-day .card-actions {
+    justify-content: center;
+}
+.daily-meal-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.meal-group {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-medium-gray);
+}
+.meal-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.meal-group:first-child {
+    padding-top: 0;
+}
+.meal-group-header {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-light-gray);
+    margin-bottom: 0.75rem;
+}
+.meal-group-header i {
+    color: var(--color-yellow);
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    width: 20px;
+    text-align: center;
+}
+.food-item-list {
+    list-style-type: disc;
+    padding-left: calc(20px + 2rem);
+    margin: 0;
+    color: #aaa;
+}
+.food-item-list li {
+    padding-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+.daily-tip {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-medium-gray);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+.daily-tip i {
+    color: var(--color-yellow);
+    font-size: 1.2rem;
+    margin-top: 0.2rem;
+}
+.daily-tip p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #ccc;
+    font-style: italic;
+    line-height: 1.5;
+}
+.nutrition-card .error-msg,
+.nutrition-card .info-msg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: #aaa;
+}
 
-
+/* Feed Card */
+.feed-card {
+    height: 70vh;
+}
 .post-form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     margin-bottom: 2rem;
 }
-
 .post-form textarea {
     background-color: var(--color-medium-gray);
     border: 1px solid #333;
@@ -195,21 +239,16 @@
     resize: vertical;
     min-height: 80px;
 }
-
 .post-form .form-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
-/* Container para o botão de upload e o nome do arquivo */
 .file-upload-container {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
-
-/* Estilo para o label parecer um botão */
 .file-upload-button {
     display: inline-flex;
     align-items: center;
@@ -223,8 +262,6 @@
 .file-upload-button:hover {
     background-color: #2a2a2a;
 }
-
-/* Container para o nome do arquivo, seu ícone e o botão de remover */
 .file-name-container {
     display: flex;
     align-items: center;
@@ -261,52 +298,42 @@
     color: var(--color-white);
 }
 
-/* ===== ESTÉTICA DOS POSTS - V2 (MAIS CLEAN) ===== */
-
-.feed-posts .post {
-    /* Efeito "card-dentro-do-card" */
+/* Estilos dos Posts no Feed */
+.post {
     background-color: var(--color-medium-gray);
     border: 1px solid #2a2a2a;
     border-radius: 12px;
     padding: 1.25rem;
-    margin-bottom: 1.5rem; /* Espaçamento entre os cards de post */
+    margin-bottom: 1.5rem;
 }
-.feed-posts .post:last-child {
+.post:last-child {
     margin-bottom: 0;
 }
-
 .post-header {
     display: flex;
-    justify-content: space-between; /* Alinha o autor à esquerda e o botão à direita */
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
 }
-
-/* Novo container para avatar e nome */
 .post-author-details {
     display: flex;
     align-items: center;
     gap: 0.75rem;
 }
-
 .post-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
 }
-
 .post-author-info .author-name {
     font-weight: 600;
     color: var(--color-white);
 }
-
 .post-author-info .post-date {
     font-size: 0.8rem;
     color: #888;
 }
-
-/* Novo botão de 'mais opções' */
 .post-options-btn {
     background: none;
     border: none;
@@ -322,27 +349,24 @@
     justify-content: center;
     transition: background-color 0.2s ease;
 }
-
 .post-options-btn:hover {
     background-color: #2a2a2a;
     color: var(--color-white);
 }
-
 .post-content p {
     margin-bottom: 1rem;
     white-space: pre-wrap;
-    line-height: 1.6; 
+    line-height: 1.6;
 }
-
 .post-image {
-    max-width: 100%; /* A imagem agora ocupa a largura do 'inner card' */
+    max-width: 100%;
     display: block;
     margin-top: 1rem;
-    border-radius: 8px; /* Bordas mais sutis para a imagem */
+    border-radius: 8px;
     object-fit: cover;
 }
 
-/* Post Skeleton */
+/* Skeleton Loaders */
 .post-skeleton {
     padding: 1.5rem 0;
     border-bottom: 1px solid var(--color-medium-gray);
@@ -356,124 +380,9 @@
     gap: 10px;
 }
 
-.header-details {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem; /* Controla o espaço entre a tag e o ícone */
-}
-
-
-.file-upload-container {
-    display: flex;
-    align-items: center; /* Alinha na vertical */
-    gap: 1rem; /* Espaço entre o botão e o nome do arquivo */
-}
-
-/* Estilo para o label parecer um botão */
-.file-upload-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background-color: var(--color-medium-gray);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: var(--transition-smooth);
-}
-.file-upload-button:hover {
-    background-color: #2a2a2a;
-}
-
-/* Container para o nome do arquivo e seu ícone */
-.file-name-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: #aaa;
-    /* Adiciona um limite para o container não crescer demais */
-    max-width: calc(100% - 100px); /* Ajuste conforme necessário */
-}
-
-.remove-file-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    background-color: #4a4a4a;
-    color: var(--color-light-gray);
-    border: none;
-    border-radius: 50%; /* Deixa o botão redondo */
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 20px;
-    text-align: center;
-    transition: background-color 0.2s ease;
-    margin-left: 0.5rem; /* Um pequeno espaço à esquerda */
-}
-
-.remove-file-btn:hover {
-    background-color: #ff4d4d; /* Cor de perigo ao passar o mouse */
-    color: var(--color-white);
-}
-
-/* Classe para o texto do nome do arquivo para controlar o tamanho */
-.file-name-text {
-    max-width: 120px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-#workout-status-tag {
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    text-transform: uppercase;
-}
-
-#workout-status-tag.status-pending {
-    background-color: var(--color-orange);
-    color: var(--color-black);
-}
-
-#workout-status-tag.status-completed {
-    background-color: var(--color-green);
-    color: var(--color-white);
-}
-
-/* MODIFICAÇÃO: Estilo para o botão quando o treino está concluído */
-.btn.completed {
-    background-color: var(--color-green);
-    color: var(--color-white);
-    cursor: default;
-}
-
-.btn.completed:hover {
-    filter: brightness(1); /* Remove o efeito de hover */
-}
-/* ===== Home Page Specific Styles ===== */
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .main-header {
-        margin-bottom: 1.5rem;
-    }
-
-    .sidebar-toggle-desktop {
-        display: block;
-    }
-}
-
-@media (min-width: 769px) and (max-width: 991px) {
+/* Responsive */
+@media (max-width: 991px) {
     .home-grid {
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    }
-}
-
-@media (min-width: 769px) {
-    .sidebar-toggle-desktop {
-        display: none;
+        grid-template-columns: 1fr;
     }
 }

@@ -2,9 +2,9 @@
 
 export const exerciseDatabase = {
     // Peito
-    'peito_supino_reto_barra': 'https://www.youtube.com/watch?v=sqOw2Y6uDWQ',
-    'peito_crucifixo_inclinado_halteres': 'https://www.youtube.com/watch?v=VveI6h3PM0I',
-    'peito_flexao_bracos': 'https://www.youtube.com/@projetogymrats5',
+    'Flexão de Braços': 'https://www.youtube.com/watch?v=sqOw2Y6uDWQ',
+    'Elevação Lateral de Ombro': 'https://www.youtube.com/watch?v=ulVCkRXXuWQ',
+    'Remada Invertida': 'https://www.youtube.com/watch?v=I0P9HY08rcY',
 
     // Costas
     'costas_puxada_frente_polia': 'https://www.youtube.com/watch?v=k_jY1-2yGzU',

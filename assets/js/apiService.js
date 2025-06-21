@@ -8,7 +8,7 @@
 import { authService } from './auth.js'; // Garanta que o caminho para o seu auth.js está correto
 
 
-const API_BASE_URL = 'http://localhost:3000'; // A mesma URL base do seu auth.js
+const API_BASE_URL = 'https://api-gym-cyan.vercel.app'; // A mesma URL base do seu auth.js
 
 /**
  * Função centralizada para fazer requisições de DADOS à API.
@@ -82,7 +82,7 @@ export const api = {
     },
     
     completeTodayWorkout: (dayName) => request('/training/complete-day', 'POST', { dayName }),
-
+    getTrainingPlan: () => request('/training'),
     // --- Feed ---
     getFeedPosts: () => request('/posts'),
 
@@ -90,4 +90,5 @@ export const api = {
 
     // --- Nutrição ---
     getTodayNutrition: () => request('/nutrition'),
+    getNutritionPlan: () => request('/nutrition'),
 };

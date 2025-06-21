@@ -1,0 +1,259 @@
+/* assets/style/dashboard/nutrition-plan.css */
+
+/* Visão Geral do Plano Nutricional */
+.nutrition-overview {
+    background-color: var(--color-dark-gray);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--color-medium-gray);
+    margin-bottom: 2rem;
+}
+.overview-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-medium-gray);
+    margin-bottom: 1.5rem;
+}
+.overview-header i { 
+    font-size: 2rem; 
+    color: var(--color-yellow); 
+}
+.overview-header h1 { 
+    font-size: 1.8rem; 
+    font-weight: 600; 
+    color: var(--color-white); 
+    margin: 0; 
+}
+.overview-details { 
+    display: flex; 
+    gap: 1rem; 
+    flex-wrap: wrap; 
+}
+.overview-item { 
+    background-color: var(--color-medium-gray); 
+    padding: 0.5rem 1rem; 
+    border-radius: 20px; 
+    font-size: 0.9rem; 
+    font-weight: 500;
+}
+.overview-item i { 
+    margin-right: 0.5rem; 
+    color: var(--color-yellow); 
+}
+
+/* Estilos para a nova seção de Dicas */
+.overview-tips {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-medium-gray);
+}
+.overview-tips h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--color-white);
+}
+.overview-tips h3 i {
+    font-size: 1.2rem;
+    color: var(--color-yellow);
+}
+.overview-tips ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin: 0;
+    color: #ccc;
+}
+.overview-tips li {
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+    padding-left: 0.5rem;
+}
+.overview-tips li:last-child {
+    margin-bottom: 0;
+}
+
+/* Container Principal do Plano */
+.plan-container {
+    background-color: var(--color-dark-gray);
+    border-radius: 12px;
+    border: 1px solid var(--color-medium-gray);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+/* Estilos das Abas */
+.day-tabs {
+    display: flex;
+    background-color: var(--color-medium-gray);
+    border-bottom: 1px solid #333;
+    flex-shrink: 0;
+}
+.day-tab-btn {
+    flex-grow: 1;
+    padding: 1rem;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+}
+.day-tab-btn:hover {
+    background-color: #2a2a2a;
+    color: var(--color-white);
+}
+.day-tab-btn.active {
+    color: var(--color-yellow);
+    border-bottom-color: var(--color-yellow);
+}
+
+/* Conteúdo das Abas */
+.day-content-container {
+    padding: 2rem;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+.day-content {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+.day-content.active {
+    display: block;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Card de Refeição */
+.meal-card {
+    background-color: var(--color-medium-gray);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+.meal-card:last-child {
+    margin-bottom: 0;
+}
+.meal-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: #2a2a2a;
+    padding: 1rem 1.5rem;
+}
+.meal-header i {
+    font-size: 1.5rem;
+    color: var(--color-yellow);
+}
+.meal-header h3 {
+    font-size: 1.2rem;
+    color: var(--color-white);
+    margin: 0;
+}
+.meal-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.meal-main-content {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+.food-list-wrapper {
+    flex: 2;
+}
+.food-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.food-list li {
+    padding: 0.25rem 0;
+    color: var(--color-light-gray);
+    border-bottom: 1px solid #333;
+}
+.food-list li:last-child {
+    border-bottom: none;
+}
+.macros-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-left: 1.5rem;
+    border-left: 1px solid #333;
+}
+.macro-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.macro-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 0.25rem;
+}
+.macro-label i {
+    color: var(--color-yellow);
+    width: 16px;
+    text-align: center;
+}
+.macro-item strong {
+    font-size: 1.1rem;
+    color: var(--color-white);
+    padding-left: calc(16px + 0.5rem);
+}
+
+/* Estilo para a Dica de Preparo da Refeição */
+.preparation-tip {
+    padding-top: 1.5rem;
+    border-top: 1px solid #333;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+.preparation-tip i {
+    color: var(--color-yellow);
+    font-size: 1.1rem;
+    margin-top: 0.2rem;
+}
+.preparation-tip p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #ccc;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+/* Estilização da Barra de Rolagem */
+.day-content-container {
+    scrollbar-width: thin;
+    scrollbar-color: #333 var(--color-dark-gray);
+}
+.day-content-container::-webkit-scrollbar {
+    width: 10px;
+}
+.day-content-container::-webkit-scrollbar-track {
+    background: var(--color-dark-gray);
+    border-radius: 10px;
+}
+.day-content-container::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 10px;
+    border: 2px solid var(--color-dark-gray);
+}
+.day-content-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}

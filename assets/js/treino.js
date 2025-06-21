@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Variáveis Globais ---
     let currentTrainingPlan = null;
     let currentDayIndex = 0;
-    const BASE_URL = 'http://localhost:3000'; // URL do seu backend
+    const BASE_URL = 'https://api-gym-cyan.vercel.app'; // URL do seu backend
 
     // Inicializa o Modal de Exercícios (cria uma vez para reutilizar)
     initExerciseModal();
@@ -89,8 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
             difficultyContainer.appendChild(dot);
         }
 
-        const youtubeUrl = exerciseDatabase[exerciseData.exerciseId];
+        const youtubeUrl = exerciseDatabase[exerciseData.name];
         const videoContainer = document.getElementById('modal-video');
+        console.log("YouTube URL:", exerciseData.name);
 
         if (youtubeUrl) {
             const videoId = getYoutubeVideoId(youtubeUrl);

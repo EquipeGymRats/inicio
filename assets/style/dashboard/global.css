@@ -68,6 +68,25 @@ button {
     padding: 1.5rem;
 }
 
+.sidebar-toggle-desktop {
+    background: none;
+    color: var(--color-light-gray);
+    font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    /* ...outras regras podem estar aqui... */
+    .sidebar-toggle-desktop {
+        display: block; /* Show the hamburger on mobile-sized main content */
+    }
+}
+
+@media (min-width: 769px) {
+    .sidebar-toggle-desktop {
+        display: none; /* Hide hamburger on larger screens */
+    }
+}
+
 /* ===== Components ===== */
 .card {
     background-color: var(--color-dark-gray);
