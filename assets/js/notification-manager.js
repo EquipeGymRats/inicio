@@ -21,26 +21,30 @@ function urlBase64ToUint8Array(base64String) {
  * Registra o Service Worker e inscreve o usuário nas notificações Push.
  */
 export async function registerAndSubscribe() {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        console.warn('Push messaging is not supported');
-        alert('Seu navegador não suporta notificações push.');
+    const isSupported = 'serviceWorker' in navigator && 'PushManager' in window;
+    const isSecureContext = window.location.protocol === 'https:';
+
+    if (!isSupported || !isSecureContext) {
+        alert('Push messaging não é suportado ou o ambiente não é seguro.');
+        const banner = document.getElementById('notification-unsupported-banner');
+        if (banner) {
+            banner.classList.add('show');
+        }
         return;
     }
 
     try {
-        // 1. Registra o Service Worker
+        // <<< CORREÇÃO PRINCIPAL AQUI >>>
+        // Adicionamos o caminho do repositório '/inicio/' ao registro do Service Worker.
         const registration = await navigator.serviceWorker.register('/inicio/sw.js');
         console.log('Service Worker registrado com sucesso:', registration);
 
-        // 2. Pede permissão para notificações
         const permission = await Notification.requestPermission();
         if (permission !== 'granted') {
-            console.warn('Permissão para notificações negada.');
-            alert('Você precisa permitir notificações para receber lembretes.');
+            alert('Permissão para notificações negada.');
             return;
         }
 
-        // 3. Obtém a inscrição (subscription)
         let subscription = await registration.pushManager.getSubscription();
         if (subscription === null) {
             console.log('Nenhuma inscrição encontrada, criando uma nova...');
@@ -50,12 +54,10 @@ export async function registerAndSubscribe() {
             });
             console.log('Nova inscrição criada:', subscription);
 
-            // 4. Envia a nova inscrição para o backend
             await api.savePushSubscription(subscription);
             console.log('Inscrição salva no backend.');
         } else {
             console.log('Usuário já está inscrito.');
-            alert('Você já está inscrito para receber notificações.');
         }
 
     } catch (error) {
