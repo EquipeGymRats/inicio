@@ -1,0 +1,195 @@
+/* assets/style/dashboard/reminders.css */
+
+.reminders-page-container {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 30px;
+}
+
+/* Estilos para os cards */
+.reminder-form-card, .reminders-list-card {
+    background-color: var(--color-surface);
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid var(--color-border);
+}
+
+.card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: var(--color-yellow);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Formulário de criação */
+#reminder-form .form-group {
+    margin-bottom: 18px;
+}
+
+#reminder-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+}
+
+#reminder-form input[type="text"],
+#reminder-form input[type="time"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    font-size: 0.95rem;
+}
+
+/* Seletor de dias da semana */
+.days-selector {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.days-selector span {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--color-border);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.days-selector span:hover {
+    background-color: #555;
+}
+
+.days-selector span.selected {
+    background-color: var(--color-yellow);
+    color: var(--color-bg);
+    transform: scale(1.1);
+}
+
+/* Lista de lembretes */
+.reminders-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px; /* Espaço para a barra de rolagem */
+}
+
+.reminder-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-yellow);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    gap: 15px;
+}
+
+.reminder-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-grow: 1;
+}
+
+.reminder-info i {
+    font-size: 1.5rem;
+    color: var(--color-yellow);
+}
+
+.reminder-info div {
+    display: flex;
+    flex-direction: column;
+}
+
+.reminder-info strong {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.reminder-info span {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+
+.reminder-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.reminder-actions button {
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.reminder-actions button:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-text-primary);
+}
+
+.reminder-actions .btn-delete:hover {
+    color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.empty-list-message {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: 20px;
+}
+
+/* Responsividade */
+@media (max-width: 992px) {
+    .reminders-page-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Adicione ao final de assets/style/dashboard/reminders.css */
+
+.suggestion-pills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px; /* Espaço antes do formulário */
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.pill-btn {
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pill-btn:hover {
+    background-color: var(--color-yellow);
+    color: var(--color-bg);
+    border-color: var(--color-yellow);
+    transform: translateY(-2px);
+}

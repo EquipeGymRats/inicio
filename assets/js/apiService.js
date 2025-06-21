@@ -91,4 +91,11 @@ export const api = {
     // --- Nutrição ---
     getTodayNutrition: () => request('/nutrition'),
     getNutritionPlan: () => request('/nutrition'),
+
+    // --- Lembretes ---
+    getReminders: () => request('/reminders'),
+    createReminder: (data) => request('/reminders', 'POST', data),
+    updateReminder: (id, data) => request(`/reminders/${id}`, 'PUT', data),
+    deleteReminder: (id) => request(`/reminders/${id}`, 'DELETE'),
+    savePushSubscription: (subscription) => request('/push/subscribe', 'POST', { subscription }),
 };

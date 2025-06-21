@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plano Alimentar - Gym Rats</title>
+    <title>Lembretes - Gym Rats</title>
     
     <link rel="stylesheet" href="assets/style/dashboard/global.css">
     <link rel="stylesheet" href="assets/style/dashboard/sidebar.css">
-    <link rel="stylesheet" href="assets/style/dashboard/nutrition-plan.css">
+    
+    <link rel="stylesheet" href="assets/style/dashboard/reminders.css">
     <link rel="shortcut icon" type="image/x-icon" href="assets/logo.ico">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 </head>
 <body>
     <div class="dashboard-container">
-       <aside class="sidebar" id="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <a href="#" class="sidebar-logo">
+                <a href="home.html" class="sidebar-logo">
                     <i class="fa-solid fa-dumbbell"></i>
                     <span>Gym Rats</span>
                 </a>
@@ -47,17 +48,48 @@
                 <button class="sidebar-toggle-desktop" id="sidebar-toggle-desktop">
                     <i class="fa-solid fa-bars"></i>
                 </button>
+                <h1>Meus Lembretes</h1>
             </header>
 
-            <section id="nutrition-overview" class="nutrition-overview">
-                </section>
-            
-            <div class="plan-container">
-                <div id="day-tabs" class="day-tabs">
-                    </div>
+            <div class="reminders-page-container">
+                <div class="card reminder-form-card">
+                    <h2><i class="fa-solid fa-plus"></i> Novo Lembrete</h2>
 
-                <div id="day-content-container" class="day-content-container">
+                    <div class="suggestion-pills">
+                        <button class="pill-btn" data-message="Beber 300ml de água">💧 Água</button>
+                        <button class="pill-btn" data-message="Hora do lanche!">🍎 Lanche</button>
+                        <button class="pill-btn" data-message="Preparar a próxima refeição">🥗 Refeição</button>
                     </div>
+                    <form id="reminder-form" novalidate>
+                        <div class="form-group">
+                            <label for="reminder-message">Mensagem do Lembrete</label>
+                            <input type="text" id="reminder-message" placeholder="Ex: Beber 300ml de água" required maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="reminder-time">Horário</label>
+                            <input type="time" id="reminder-time" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Repetir nos dias:</label>
+                            <div id="reminder-days" class="days-selector">
+                                <span data-day="Domingo">D</span>
+                                <span data-day="Segunda-feira">S</span>
+                                <span data-day="Terça-feira">T</span>
+                                <span data-day="Quarta-feira">Q</span>
+                                <span data-day="Quinta-feira">Q</span>
+                                <span data-day="Sábado">S</span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="create-reminder-btn">Criar Lembrete</button>
+                    </form>
+                </div>
+
+                <div class="card reminders-list-card">
+                    <h2><i class="fa-solid fa-list-check"></i> Meus Lembretes</h2>
+                    <div id="reminders-list" class="reminders-list">
+                        <p class="empty-list-message">Carregando seus lembretes...</p>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -65,10 +97,10 @@
     <script type="module" src="assets/js/auth.js"></script>
     <script type="module" src="assets/js/apiService.js"></script>
     <script type="module" src="assets/js/dashboard/sidebar.js"></script>
-    <script type="module" src="assets/js/dashboard/nutrition-plan.js"></script>
+    <script type="module" src="assets/js/dashboard/reminders.js"></script>
     <script type="module">
     import { registerAndSubscribe } from './assets/js/notification-manager.js';
     registerAndSubscribe();
-    </script>
+</script>
 </body>
 </html>
