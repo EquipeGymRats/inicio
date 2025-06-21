@@ -37,7 +37,7 @@
 .profile-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center; /* MUDADO para 'center' para alinhar a tag verticalmente */
 }
 .profile-card-username {
     font-size: 1.25rem;
@@ -73,7 +73,6 @@
     font-size: 0.8rem;
 }
 
-/* Nova seção do mascote DENTRO do card de perfil */
 .profile-card-mascot {
     display: flex;
     flex-direction: column;
@@ -92,7 +91,6 @@
     color: #ccc;
     text-align: center;
 }
-
 
 /* Home Grid Layout */
 .home-grid {
@@ -220,9 +218,6 @@
 }
 
 /* Feed Card */
-.feed-card {
-    height: 70vh;
-}
 .post-form {
     display: flex;
     flex-direction: column;
@@ -312,7 +307,7 @@
 .post-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start; /* Alinha no topo para consistência */
     margin-bottom: 1rem;
 }
 .post-author-details {
@@ -334,6 +329,89 @@
     font-size: 0.8rem;
     color: #888;
 }
+
+.post-content p {
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    word-wrap: break-word;
+}
+.post-image {
+    max-width: 50%;
+    display: block;
+    margin-top: 1rem;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .home-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ================================================= */
+/* <<< INÍCIO DOS NOVOS ESTILOS PARA TAGS E MENU >>> */
+/* ================================================= */
+
+/* Container para alinhar nome e tag (usado no perfil e nos posts) */
+.author-name-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Espaço entre o nome e a tag */
+}
+
+/* Ajuste específico para o card de perfil */
+.profile-card-header .author-name-container {
+    gap: 0.75rem;
+}
+
+/* Estilo base para todas as tags de cargo */
+.user-role-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 1vh;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+
+/* Estilo específico para a tag de ADMIN */
+.admin-tag {
+    background-color: #e74c3c;
+    color: var(--color-white);
+    border: 1px solid #c0392b;
+}
+
+.admin-tag i {
+    color: var(--color-white);
+}
+
+/* Estilo de exemplo para a futura tag VIP */
+.vip-tag {
+    background-color: var(--color-yellow);
+    color: var(--color-black);
+    box-shadow: 0 0 1px var(--color-yellow), 0 0 5px var(--color-yellow);
+    text-shadow: 0 0 1px rgba(0,0,0,0.2);
+}
+
+.vip-tag i {
+    color: var(--color-black);
+}
+
+
+/* --- Estilos para o Menu de Opções do Post --- */
+
+.post-options {
+    position: relative; /* Âncora para o menu absoluto */
+    flex-shrink: 0;
+}
+
 .post-options-btn {
     background: none;
     border: none;
@@ -349,40 +427,43 @@
     justify-content: center;
     transition: background-color 0.2s ease;
 }
+
 .post-options-btn:hover {
     background-color: #2a2a2a;
     color: var(--color-white);
 }
-.post-content p {
-    margin-bottom: 1rem;
-    white-space: pre-wrap;
-    line-height: 1.6;
-}
-.post-image {
-    max-width: 100%;
-    display: block;
-    margin-top: 1rem;
+
+.post-options-menu {
+    display: none; /* Começa escondido */
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #2e2e2e;
     border-radius: 8px;
-    object-fit: cover;
+    border: 1px solid #444;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 10;
+    width: 150px;
+    padding: 0.5rem 0;
 }
 
-/* Skeleton Loaders */
-.post-skeleton {
-    padding: 1.5rem 0;
-    border-bottom: 1px solid var(--color-medium-gray);
-}
-.post-skeleton:last-child {
-    border-bottom: none;
-}
-.post-skeleton-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.post-options-menu.show {
+    display: block; /* Mostra o menu */
 }
 
-/* Responsive */
-@media (max-width: 991px) {
-    .home-grid {
-        grid-template-columns: 1fr;
-    }
+.post-options-menu a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: var(--color-light-gray);
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.post-options-menu a:hover {
+    background-color: #444;
+}
+
+.delete-post-action:hover {
+    background-color: #c0392b !important; /* Vermelho mais escuro para hover */
+    color: var(--color-white) !important;
 }

@@ -2,8 +2,9 @@
  * sidebar.js
  * * Gerencia o comportamento da sidebar, como o toggle em telas móveis.
  */
+import { authService } from '../auth.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const sidebar = document.getElementById('sidebar');
     const toggleMobileBtn = document.getElementById('sidebar-toggle-mobile');
     const toggleDesktopBtn = document.getElementById('sidebar-toggle-desktop');
@@ -11,6 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!sidebar || !toggleMobileBtn || !toggleDesktopBtn) {
         console.error('Elementos da sidebar não encontrados.');
         return;
+    }
+
+    const isAdmin = await authService.isAdmin();
+
+    if (isAdmin) {
+        const navList = document.querySelector('.sidebar-nav ul');
+        if (navList) {
+            const adminLink = document.createElement('li');
+            adminLink.innerHTML = `<a href="admin.html" class="nav-link"><i class="fa-solid fa-user-shield"></i> <span>Admin</span></a>`;
+            navList.appendChild(adminLink); // Adiciona o link ao final do menu
+        }
     }
 
     // Função para abrir/fechar a sidebar

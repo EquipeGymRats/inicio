@@ -25,7 +25,7 @@ export async function registerAndSubscribe() {
     const isSecureContext = window.location.protocol === 'https:';
 
     if (!isSupported || !isSecureContext) {
-        alert('Push messaging não é suportado ou o ambiente não é seguro.');
+        // alert('Push messaging não é suportado ou o ambiente não é seguro.');
         const banner = document.getElementById('notification-unsupported-banner');
         if (banner) {
             banner.classList.add('show');

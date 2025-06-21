@@ -23,7 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Variáveis Globais ---
     let currentTrainingPlan = null;
     let currentDayIndex = 0;
-    const BASE_URL = 'https://api-gym-cyan.vercel.app'; // URL do seu backend
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const BASE_URL = isLocal 
+        ? 'http://192.168.10.24:3000' // URL para desenvolvimento local
+        : 'https://api-gym-cyan.vercel.app'; // URL para produção
+
 
     // Inicializa o Modal de Exercícios (cria uma vez para reutilizar)
     initExerciseModal();

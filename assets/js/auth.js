@@ -1,6 +1,11 @@
 // assets/js/auth.js
 
-const BASE_URL = 'https://api-gym-cyan.vercel.app'; // Sua Base URL do backend
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const BASE_URL = isLocal 
+    ? 'http://192.168.10.24:3000' // URL para desenvolvimento local
+    : 'https://api-gym-cyan.vercel.app'; // URL para produção
+
+
 
 export const authService = {
     async register(username, email, password) {
@@ -65,6 +70,7 @@ export const authService = {
 
     logout() {
         localStorage.removeItem('jwtToken');
+        localStorage.removeItem('userProfile');
         window.location.href = 'login.html'; // Redireciona ao deslogar
     },
 
@@ -73,25 +79,47 @@ export const authService = {
     },
 
     async getUserProfile() {
+        const cachedProfile = localStorage.getItem('userProfile');
+        if (cachedProfile) {
+            return JSON.parse(cachedProfile);
+        }
+
+        // 2. Se não houver cache, busca na API
         const token = this.getToken();
         if (!token) return null;
+
         try {
             const response = await fetch(`${BASE_URL}/auth/profile`, {
                 method: 'GET',
                 headers: { 'x-auth-token': token, 'Content-Type': 'application/json' },
             });
+
             if (response.ok) {
-                return await response.json();
+                const profile = await response.json();
+                // 3. Salva o perfil recém-buscado no cache
+                localStorage.setItem('userProfile', JSON.stringify(profile));
+                return profile;
             } else {
+                // Se a busca falhar (ex: token expirado), desloga o usuário
                 this.logout();
                 return null;
             }
         } catch (error) {
             console.error('Erro de rede ao buscar perfil:', error);
-            return null;
+            return null; // Retorna nulo em caso de erro de conexão
         }
     },
-    
+
+    async isAdmin() {
+        try {
+            const profile = await this.getUserProfile();
+            return !!(profile && profile.role === 'admin');
+        } catch (error) {
+            console.error("Erro ao verificar status de admin:", error);
+            return false;
+        }
+    },
+
     getToken() {
         return localStorage.getItem('jwtToken');
     },
@@ -116,7 +144,8 @@ export const authService = {
             const data = await response.json();
             
             if (response.ok) {
-                // Retorna o objeto de sucesso com a mensagem e o usuário atualizado
+                // <<< MELHORIA: Atualiza o cache após a edição do perfil >>>
+                localStorage.setItem('userProfile', JSON.stringify(data));
                 return { success: true, message: data.message || 'Perfil atualizado!', user: data };
             } else {
                 return { success: false, message: data.message || 'Erro ao atualizar perfil.' };

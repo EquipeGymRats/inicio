@@ -2,15 +2,21 @@
 
 import { authService } from './auth.js';
 
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE_URL = isLocal 
+    ? 'http://192.168.10.24:3000' // URL para desenvolvimento local
+    : 'https://api-gym-cyan.vercel.app'; // URL para produção
+
+
 const api = {
     getNutritionPlan: async () => {
         const token = authService.getToken();
         // A URL deve corresponder à sua URL de produção/desenvolvimento
-        return fetch('https://api-gym-cyan.vercel.app/nutrition', { headers: { 'x-auth-token': token } });
+        return fetch(`${API_BASE_URL}/nutrition`, { headers: { 'x-auth-token': token } });
     },
     saveNutritionPlan: async (planData) => {
         const token = authService.getToken();
-        return fetch('https://api-gym-cyan.vercel.app/nutrition', {
+        return fetch(`${API_BASE_URL}/nutrition`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
             body: JSON.stringify(planData)

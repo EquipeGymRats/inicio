@@ -7,8 +7,10 @@
 // 1. Importa o seu serviço de autenticação
 import { authService } from './auth.js'; // Garanta que o caminho para o seu auth.js está correto
 
-
-const API_BASE_URL = 'https://api-gym-cyan.vercel.app'; // A mesma URL base do seu auth.js
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE_URL = isLocal 
+    ? 'http://192.168.10.24:3000' // URL para desenvolvimento local
+    : 'https://api-gym-cyan.vercel.app'; // URL para produção
 
 /**
  * Função centralizada para fazer requisições de DADOS à API.
@@ -84,8 +86,8 @@ export const api = {
     completeTodayWorkout: (dayName) => request('/training/complete-day', 'POST', { dayName }),
     getTrainingPlan: () => request('/training'),
     // --- Feed ---
-    getFeedPosts: () => request('/posts'),
-
+    getFeedPosts: (page = 1) => request(`/posts?page=${page}&limit=5`),
+    deletePost: (postId) => request(`/posts/${postId}`, 'DELETE'),
     createPost: (formData) => request('/posts', 'POST', formData, true),
 
     // --- Nutrição ---
