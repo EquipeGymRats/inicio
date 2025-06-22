@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <link rel="stylesheet" href="assets/style/dashboard/global.css">
     <link rel="stylesheet" href="assets/style/dashboard/sidebar.css">
@@ -19,7 +19,7 @@
     <div class="dashboard-container">
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <a href="#" class="sidebar-logo">
+                <a href="home.html" class="sidebar-logo">
                     <i class="fa-solid fa-dumbbell"></i>
                     <span>Gym Rats</span>
                 </a>
@@ -32,7 +32,7 @@
                     <li><a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i> <span>Início</span></a></li>
                     <li><a href="my-training.html" class="nav-link"><i class="fa-solid fa-person-running"></i> <span>Meu Treino</span></a></li>
                     <li><a href="nutrition-plan.html" class="nav-link"><i class="fa-solid fa-utensils"></i> <span>Alimentação</span></a></li>
-                    <li><a href="reminders.html" class="nav-link active"><i class="fa-solid fa-bell"></i> <span>Lembretes</span></a></li>
+                    <li><a href="reminders.html" class="nav-link"><i class="fa-solid fa-bell"></i> <span>Lembretes</span></a></li>
                     <li><a href="progress.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> <span>Progressão</span></a></li>
                     <li><a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> <span>Configurações</span></a></li>
                 </ul>
@@ -52,30 +52,32 @@
                 </button>
             </header>
 
-
             <section class="profile-card" id="profile-card">
                 <div class="skeleton skeleton-avatar" style="width: 80px; height: 80px;"></div>
-                <div style="flex-grow: 1;">
-                    <div class="skeleton skeleton-text" style="width: 40%; height: 24px; margin-bottom: 12px;"></div>
-                    <div class="skeleton skeleton-text" style="width: 100%; height: 40px;"></div>
+                <div class="profile-card-info">
+                    <div class="profile-card-header">
+                        <div class="skeleton skeleton-text" style="width: 150px; height: 24px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 120px; height: 16px;"></div>
+                    </div>
+                    <div class="skeleton skeleton-text" style="height: 24px;"></div>
                 </div>
-                <div class="skeleton skeleton-avatar" style="width: 70px; height: 70px;"></div>
+                <div class="profile-card-mascot">
+                    <div class="skeleton skeleton-avatar" style="width: 70px; height: 70px;"></div>
+                    <div class="skeleton skeleton-text" style="width: 100px; height: 16px;"></div>
+                </div>
             </section>
 
             <div class="home-grid">
                 <section class="card workout-card" id="workout-day">
                     <div class="card-header">
                         <h2>Treino do Dia</h2>
-                        <div class="header-details">
-                            <span id="workout-status-tag"></span>
-                            <i class="fa-solid fa-fire-flame-curved" style="color: var(--color-yellow);"></i>
-                        </div>
+                        <i class="fa-solid fa-fire-flame-curved" style="color: var(--color-yellow);"></i>
                     </div>
                     <div class="card-content" id="workout-content">
-                        <div class="skeleton skeleton-text" style="width: 80%; height: 20px; margin-bottom: 15px;"></div>
-                        <div class="skeleton skeleton-text" style="width: 100%; height: 15px; margin-bottom: 5px;"></div>
-                        <div class="skeleton skeleton-text" style="width: 100%; height: 15px; margin-bottom: 5px;"></div>
-                        <div class="skeleton skeleton-text" style="width: 60%; height: 15px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 60%; height: 22px; margin-bottom: 20px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 90%; margin-bottom: 10px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 80%; margin-bottom: 10px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 85%;"></div>
                     </div>
                     <div class="card-actions">
                         <button class="btn btn-primary" id="complete-workout-btn" disabled>Concluir Treino</button>
@@ -91,37 +93,42 @@
                     <div class="card-content">
                         <form class="post-form" id="post-form">
                             <textarea name="text" placeholder="Compartilhe seu progresso..." required></textarea>
-                        <div class="form-actions">
-                            <div class="file-upload-container">
-                                <label for="post-image" class="file-upload-button">
-                                    <i class="fa-solid fa-camera"></i> Foto
-                                </label>
-                                <input type="file" id="post-image" name="postImage" accept="image/*" style="display: none;">
-                                <div id="file-name-display" class="file-name-container">
-                                    </div>
+                            <div class="form-actions">
+                                <div class="file-upload-container">
+                                    <label for="post-image" class="file-upload-button">
+                                        <i class="fa-solid fa-camera"></i> Foto
+                                    </label>
+                                    <input type="file" id="post-image" name="postImage" accept="image/*" style="display: none;">
+                                    <div id="file-name-display" class="file-name-container"></div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Postar</button>
                             </div>
-                            <button type="submit" class="btn btn-primary">Postar</button>
-                        </div>
                         </form>
                         <div class="feed-posts" id="feed-posts">
                             <div class="post-skeleton">
                                 <div class="post-skeleton-header">
                                     <div class="skeleton skeleton-avatar-small"></div>
-                                    <div class="skeleton skeleton-text" style="width: 120px; height: 16px;"></div>
+                                    <div class="post-skeleton-author">
+                                        <div class="skeleton skeleton-text" style="width: 120px; height: 16px;"></div>
+                                        <div class="skeleton skeleton-text" style="width: 80px; height: 12px;"></div>
+                                    </div>
                                 </div>
-                                <div class="skeleton skeleton-text" style="height: 40px; margin: 10px 0;"></div>
-                                <div class="skeleton skeleton-image"></div>
+                                <div class="skeleton skeleton-text" style="height: 30px; margin-top: 10px;"></div>
                             </div>
                              <div class="post-skeleton">
                                 <div class="post-skeleton-header">
                                     <div class="skeleton skeleton-avatar-small"></div>
-                                    <div class="skeleton skeleton-text" style="width: 120px; height: 16px;"></div>
+                                    <div class="post-skeleton-author">
+                                        <div class="skeleton skeleton-text" style="width: 100px; height: 16px;"></div>
+                                        <div class="skeleton skeleton-text" style="width: 70px; height: 12px;"></div>
+                                    </div>
                                 </div>
-                                <div class="skeleton skeleton-text" style="height: 40px; margin: 10px 0;"></div>
-                                </div>
-                                <div id="feed-scroll-trigger" style="height: 50px; display: none;">
-                                    <div class="skeleton skeleton-text" style="width: 80%; margin: auto;"></div>
-                                </div>
+                                <div class="skeleton skeleton-text" style="height: 60px; margin-top: 10px;"></div>
+                                <div class="skeleton skeleton-image" style="height: 200px; margin-top: 10px;"></div>
+                            </div>
+                        </div>
+                        <div id="feed-scroll-trigger" style="height: 50px; display: none;">
+                            <div class="skeleton skeleton-text" style="width: 80%; margin: auto;"></div>
                         </div>
                     </div>
                 </section>
@@ -132,9 +139,15 @@
                         <i class="fa-solid fa-apple-whole" style="color: var(--color-yellow);"></i>
                     </div>
                     <div class="card-content" id="nutrition-content">
-                         <div class="skeleton skeleton-text" style="width: 80%; height: 20px; margin-bottom: 15px;"></div>
-                         <div class="skeleton skeleton-text" style="width: 100%; height: 15px; margin-bottom: 5px;"></div>
-                         <div class="skeleton skeleton-text" style="width: 60%; height: 15px;"></div>
+                        <div class="meal-skeleton">
+                             <div class="skeleton skeleton-text" style="width: 80%; height: 20px; margin-bottom: 15px;"></div>
+                             <div class="skeleton skeleton-text" style="width: 100%; height: 15px; margin-bottom: 5px;"></div>
+                             <div class="skeleton skeleton-text" style="width: 60%; height: 15px;"></div>
+                        </div>
+                         <div class="meal-skeleton">
+                             <div class="skeleton skeleton-text" style="width: 70%; height: 20px; margin-bottom: 15px;"></div>
+                             <div class="skeleton skeleton-text" style="width: 90%; height: 15px; margin-bottom: 5px;"></div>
+                        </div>
                     </div>
                      <div class="card-actions">
                         <button class="btn btn-secondary" id="view-diet-btn">Ver Plano Alimentar</button>
@@ -148,8 +161,8 @@
     <script type="module" src="assets/js/dashboard/sidebar.js"></script>
     <script type="module" src="assets/js/dashboard/home.js"></script>
     <script type="module">
-    import { registerAndSubscribe } from './assets/js/notification-manager.js';
-    registerAndSubscribe();
+        import { registerAndSubscribe } from './assets/js/notification-manager.js';
+        registerAndSubscribe();
     </script>
 </body>
 </html>
