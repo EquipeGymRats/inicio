@@ -101,4 +101,11 @@ export const api = {
     updateReminder: (id, data) => request(`/reminders/${id}`, 'PUT', data),
     deleteReminder: (id) => request(`/reminders/${id}`, 'DELETE'),
     savePushSubscription: (subscription) => request('/push/subscribe', 'POST', { subscription }),
+
+
+
+    getUserProfileByUsername: (username) => request(`/user/${username}`),
+    followUser: (userId) => request(`/user/${userId}/follow`, 'POST'),
+    unfollowUser: (userId) => request(`/user/${userId}/unfollow`, 'POST'),
+
 };
