@@ -67,7 +67,13 @@ async function loadTodayWorkout() {
         renderTodayWorkout(workout);
     } catch (error) {
         console.error('Erro ao buscar treino do dia:', error);
-        if(workoutContent) workoutContent.innerHTML = '<p class="error-msg">Crie um plano de treino para ver o resumo aqui.</p>';
+        if(workoutContent) workoutContent.innerHTML = `
+            <div class="empty-state-container">
+                <i class="fas fa-dumbbell empty-state-icon"></i>
+                <h5 class="empty-state-title">Comece a Treinar</h5>
+                <p class="empty-state-text">Nenhum plano de treino encontrado. Crie um para ver seu resumo diário aqui!</p>
+            </div>
+        `; 
         if (workoutActions) workoutActions.style.display = 'none';
     }
 }
@@ -79,36 +85,72 @@ async function loadTodayNutrition() {
         const nutritionPlan = await api.getNutritionPlan();
         renderTodayNutrition(nutritionPlan);
     } catch (error) {
-        if(nutritionContent) nutritionContent.innerHTML = '<p class="error-msg">Crie um plano alimentar para ver o resumo aqui.</p>';
+        if(nutritionContent) nutritionContent.innerHTML = nutritionContent.innerHTML = `
+            <div class="empty-state-container">
+                <i class="fas fa-utensils empty-state-icon"></i>
+                <h5 class="empty-state-title">Defina sua Dieta</h5>
+                <p class="empty-state-text">Nenhum plano alimentar encontrado. Gere o seu para ver o resumo das refeições do dia.</p>
+            </div>
+        `;
         if (nutritionActions) nutritionActions.style.display = 'none';
     }
 }
 
+/**
+ * Carrega os posts de uma página específica.
+ * [VERSÃO FINAL COM TRATAMENTO DE ERRO APRIMORADO]
+ */
 async function loadPosts(page = 1) {
+    const feedContainer = document.getElementById('feed-posts');
+    if (!feedContainer) {
+        console.warn('O elemento com id="feed-posts" não foi encontrado na página. O feed não será carregado.');
+        return;
+    }
+
     if (isLoadingFeed) return;
     isLoadingFeed = true;
+    
     const trigger = document.getElementById('feed-scroll-trigger');
-    if(trigger) trigger.style.display = 'block';
+    if (trigger) trigger.style.display = 'block';
 
     try {
         const response = await api.getFeedPosts(page);
         renderFeed(response.posts, page > 1);
+        
         currentPage = response.currentPage;
         totalPages = response.totalPages;
+
         if (currentPage >= totalPages && trigger) {
             trigger.style.display = 'none';
         }
     } catch (error) {
         console.error('Erro ao buscar feed:', error);
-        const feedContainer = document.getElementById('feed-posts');
-        if (page === 1 && feedContainer) {
-            feedContainer.innerHTML = '<p class="error-msg">Não foi possível carregar o feed.</p>';
+        if (page === 1) {
+            // =======================================================
+            // INÍCIO DA MUDANÇA: Bloco de erro aprimorado
+            // =======================================================
+            feedContainer.innerHTML = `
+                <div class="empty-state-container" id="feed-error-state">
+                    <i class="fas fa-exclamation-triangle empty-state-icon" style="color: #E74C3C;"></i>
+                    <h5 class="empty-state-title">Ocorreu um Erro</h5>
+                    <p class="empty-state-text">Não conseguimos carregar seu feed. Pode ser um problema de conexão.</p>
+                    <button class="btn btn-secondary" id="retry-feed-button">Tentar Novamente</button>
+                </div>
+            `;
+            // Adiciona a funcionalidade de "Tentar Novamente" ao botão
+            const retryButton = document.getElementById('retry-feed-button');
+            if(retryButton){
+                retryButton.addEventListener('click', () => loadPosts(1));
+            }
+            // =======================================================
+            // FIM DA MUDANÇA
+            // =======================================================
         }
     } finally {
         isLoadingFeed = false;
-        const finalTrigger = document.getElementById('feed-scroll-trigger');
-        if (currentPage >= totalPages && finalTrigger) {
-            finalTrigger.style.display = 'none';
+        // Esconde o gatilho se o carregamento falhar também
+        if (trigger && currentPage >= totalPages) {
+           trigger.style.display = 'none';
         }
     }
 }
@@ -205,17 +247,21 @@ function renderTodayNutrition(nutritionPlan) {
 
 function renderFeed(posts, append = false) {
     const feedContainer = document.getElementById('feed-posts');
+    // Verificação de segurança
     if (!feedContainer) return;
+    
+    if (!append) {
+        feedContainer.innerHTML = '';
+    }
 
-    if (!append) feedContainer.innerHTML = '';
     if (posts.length === 0 && !append) {
         feedContainer.innerHTML = '<p class="info-msg">Ainda não há posts. Seja o primeiro!</p>';
         return;
     }
+
     const postsHtml = posts.map(createPostHtml).join('');
     feedContainer.insertAdjacentHTML('beforeend', postsHtml);
 }
-
 function createPostHtml(post) {
     const postDate = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(post.createdAt));
     const borderColor = post.user?.levelInfo?.currentLevel?.borderColor || 'transparent';

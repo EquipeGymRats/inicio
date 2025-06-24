@@ -610,6 +610,40 @@
     transform: rotate(45deg);
 }
 
+/* ===== Empty State / Error Component ===== */
+.empty-state-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    padding: 1.5rem;
+    opacity: 0.8;
+    border: 2px dashed var(--color-medium-gray);
+    border-radius: 12px;
+}
+
+.empty-state-icon {
+    font-size: 3.5rem;
+    color: var(--color-yellow);
+    margin-bottom: 1.5rem;
+}
+
+.empty-state-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-white);
+    margin-bottom: 0.75rem;
+}
+
+.empty-state-text {
+    color: var(--color-light-gray);
+    max-width: 350px;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
 /* --- Botão de Fechar --- */
 .modal-close-btn {
     position: absolute;
