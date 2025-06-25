@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Progressão - Gym Rats</title>
+    
+    <link rel="stylesheet" href="assets/style/dashboard/global.css">
+    <link rel="stylesheet" href="assets/style/dashboard/sidebar.css">
+    <link rel="stylesheet" href="assets/style/dashboard/progress.css">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/logo.ico">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="home.html" class="sidebar-logo">
+                    <i class="fa-solid fa-dumbbell"></i>
+                    <span>Gym Rats</span>
+                </a>
+                <button class="sidebar-toggle-mobile" id="sidebar-toggle-mobile">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i> <span>Início</span></a></li>
+                    <li><a href="my-training.html" class="nav-link"><i class="fa-solid fa-person-running"></i> <span>Meu Treino</span></a></li>
+                    <li><a href="nutrition-plan.html" class="nav-link"><i class="fa-solid fa-utensils"></i> <span>Alimentação</span></a></li>
+                    <li><a href="reminders.html" class="nav-link"><i class="fa-solid fa-bell"></i> <span>Lembretes</span></a></li>
+                    <li><a href="progress.html" class="nav-link active"><i class="fa-solid fa-chart-line"></i> <span>Progressão</span></a></li>
+                    <li><a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> <span>Configurações</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-button" id="logout-btn">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <button class="sidebar-toggle-desktop" id="sidebar-toggle-desktop">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h1>Minha Progressão</h1>
+            </header>
+
+            <div class="progress-page-container">
+                <div class="charts-section">
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-weight-hanging"></i> Evolução de Peso</h2>
+                            <select id="weight-period-filter" class="chart-filter">
+                                <option value="7">Últimos 7 dias</option>
+                                <option value="30" selected>Últimos 30 dias</option>
+                                <option value="90">Últimos 90 dias</option>
+                                <option value="all">Todo o período</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="weight-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-ruler-combined"></i> Evolução de Medidas</h2>
+                            <select id="measurement-type-filter" class="chart-filter">
+                                <option value="biceps">Bíceps</option>
+                                <option value="chest">Peito</option>
+                                <option value="waist">Cintura</option>
+                                <option value="hips">Quadril</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="measurements-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card achievements-section">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-trophy"></i> Conquistas e Mascotes</h2>
+                    </div>
+                    <div id="achievements-grid" class="achievements-grid">
+                        </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="assets/js/auth.js"></script>
+    <script type="module" src="assets/js/apiService.js"></script>
+    <script type="module" src="assets/js/dashboard/sidebar.js"></script>
+    <script type="module" src="assets/js/dashboard/progress.js"></script>
+</body>
+</html>

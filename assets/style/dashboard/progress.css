@@ -1,0 +1,111 @@
+/* assets/style/dashboard/progress.css */
+
+.progress-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.charts-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+}
+
+.chart-card .card-header {
+    margin-bottom: 1.5rem;
+}
+
+.chart-filter {
+    background-color: var(--color-medium-gray);
+    border: 1px solid #333;
+    color: var(--color-light-gray);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 350px;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+    padding-top: 1rem;
+}
+
+.achievement-card {
+    background-color: var(--color-medium-gray);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 2px solid #333;
+    transition: all 0.3s ease;
+    opacity: 0.5;
+}
+
+.achievement-card.unlocked {
+    opacity: 1;
+    border-color: var(--color-yellow);
+    box-shadow: 0 0 15px rgba(255, 215, 93, 0.2);
+}
+
+.achievement-card:not(.unlocked):hover {
+    transform: translateY(-5px);
+    border-color: #555;
+}
+
+
+.achievement-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem auto;
+    object-fit: contain;
+    filter: grayscale(100%);
+}
+
+.achievement-card.unlocked .achievement-icon {
+    filter: none;
+    animation: pop-in 0.5s ease-out;
+}
+
+@keyframes pop-in {
+    0% { transform: scale(0.5); }
+    100% { transform: scale(1); }
+}
+
+.achievement-title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-light-gray);
+    margin-bottom: 0.5rem;
+}
+
+.achievement-card.unlocked .achievement-title {
+    color: var(--color-white);
+}
+
+.achievement-description {
+    font-size: 0.8rem;
+    color: #888;
+    line-height: 1.4;
+}
+
+.achievement-date {
+    font-size: 0.75rem;
+    color: var(--color-yellow);
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .charts-section {
+        grid-template-columns: 1fr;
+    }
+    .achievements-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
