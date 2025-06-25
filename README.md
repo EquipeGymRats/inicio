@@ -55,8 +55,8 @@ Oferecemos treinos personalizados, monitoramento de execução com IA, controle 
 ---
 
 <div align="center" style="margin: 30px 0;">
-  <a href="#" target="_blank">
-    <img src="https://img.shields.io/badge/🔗%20Ver%20o%20site-27ae60?style=for-the-badge&logo=google-chrome&logoColor=white&labelColor=27ae60&color=27ae60" alt="Ver o site" style="border-radius: 16px;">
+  <a href="https://equipegymrats.github.io/inicio/" target="_blank">
+    <img src="https://img.shields.io/badge/%20Ver%20o%20site-27ae60?style=for-the-badge&logo=google-chrome&logoColor=white&labelColor=27ae60&color=27ae60" alt="Ver o site" style="border-radius: 16px;">
   </a>
 </div>
 
