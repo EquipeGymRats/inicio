@@ -9,7 +9,7 @@ import { authService } from './auth.js'; // Garanta que o caminho para o seu aut
 
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const API_BASE_URL = isLocal 
-    ? 'http://192.168.10.24:3000' // URL para desenvolvimento local
+    ? 'https://api-gym-cyan.vercel.app' // URL para desenvolvimento local
     : 'https://api-gym-cyan.vercel.app'; // URL para produção
 
 /**

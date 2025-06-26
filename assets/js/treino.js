@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentDayIndex = 0;
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const BASE_URL = isLocal 
-        ? 'http://192.168.10.24:3000' // URL para desenvolvimento local
+        ? 'https://api-gym-cyan.vercel.app' // URL para desenvolvimento local
         : 'https://api-gym-cyan.vercel.app'; // URL para produção
 
 
