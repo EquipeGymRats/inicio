@@ -33,19 +33,23 @@ document.addEventListener('DOMContentLoaded', () => {
             item.className = 'reminder-item';
             item.dataset.id = reminder._id;
 
+            // Badge de status
+            const badgeClass = reminder.isActive ? 'reminder-badge active' : 'reminder-badge inactive';
+            const badgeText = reminder.isActive ? 'Ativo' : 'Inativo';
+
             item.innerHTML = `
                 <div class="reminder-info">
                     <i class="fas fa-bell"></i>
                     <div>
-                        <strong>${reminder.message}</strong>
+                        <strong>${reminder.message} <span class="${badgeClass}">${badgeText}</span></strong>
                         <span>${reminder.time} - ${reminder.days.join(', ')}</span>
                     </div>
                 </div>
                 <div class="reminder-actions">
-                    <button class="btn-toggle-status" data-active="${reminder.isActive}">
-                        ${reminder.isActive ? 'Desativar' : 'Ativar'}
+                    <button class="btn-toggle-status" data-active="${reminder.isActive}" title="${reminder.isActive ? 'Desativar lembrete' : 'Ativar lembrete'}">
+                        <i class="fa-solid fa-power-off"></i>
                     </button>
-                    <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                    <button class="btn-delete" title="Excluir lembrete"><i class="fas fa-trash"></i></button>
                 </div>
             `;
             listContainer.appendChild(item);

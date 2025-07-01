@@ -1,112 +1,150 @@
 /* assets/style/dashboard/reminders.css */
 
 .reminders-page-container {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: center;
+    background: var(--color-black);
+    padding: 32px 0;
+    min-height: 100vh;
 }
 
 /* Estilos para os cards */
-.reminder-form-card, .reminders-list-card {
-    background-color: var(--color-surface);
-    border-radius: 12px;
-    padding: 25px;
-    border: 1px solid var(--color-border);
+.card.reminder-form-card, .card.reminders-list-card {
+    background: var(--color-surface, #181818);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+    padding: 32px 28px;
+    border: none;
+    min-width: 340px;
+    max-width: 420px;
+    flex: 1 1 340px;
+    transition: box-shadow 0.2s;
+}
+
+.card.reminder-form-card:hover, .card.reminders-list-card:hover {
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.13);
 }
 
 .card h2 {
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-    color: var(--color-yellow);
+    font-size: 1.6rem;
+    margin-bottom: 24px;
+    color: #f7b731;
+    letter-spacing: 0.5px;
+    font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 /* Formulário de criação */
 #reminder-form .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 22px;
 }
 
 #reminder-form label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: var(--color-text-secondary);
+    font-size: 1rem;
+    color: #7b7b7b;
+    font-weight: 600;
+    margin-bottom: 7px;
 }
 
 #reminder-form input[type="text"],
 #reminder-form input[type="time"] {
     width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid var(--color-border);
-    background-color: var(--color-bg);
-    color: var(--color-text-primary);
-    font-size: 0.95rem;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #232323;
+    background: #181818;
+    color: #f7b731;
+    font-size: 1rem;
+    margin-top: 2px;
+    transition: border 0.2s;
+}
+
+#reminder-form input[type="text"]:focus,
+#reminder-form input[type="time"]:focus {
+    border: 1.5px solid #f7b731;
+    outline: none;
+    background: #232323;
+    color: #fff;
 }
 
 /* Seletor de dias da semana */
 .days-selector {
     display: flex;
     justify-content: space-between;
-    gap: 5px;
+    gap: 7px;
 }
 
 .days-selector span {
-    width: 35px;
-    height: 35px;
+    width: 38px;
+    height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background-color: var(--color-border);
-    color: var(--color-text-secondary);
+    background: #f1f5f9;
+    color: #b1b1b1;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.days-selector span:hover {
-    background-color: #555;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.03);
 }
 
 .days-selector span.selected {
-    background-color: var(--color-yellow);
-    color: var(--color-bg);
-    transform: scale(1.1);
+    background: #f7b731;
+    color: #fff;
+    border: 2px solid #f7b731;
+    transform: scale(1.12);
+}
+
+.days-selector span:hover {
+    border: 2px solid #f7b731;
+    color: #f7b731;
+    background: #fffbe6;
 }
 
 /* Lista de lembretes */
 .reminders-list {
-    max-height: 400px;
+    max-height: 420px;
     overflow-y: auto;
-    padding-right: 10px; /* Espaço para a barra de rolagem */
+    padding-right: 8px;
 }
 
 .reminder-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 15px;
-    background-color: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-left: 4px solid var(--color-yellow);
-    border-radius: 8px;
-    margin-bottom: 15px;
-    gap: 15px;
+    padding: 18px 16px;
+    background: #f8fafc;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    gap: 18px;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+    border-left: 5px solid #f7b731;
+    position: relative;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .reminder-info {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 18px;
     flex-grow: 1;
 }
 
 .reminder-info i {
-    font-size: 1.5rem;
-    color: var(--color-yellow);
+    font-size: 1.7rem;
+    color: #f7b731;
 }
 
 .reminder-info div {
@@ -115,16 +153,38 @@
 }
 
 .reminder-info strong {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-text-primary);
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 2px;
 }
 
 .reminder-info span {
-    font-size: 0.85rem;
-    color: var(--color-text-secondary);
+    font-size: 0.93rem;
+    color: #7b7b7b;
 }
 
+.reminder-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 8px;
+    background: #e0e0e0;
+    color: #888;
+    vertical-align: middle;
+}
+
+.reminder-badge.active {
+    background: #f7b731;
+    color: #fff;
+}
+
+.reminder-badge.inactive {
+    background: #e74c3c;
+    color: #fff;
+}
 
 .reminder-actions {
     display: flex;
@@ -132,36 +192,78 @@
 }
 
 .reminder-actions button {
-    background: none;
-    border: 1px solid var(--color-border);
-    color: var(--color-text-secondary);
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 0.8rem;
+    background: #fff;
+    border: 1.5px solid #e0e0e0;
+    color: #7b7b7b;
+    border-radius: 7px;
+    padding: 7px 14px;
+    font-size: 0.93rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.03);
+    position: relative;
 }
 
 .reminder-actions button:hover {
-    color: var(--color-text-primary);
-    border-color: var(--color-text-primary);
+    color: #f7b731;
+    border-color: #f7b731;
+    background: #fffbe6;
 }
 
 .reminder-actions .btn-delete:hover {
     color: #e74c3c;
     border-color: #e74c3c;
+    background: #fff0ee;
+}
+
+.reminder-actions button[title]:hover:after {
+    content: attr(title);
+    position: absolute;
+    left: 50%;
+    top: -32px;
+    transform: translateX(-50%);
+    background: #222;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    z-index: 10;
+    opacity: 0.95;
 }
 
 .empty-list-message {
     text-align: center;
-    color: var(--color-text-secondary);
-    padding: 20px;
+    color: #b1b1b1;
+    padding: 28px 0;
+    font-size: 1.08rem;
 }
 
 /* Responsividade */
 @media (max-width: 992px) {
     .reminders-page-container {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+        padding: 18px 0;
+    }
+    .card.reminder-form-card, .card.reminders-list-card {
+        min-width: 90vw;
+        max-width: 98vw;
+        padding: 22px 8px;
+    }
+}
+
+@media (max-width: 600px) {
+    .reminders-page-container {
+        padding: 8px 0;
+    }
+    .card.reminder-form-card, .card.reminders-list-card {
+        min-width: 100vw;
+        max-width: 100vw;
+        border-radius: 0;
+        box-shadow: none;
     }
 }
 
@@ -169,27 +271,75 @@
 
 .suggestion-pills {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
-    margin-bottom: 20px; /* Espaço antes do formulário */
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #f1f1f1;
 }
 
 .pill-btn {
-    background-color: var(--color-bg);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-secondary);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    background: #f8fafc;
+    border: 1.5px solid #e0e0e0;
+    color: #7b7b7b;
+    padding: 7px 16px;
+    border-radius: 22px;
+    font-size: 0.97rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.03);
 }
 
 .pill-btn:hover {
-    background-color: var(--color-yellow);
-    color: var(--color-bg);
-    border-color: var(--color-yellow);
-    transform: translateY(-2px);
+    background: #f7b731;
+    color: #fff;
+    border-color: #f7b731;
+    transform: translateY(-2px) scale(1.07);
+}
+
+.btn.btn-primary, #create-reminder-btn {
+    background: linear-gradient(90deg, #f7b731 60%, #f5a623 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 1.08rem;
+    font-weight: 700;
+    width: 100%;
+    box-shadow: 0 2px 8px 0 rgba(247,183,49,0.10);
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn.btn-primary:hover, #create-reminder-btn:hover {
+    background: linear-gradient(90deg, #f5a623 60%, #f7b731 100%);
+    box-shadow: 0 4px 16px 0 rgba(247,183,49,0.18);
+}
+
+/* --- Bloco de título bonito (overview-header) --- */
+.nutrition-overview {
+    background-color: var(--color-dark-gray, #181818);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--color-medium-gray, #232323);
+    margin-bottom: 2rem;
+}
+.overview-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-medium-gray, #232323);
+    margin-bottom: 1.5rem;
+}
+.overview-header i { 
+    font-size: 2rem; 
+    color: var(--color-yellow, #f7b731); 
+}
+.overview-header h1 { 
+    font-size: 1.8rem; 
+    font-weight: 600; 
+    color: var(--color-white, #fff); 
+    margin: 0; 
 }

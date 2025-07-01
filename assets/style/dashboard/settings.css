@@ -104,3 +104,30 @@
 .feedback-message.error {
     color: #ff4d4d;
 }
+
+/* --- Bloco de título bonito (overview-header) --- */
+.nutrition-overview {
+    background-color: var(--color-dark-gray, #181818);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--color-medium-gray, #232323);
+    margin-bottom: 2rem;
+}
+.overview-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-medium-gray, #232323);
+    margin-bottom: 1.5rem;
+}
+.overview-header i { 
+    font-size: 2rem; 
+    color: var(--color-yellow, #f7b731); 
+}
+.overview-header h1 { 
+    font-size: 1.8rem; 
+    font-weight: 600; 
+    color: var(--color-white, #fff); 
+    margin: 0; 
+}

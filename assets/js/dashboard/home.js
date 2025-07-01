@@ -12,24 +12,106 @@ let currentWorkout = null;
 let currentPage = 1;
 let totalPages = 1;
 let isLoadingFeed = false;
+let apiStatusCheckInterval = null;
+let isApiUnstable = false;
 
 // --- INICIALIZAÇÃO ---
 document.addEventListener('DOMContentLoaded', () => {
     loadAllData();
     setupEventListeners();
+    startApiStatusMonitoring();
 });
+
+/**
+ * Inicia o monitoramento do status da API
+ */
+function startApiStatusMonitoring() {
+    // Verifica o status da API a cada 30 segundos
+    apiStatusCheckInterval = setInterval(checkApiStatus, 30000);
+    
+    // Primeira verificação imediata
+    checkApiStatus();
+}
+
+/**
+ * Verifica se a API está funcionando corretamente
+ */
+async function checkApiStatus() {
+    try {
+        // Tenta fazer uma requisição simples para verificar se a API está online
+        await api.ping();
+        
+        // Se chegou até aqui, a API está funcionando
+        if (isApiUnstable) {
+            hideApiUnstableWarning();
+        }
+    } catch (error) {
+        console.warn('API parece estar instável:', error);
+        if (!isApiUnstable) {
+            showApiUnstableWarning();
+        }
+    }
+}
+
+/**
+ * Mostra o aviso de instabilidade da API
+ */
+function showApiUnstableWarning() {
+    isApiUnstable = true;
+    
+    // Remove aviso existente se houver
+    const existingWarning = document.getElementById('api-unstable-warning');
+    if (existingWarning) {
+        existingWarning.remove();
+    }
+    
+    // Cria o aviso
+    const warning = document.createElement('div');
+    warning.id = 'api-unstable-warning';
+    warning.className = 'api-unstable-warning';
+    warning.innerHTML = `
+        <div class="api-warning-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Sistema instável - Algumas funcionalidades podem não funcionar corretamente</span>
+            <button class="api-warning-close" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    // Adiciona o aviso no topo da página
+    document.body.insertBefore(warning, document.body.firstChild);
+}
+
+/**
+ * Esconde o aviso de instabilidade da API
+ */
+function hideApiUnstableWarning() {
+    isApiUnstable = false;
+    const warning = document.getElementById('api-unstable-warning');
+    if (warning) {
+        warning.style.animation = 'slideUp 0.3s ease-out';
+        warning.addEventListener('animationend', () => warning.remove());
+    }
+}
 
 /**
  * Carrega todos os dados iniciais da página.
  */
 async function loadAllData() {
-    currentUserIsAdmin = await authService.isAdmin();
-    
-    loadUserProfile();
-    loadTodayWorkout();
-    loadTodayNutrition();
-    loadPosts(1);
-    checkUrlForProfile(); // Verifica se um perfil deve ser aberto via URL
+    try {
+        currentUserIsAdmin = await authService.isAdmin();
+        
+        loadUserProfile();
+        loadTodayWorkout();
+        loadTodayNutrition();
+        loadPosts(1);
+        checkUrlForProfile(); // Verifica se um perfil deve ser aberto via URL
+    } catch (error) {
+        console.error('Erro ao carregar dados iniciais:', error);
+        // Se falhar no carregamento inicial, mostra o aviso de instabilidade
+        showApiUnstableWarning();
+    }
 }
 
 /**
@@ -44,6 +126,13 @@ function setupEventListeners() {
     document.getElementById('view-training-btn')?.addEventListener('click', () => redirectToPage('my-training.html'));
     document.getElementById('post-image')?.addEventListener('change', handleFileSelection);
     window.addEventListener('popstate', handleBrowserNavigation);
+    
+    // Limpa o intervalo de monitoramento quando a página for fechada
+    window.addEventListener('beforeunload', () => {
+        if (apiStatusCheckInterval) {
+            clearInterval(apiStatusCheckInterval);
+        }
+    });
 }
 
 // --- CARREGAMENTO DE DADOS ---
@@ -55,6 +144,10 @@ async function loadUserProfile() {
     } catch (error) {
         console.error('Erro ao buscar perfil do usuário:', error);
         document.getElementById('profile-card').innerHTML = '<p class="error-msg">Não foi possível carregar o perfil.</p>';
+        // Se for erro de conectividade, mostra o aviso de instabilidade
+        if (error.message.includes('API não está acessível') || error.message.includes('fetch')) {
+            showApiUnstableWarning();
+        }
     }
 }
 
@@ -75,6 +168,11 @@ async function loadTodayWorkout() {
             </div>
         `; 
         if (workoutActions) workoutActions.style.display = 'none';
+        
+        // Se for erro de conectividade, mostra o aviso de instabilidade
+        if (error.message.includes('API não está acessível') || error.message.includes('fetch')) {
+            showApiUnstableWarning();
+        }
     }
 }
 
@@ -93,6 +191,11 @@ async function loadTodayNutrition() {
             </div>
         `;
         if (nutritionActions) nutritionActions.style.display = 'none';
+        
+        // Se for erro de conectividade, mostra o aviso de instabilidade
+        if (error.message.includes('API não está acessível') || error.message.includes('fetch')) {
+            showApiUnstableWarning();
+        }
     }
 }
 
@@ -145,6 +248,11 @@ async function loadPosts(page = 1) {
             // =======================================================
             // FIM DA MUDANÇA
             // =======================================================
+        }
+        
+        // Se for erro de conectividade, mostra o aviso de instabilidade
+        if (error.message.includes('API não está acessível') || error.message.includes('fetch')) {
+            showApiUnstableWarning();
         }
     } finally {
         isLoadingFeed = false;
@@ -490,27 +598,34 @@ function renderProfileModal(userProfile) {
         ? `<ul class="modal-content-list">${userProfile.nutrition.plan.map(day => `<li><strong>${day.dayName}:</strong> ${day.meals.length} refeições</li>`).join('')}</ul>`
         : '<p class="info-msg">O usuário não possui um plano de alimentação ativo.</p>';
 
+    // NOVO HTML: Estrutura de duas colunas
     const modalHtml = `
-        <div class="profile-modal" id="profile-modal-content">
-            <button class="modal-close-btn">&times;</button>
-            <div class="profile-modal-header">
+        <div class="profile-modal profile-modal-centered">
+            <div class="modal-profile-info">
                 <img src="${userProfile.profilePicture}" alt="Avatar de ${userProfile.username}" class="profile-modal-avatar">
                 <h2 class="profile-modal-username">${userProfile.username}</h2>
                 <p class="profile-modal-level">${levelInfo.name}</p>
-                <p class="profile-modal-since">Usuário desde ${joinDate.replace('.', '')}</p>
-            </div>
-            <div class="modal-tabs">
-                <button class="modal-tab-btn active" data-tab="treino">Treino do Dia</button>
-                <button class="modal-tab-btn" data-tab="dieta">Dieta</button>
-            </div>
-            <div class="modal-content-container">
-                <div id="tab-treino" class="modal-content active">${workoutHtml}</div>
-                <div id="tab-dieta" class="modal-content">${nutritionHtml}</div>
-            </div>
-            <div class="profile-modal-actions">
+                <div class="profile-info-item"><i class="fa-solid fa-calendar"></i> Usuário desde ${joinDate.replace('.', '')}</div>
                 <button class="follow-button ${userProfile.isFollowing ? 'following' : ''}" data-user-id="${userProfile._id}">
                     ${userProfile.isFollowing ? '<i class="fa-solid fa-check"></i> Seguindo' : '<i class="fa-solid fa-plus"></i> Seguir'}
                 </button>
+            </div>
+            <div class="modal-profile-details">
+                <button class="modal-close-btn">&times;</button>
+                <div class="modal-tabs">
+                    <button class="modal-tab-btn active" data-tab="treino"><i class='fa-solid fa-dumbbell'></i> <span>Treino do Dia</span></button>
+                    <button class="modal-tab-btn" data-tab="dieta"><i class='fa-solid fa-utensils'></i> <span>Dieta</span></button>
+                </div>
+                <div class="modal-content-container">
+                    <div id="tab-treino" class="modal-content active">
+                        <div class="modal-content-title"><i class='fa-solid fa-dumbbell'></i> Treino do Dia</div>
+                        ${workoutHtml}
+                    </div>
+                    <div id="tab-dieta" class="modal-content">
+                        <div class="modal-content-title"><i class='fa-solid fa-utensils'></i> Dieta</div>
+                        ${nutritionHtml}
+                    </div>
+                </div>
             </div>
         </div>`;
 
@@ -518,24 +633,30 @@ function renderProfileModal(userProfile) {
     if(!modalBackdrop) return;
     modalBackdrop.innerHTML = modalHtml;
     
+    // Avatar com borda colorida
     const avatar = modalBackdrop.querySelector('.profile-modal-avatar');
     if (avatar && levelInfo.borderColor) {
         avatar.style.borderColor = levelInfo.borderColor;
         avatar.style.boxShadow = `0 0 15px ${levelInfo.borderColor}aa`;
     }
 
+    // Fechar modal
     modalBackdrop.querySelector('.modal-close-btn')?.addEventListener('click', closeProfileModal);
     modalBackdrop.addEventListener('click', e => e.target.id === 'profile-modal-backdrop' && closeProfileModal());
 
-    modalBackdrop.querySelectorAll('.modal-tab-btn').forEach(btn => {
+    // Troca de abas
+    const tabBtns = modalBackdrop.querySelectorAll('.modal-tab-btn');
+    const tabContents = modalBackdrop.querySelectorAll('.modal-content');
+    tabBtns.forEach((btn, idx) => {
         btn.addEventListener('click', () => {
             modalBackdrop.querySelector('.modal-tab-btn.active')?.classList.remove('active');
             modalBackdrop.querySelector('.modal-content.active')?.classList.remove('active');
             btn.classList.add('active');
-            modalBackdrop.querySelector(`#tab-${btn.dataset.tab}`)?.classList.add('active');
+            tabContents[idx].classList.add('active');
         });
     });
 
+    // Botão seguir
     const followBtn = modalBackdrop.querySelector('.follow-button');
     followBtn?.addEventListener('click', async () => {
         const userId = followBtn.dataset.userId;
@@ -552,6 +673,21 @@ function renderProfileModal(userProfile) {
             alert('Não foi possível realizar a ação.');
         } finally {
             followBtn.disabled = false;
+        }
+    });
+
+    // Lógica de "Ver mais" para conteúdos grandes
+    modalBackdrop.querySelectorAll('.modal-content').forEach(content => {
+        if (content.scrollHeight > 280) {
+            content.classList.remove('expanded');
+            const overlay = document.createElement('div');
+            overlay.className = 'see-more-overlay';
+            overlay.innerHTML = '<button class="see-more-btn">Ver mais</button>';
+            content.appendChild(overlay);
+            overlay.querySelector('.see-more-btn').addEventListener('click', () => {
+                content.classList.add('expanded');
+                overlay.remove();
+            });
         }
     });
 }

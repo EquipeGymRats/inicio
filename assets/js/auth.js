@@ -2,7 +2,7 @@
 
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const BASE_URL = isLocal 
-    ? 'https://api-gym-cyan.vercel.app' // URL para desenvolvimento local
+    ? 'http://localhost:3000' // URL para desenvolvimento local
     : 'https://api-gym-cyan.vercel.app'; // URL para produção
 
 

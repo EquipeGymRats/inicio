@@ -9,7 +9,7 @@ import { authService } from './auth.js'; // Garanta que o caminho para o seu aut
 
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const API_BASE_URL = isLocal 
-    ? 'https://api-gym-cyan.vercel.app' // URL para desenvolvimento local
+    ? 'http://localhost:3000' // URL para desenvolvimento local
     : 'https://api-gym-cyan.vercel.app'; // URL para produção
 
 /**
@@ -74,6 +74,26 @@ async function request(endpoint, method = 'GET', body = null, isFormData = false
 
 // 5. Exporta o objeto 'api' apenas com as funções relacionadas a DADOS
 export const api = {
+    // --- Teste de conectividade ---
+    ping: async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/health`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API não está respondendo corretamente: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            throw new Error('API não está acessível');
+        }
+    },
+
     // --- Treino ---
     getTodayWorkout: async () => {
         const response = await request('/training/today');
@@ -84,7 +104,14 @@ export const api = {
         return response.workout; 
     },
     
-    completeTodayWorkout: (dayName) => request('/training/complete-day', 'POST', { dayName }),
+    completeTodayWorkout: async (dayName, rating, difficulties, notes) => {
+        const response = await request('/training/complete-day', 'POST', { dayName, rating, difficulties, notes });
+        if (response.isRestDay) {
+            return response;
+        }
+        // A API de hoje retorna um objeto aninhado. O frontend espera o objeto de treino direto.
+        return response.workout;
+    },
     getTrainingPlan: () => request('/training'),
     // --- Feed ---
     getFeedPosts: (page = 1) => request(`/posts?page=${page}&limit=5`),
@@ -101,8 +128,6 @@ export const api = {
     updateReminder: (id, data) => request(`/reminders/${id}`, 'PUT', data),
     deleteReminder: (id) => request(`/reminders/${id}`, 'DELETE'),
     savePushSubscription: (subscription) => request('/push/subscribe', 'POST', { subscription }),
-
-
 
     getUserProfileByUsername: (username) => request(`/user/${username}`),
     followUser: (userId) => request(`/user/${userId}/follow`, 'POST'),
