@@ -1,19 +1,22 @@
+// assets/js/apiService.js
+
 /**
  * apiService.js
- * Módulo para chamadas de API de dados (treino, posts, etc.).
- * IMPORTA e UTILIZA o 'authService' para obter o token de autenticação.
+ * Módulo CENTRALIZADO para todas as chamadas de API de dados (treino, posts, etc.).
+ * Ele importa e utiliza o 'authService' para obter o token de autenticação.
  */
 
-// 1. Importa o seu serviço de autenticação
-import { authService } from './auth.js'; // Garanta que o caminho para o seu auth.js está correto
+// 1. Importa o serviço de autenticação para pegar o token.
+import { authService } from './auth.js';
 
+// Define a URL base da API dependendo se está em ambiente local ou de produção.
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const API_BASE_URL = isLocal 
-    ? 'http://localhost:3000' // URL para desenvolvimento local
+    ? 'http://192.168.10.24:3000' // URL para desenvolvimento local
     : 'https://api-gym-cyan.vercel.app'; // URL para produção
 
 /**
- * Função centralizada para fazer requisições de DADOS à API.
+ * Função principal e centralizada para fazer requisições à API.
  * @param {string} endpoint - O endpoint da API (ex: '/training/today').
  * @param {string} method - O método HTTP ('GET', 'POST', 'PUT', 'DELETE').
  * @param {object|FormData} [body] - O corpo da requisição.
@@ -23,12 +26,11 @@ const API_BASE_URL = isLocal
 async function request(endpoint, method = 'GET', body = null, isFormData = false) {
     const url = `${API_BASE_URL}${endpoint}`;
     
-    // 2. Usa a função do seu auth.js para pegar o token
+    // Pega o token de autenticação do authService.
     const token = authService.getToken();
 
     const headers = new Headers();
     if (token) {
-        // 3. Usa o cabeçalho 'x-auth-token' como você especificou
         headers.append('x-auth-token', token);
     }
 
@@ -49,77 +51,50 @@ async function request(endpoint, method = 'GET', body = null, isFormData = false
     try {
         const response = await fetch(url, config);
 
+        // Se a resposta não for bem-sucedida (status não for 2xx), trata o erro.
         if (!response.ok) {
-            // 4. Se o token for inválido, usa a função de logout do seu auth.js
             if (response.status === 401 || response.status === 403) {
                 console.error('Não autorizado. Token inválido ou expirado. Deslogando...');
                 authService.logout(); // Chama a função de logout centralizada
                 sessionStorage.setItem('redirectUrl', window.location.href);
                 window.location.href = 'login.html'; // Redireciona para a página de login
             }
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Erro ${response.status}`);
+            // Tenta extrair uma mensagem de erro do corpo da resposta.
+            const errorData = await response.json().catch(() => ({ message: `Erro ${response.status}: ${response.statusText}` }));
+            throw new Error(errorData.message);
         }
 
+        // Se a resposta for 204 No Content, não há corpo para ler. Retorna null.
         if (response.status === 204) {
             return null;
         }
         
+        // --- ESTA É A PARTE MAIS IMPORTANTE ---
+        // Retorna a resposta da API convertida para JSON.
+        // Se esta linha não tiver 'return', a função terminará e o valor será 'undefined'.
         return await response.json();
+
     } catch (error) {
         console.error(`Erro na requisição para ${endpoint}:`, error);
-        throw error;
+        throw error; // Repassa o erro para quem chamou a função (ex: my-training.js).
     }
 }
 
-// 5. Exporta o objeto 'api' apenas com as funções relacionadas a DADOS
+// Exporta um objeto 'api' com todas as funções de comunicação com o backend.
+// Cada função aqui DEVE retornar o resultado da chamada 'request'.
 export const api = {
-    // --- Teste de conectividade ---
-    ping: async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/health`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`API não está respondendo corretamente: ${response.status}`);
-            }
-            
-            return await response.json();
-        } catch (error) {
-            throw new Error('API não está acessível');
-        }
-    },
-
+    ping: () => request('/ping'),
     // --- Treino ---
-    getTodayWorkout: async () => {
-        const response = await request('/training/today');
-        if (response.isRestDay) {
-            return response;
-        }
-        // A API de hoje retorna um objeto aninhado. O frontend espera o objeto de treino direto.
-        return response.workout; 
-    },
-    
-    completeTodayWorkout: async (dayName, rating, difficulties, notes) => {
-        const response = await request('/training/complete-day', 'POST', { dayName, rating, difficulties, notes });
-        if (response.isRestDay) {
-            return response;
-        }
-        // A API de hoje retorna um objeto aninhado. O frontend espera o objeto de treino direto.
-        return response.workout;
-    },
+    getTodayWorkout: () => request('/training/today'),
     getTrainingPlan: () => request('/training'),
+    completeTodayWorkout: (dayName) => request('/training/complete-day', 'POST', { dayName }),
+
     // --- Feed ---
     getFeedPosts: (page = 1) => request(`/posts?page=${page}&limit=5`),
-    deletePost: (postId) => request(`/posts/${postId}`, 'DELETE'),
     createPost: (formData) => request('/posts', 'POST', formData, true),
+    deletePost: (postId) => request(`/posts/${postId}`, 'DELETE'),
 
     // --- Nutrição ---
-    getTodayNutrition: () => request('/nutrition'),
     getNutritionPlan: () => request('/nutrition'),
 
     // --- Lembretes ---
@@ -128,9 +103,4 @@ export const api = {
     updateReminder: (id, data) => request(`/reminders/${id}`, 'PUT', data),
     deleteReminder: (id) => request(`/reminders/${id}`, 'DELETE'),
     savePushSubscription: (subscription) => request('/push/subscribe', 'POST', { subscription }),
-
-    getUserProfileByUsername: (username) => request(`/user/${username}`),
-    followUser: (userId) => request(`/user/${userId}/follow`, 'POST'),
-    unfollowUser: (userId) => request(`/user/${userId}/unfollow`, 'POST'),
-    getAllAchievements: () => request('/achievements'),
 };

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard de Administração - Gym Rats</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/logo_page.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* Paleta de Cores e Variáveis Globais */
@@ -250,7 +251,7 @@
         // --- Variáveis Globais ---
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const API_URL = isLocal 
-            ? 'https://api-gym-cyan.vercel.app' // URL para desenvolvimento local
+            ? 'http://localhost:3000' // URL para desenvolvimento local
             : 'https://api-gym-cyan.vercel.app'; // URL para produção
 
         let allTrainingsData = [];

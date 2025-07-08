@@ -155,9 +155,25 @@ async function loadTodayWorkout() {
     const workoutContent = document.getElementById('workout-content');
     const workoutActions = document.querySelector('#workout-day .card-actions');
     try {
-        const workout = await api.getTodayWorkout();
-        currentWorkout = workout;
-        renderTodayWorkout(workout);
+        // =======================================================
+        // INÍCIO DA CORREÇÃO
+        // =======================================================
+        // 1. Recebe a resposta completa da API.
+        const response = await api.getTodayWorkout();
+
+        // 2. Verifica se é um dia de descanso ou um dia de treino.
+        if (response.isRestDay) {
+            // Se for descanso, a estrutura da resposta já é a esperada.
+            renderTodayWorkout(response);
+        } else {
+            // Se for treino, extrai o objeto 'workout' aninhado.
+            currentWorkout = response.workout; // Atualiza o estado global com os dados corretos.
+            // Passa apenas a parte que contém os exercícios para a função de renderização.
+            renderTodayWorkout(response.workout);
+        }
+        // =======================================================
+        // FIM DA CORREÇÃO
+        // =======================================================
     } catch (error) {
         console.error('Erro ao buscar treino do dia:', error);
         if(workoutContent) workoutContent.innerHTML = `
@@ -169,7 +185,6 @@ async function loadTodayWorkout() {
         `; 
         if (workoutActions) workoutActions.style.display = 'none';
         
-        // Se for erro de conectividade, mostra o aviso de instabilidade
         if (error.message.includes('API não está acessível') || error.message.includes('fetch')) {
             showApiUnstableWarning();
         }
