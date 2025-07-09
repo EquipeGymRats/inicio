@@ -25,7 +25,7 @@ export async function registerAndSubscribe() {
     const isSecureContext = window.location.protocol === 'https:';
 
     if (!isSupported || !isSecureContext) {
-        // alert('Push messaging não é suportado ou o ambiente não é seguro.');
+        // console.log('Push messaging não é suportado ou o ambiente não é seguro.');
         const banner = document.getElementById('notification-unsupported-banner');
         if (banner) {
             banner.classList.add('show');
@@ -41,7 +41,7 @@ export async function registerAndSubscribe() {
 
         const permission = await Notification.requestPermission();
         if (permission !== 'granted') {
-            alert('Permissão para notificações negada.');
+            console.log('Permissão para notificações negada.');
             return;
         }
 

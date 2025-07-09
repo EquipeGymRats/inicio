@@ -139,7 +139,7 @@ if (logoutLink) {
         } catch (error) {
             console.error('Erro ao fazer logout:', error);
             // Mostrar uma mensagem de erro ao usuário
-            alert('Não foi possível fazer logout. Tente novamente.');
+            console.log('Não foi possível fazer logout. Tente novamente.');
         }
     });
 }

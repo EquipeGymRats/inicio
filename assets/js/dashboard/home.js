@@ -438,7 +438,7 @@ async function handleWorkoutCompletion() {
         renderTodayWorkout(currentWorkout);
         loadUserProfile();
     } catch (error) {
-        alert(error.message || 'Não foi possível concluir o treino.');
+        console.log(error.message || 'Não foi possível concluir o treino.');
         completeBtn.disabled = false;
         completeBtn.innerHTML = 'Concluir Treino';
     }
@@ -471,7 +471,7 @@ async function handlePostCreation(event) {
         form.reset();
         document.getElementById('file-name-display').innerHTML = '';
     } catch (error) {
-        alert(error.message || 'Falha ao criar o post.');
+        console.log(error.message || 'Falha ao criar o post.');
     } finally {
         submitButton.disabled = false;
         submitButton.innerHTML = 'Postar';
@@ -539,7 +539,7 @@ async function handleFeedActions(event) {
                 postElement.style.transform = 'scale(0.95)';
                 setTimeout(() => postElement.remove(), 300);
             } catch (error) {
-                alert(`Erro ao deletar: ${error.message}`);
+                console.log(`Erro ao deletar: ${error.message}`);
             }
         }
     }
@@ -578,7 +578,7 @@ async function openProfileModal(username) {
         renderProfileModal(userProfile);
         history.pushState({ username }, `Perfil de ${username}`, `#perfil/${username}`);
     } catch (error) {
-        alert(error.message || 'Não foi possível carregar o perfil.');
+        console.log(error.message || 'Não foi possível carregar o perfil.');
         closeProfileModal();
     }
 }
@@ -685,7 +685,7 @@ function renderProfileModal(userProfile) {
                 : '<i class="fa-solid fa-plus"></i> Seguir';
         } catch (error) {
             console.error("Erro ao seguir/deixar de seguir:", error);
-            alert('Não foi possível realizar a ação.');
+            console.log('Não foi possível realizar a ação.');
         } finally {
             followBtn.disabled = false;
         }

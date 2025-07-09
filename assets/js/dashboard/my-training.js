@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 // Isso mostrará o erro exato no console do navegador para depuração
                 console.error('Erro ao concluir o treino:', error);
-                alert(error.message || 'Não foi possível marcar como concluído. Verifique o console para mais detalhes.');
+                console.log(error.message || 'Não foi possível marcar como concluído. Verifique o console para mais detalhes.');
                 
                 // Restaura o botão para que o usuário possa tentar novamente
                 target.disabled = false;

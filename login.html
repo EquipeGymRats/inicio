@@ -21,10 +21,11 @@
             --color-light-gray: #E0E0E0;
             --color-medium-gray: #1E1E1E;
             --color-dark-gray: #0F0F0F;
+            --color-card-gradient: linear-gradient(135deg, rgba(20,20,20,0.95) 60%, rgba(40,40,40,0.85) 100%);
         }
 
         body {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.948), rgb(0, 0, 0));
+            background-image: radial-gradient(circle at 20% 40%, rgba(255,215,93,0.08) 0%, rgba(0,0,0,0.95) 60%), linear-gradient(rgba(0, 0, 0, 0.948), rgb(0, 0, 0));
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -33,7 +34,11 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
         }
+
+        /* Logo de fundo decorativo */
 
         main {
             flex-grow: 1;
@@ -47,40 +52,39 @@
             max-width: 450px;
             width: 100%;
             margin: 40px 20px;
-            padding: 40px;
-            background-color: rgba(10, 10, 10, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 44px 38px 38px 38px;
+            background: var(--color-card-gradient);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 22px;
+            box-shadow: 0 10px 40px 0 rgba(0,0,0,0.55), 0 1.5px 0 0 var(--color-yellow);
+            border: 1.5px solid rgba(255, 215, 0, 0.25);
             text-align: center;
             animation: fadeInScale 0.6s ease-out forwards;
+            transition: box-shadow 0.3s, border 0.3s;
         }
-
-        .google-btn-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
+        .auth-container:hover {
+            box-shadow: 0 16px 48px 0 rgba(255,215,93,0.10), 0 2px 0 0 var(--color-yellow);
+            border: 1.5px solid var(--color-yellow);
         }
 
         .auth-header {
             margin-bottom: 30px;
         }
-        
         .auth-header .logo {
-            font-size: 2.5em;
+            font-size: 2.7em;
             color: var(--color-yellow);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
             margin: 0;
+            font-family: 'Montserrat', 'Roboto', sans-serif;
+            font-weight: 800;
         }
-
         .auth-header p {
             color: var(--color-light-gray);
-            font-size: 1.1em;
-            margin-top: 5px;
+            font-size: 1.13em;
+            margin-top: 7px;
+            font-weight: 500;
         }
 
         .form-group {
@@ -88,37 +92,34 @@
             margin-bottom: 25px;
             text-align: left;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 8px;
             color: var(--color-light-gray);
-            font-weight: 500;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
-
         .input-wrapper {
             position: relative;
         }
-
         .form-group input {
             width: 100%;
-            padding: 14px 20px;
-            padding-right: 45px; /* Espaço para o ícone */
-            border-radius: 8px;
-            border: 1px solid var(--color-medium-gray);
+            padding: 15px 22px;
+            padding-right: 45px;
+            border-radius: 12px;
+            border: 1.5px solid var(--color-medium-gray);
             background-color: var(--color-dark-gray);
             color: var(--color-white);
-            font-size: 1em;
+            font-size: 1.07em;
             box-sizing: border-box;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 1.5px 8px 0 rgba(255,215,93,0.04) inset;
         }
-
         .form-group input:focus {
             border-color: var(--color-yellow);
-            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 0 5px rgba(255, 215, 0, 0.13);
             outline: none;
         }
-        
         .password-toggle {
             position: absolute;
             top: 50%;
@@ -126,56 +127,75 @@
             transform: translateY(-50%);
             color: var(--color-light-gray);
             cursor: pointer;
-            transition: color 0.2s ease;
+            transition: color 0.2s;
         }
-        
         .password-toggle:hover {
             color: var(--color-yellow);
         }
 
         .btn {
             width: 100%;
-            padding: 14px;
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: 12px;
             border: none;
-            font-size: 1.1em;
+            font-size: 1.13em;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 12px 0 rgba(255,215,93,0.10);
         }
-
         .btn-primary {
-            background-color: var(--color-yellow);
+            background: linear-gradient(90deg, #ffd75d 60%, #ffe484 100%);
             color: var(--color-black);
+            border: 1.5px solid #ffe484;
         }
-        
         .btn-primary:hover {
-            background-color: #e6c200;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            background: linear-gradient(90deg, #ffe484 0%, #ffd75d 100%);
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 6px 24px 0 rgba(255, 215, 0, 0.18);
+            border: 1.5px solid #ffd75d;
         }
 
         /* Botão Google */
-        .google-login-btn {
-            background-color: var(--color-white);
-            color: #444;
+        .google-btn-container {
             display: flex;
-            align-items: center;
             justify-content: center;
-            gap: 10px;
-            border: 1px solid #ddd;
+            align-items: center;
+            width: 100%;
         }
-
-        .google-login-btn img {
-            width: 20px;
-            height: 20px;
+        .google-btn-container > div, .google-btn-container > div > div {
+            width: 100% !important;
         }
-        
-        .google-login-btn:hover {
-            background-color: #f5f5f5;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        .google-btn-container .abcRioButton, .google-btn-container .abcRioButtonContentWrapper {
+            background: #181818 !important;
+            border-radius: 12px !important;
+            border: 1.5px solid var(--color-yellow) !important;
+            box-shadow: 0 2px 12px 0 rgba(255,215,93,0.10) !important;
+            color: var(--color-white) !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            padding: 0 !important;
+            transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+        }
+        .google-btn-container .abcRioButton:hover, .google-btn-container .abcRioButton:focus {
+            background: #222 !important;
+            border: 1.5px solid #ffe484 !important;
+            box-shadow: 0 4px 18px 0 rgba(255,215,93,0.18) !important;
+        }
+        .google-btn-container .abcRioButtonContentWrapper span, .google-btn-container .abcRioButtonContentWrapper {
+            color: var(--color-white) !important;
+            font-weight: 600 !important;
+            font-size: 1.05em !important;
+            letter-spacing: 0.5px;
+        }
+        .google-btn-container .abcRioButtonIcon {
+            margin-right: 10px !important;
+        }
+        .google-btn-container .abcRioButtonIcon img {
+            width: 22px !important;
+            height: 22px !important;
         }
 
         /* Separador */
@@ -184,21 +204,21 @@
             align-items: center;
             text-align: center;
             color: var(--color-light-gray);
-            margin: 25px 0;
-            font-weight: 500;
+            margin: 28px 0 22px 0;
+            font-weight: 700;
+            font-size: 1.07em;
+            letter-spacing: 1px;
         }
-
         .separator::before,
         .separator::after {
             content: '';
             flex: 1;
-            border-bottom: 1px solid var(--color-medium-gray);
+            border-bottom: 1.5px solid var(--color-medium-gray);
+            margin: 0 10px;
         }
-
         .separator:not(:empty)::before {
             margin-right: .5em;
         }
-
         .separator:not(:empty)::after {
             margin-left: .5em;
         }
@@ -207,9 +227,9 @@
             margin-top: 25px;
             color: var(--color-light-gray);
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: color 0.3s;
+            font-weight: 600;
         }
-        
         .toggle-form:hover {
             color: var(--color-yellow);
             text-decoration: underline;
@@ -239,16 +259,41 @@
             align-items: center;
             gap: 10px;
         }
-
         .notification-toast.show {
             opacity: 1;
             visibility: visible;
             transform: translateX(0);
         }
-        
         .notification-toast.success { background-color: #28a745; }
         .notification-toast.error { background-color: #dc3545; }
         .notification-toast i { font-size: 1.2em; }
+
+        .custom-google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 13px 0;
+            background: #181818;
+            color: #fff;
+            border: 1.5px solid var(--color-yellow);
+            border-radius: 12px;
+            font-size: 1.08em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 12px 0 rgba(255,215,93,0.10);
+            transition: background 0.2s, border 0.2s, box-shadow 0.2s;
+        }
+        .custom-google-btn img {
+            width: 22px;
+            height: 22px;
+        }
+        .custom-google-btn:hover, .custom-google-btn:focus {
+            background: #222;
+            border: 1.5px solid #ffe484;
+            box-shadow: 0 4px 18px 0 rgba(255,215,93,0.18);
+        }
 
         @media (max-width: 480px) {
             .auth-container {
@@ -263,6 +308,7 @@
     </style>
 </head>
 <body>
+    
     <header class="main-header">
     <div class="container header-content">
         <div class="logo-area">
@@ -326,7 +372,12 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Entrar</button>
                     <div class="separator">OU</div>
-                    <div id="google-login-btn" class="google-btn-container"></div>
+                    <div class="google-btn-container">
+                        <button type="button" id="custom-google-btn" class="custom-google-btn">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+                            Entrar com Google
+                        </button>
+                    </div>
                 </form>
                 <p class="toggle-form" id="show-register">Não tem uma conta? Crie agora!</p>
             </div>
@@ -438,9 +489,7 @@
                 if (result.success) {
                     showNotification(result.message, 'success');
                     setTimeout(() => {
-                        const redirectUrl = sessionStorage.getItem('redirectUrl');
-                        sessionStorage.removeItem('redirectUrl');
-                        window.location.href = redirectUrl || '/inicio';
+                        window.location.href = 'login.html?created=1';
                     }, 500);
                 } else {
                     showNotification(result.message, 'error');
@@ -485,6 +534,10 @@
                 google.accounts.id.prompt(); //
             }
 
+            document.getElementById('custom-google-btn').addEventListener('click', async () => {
+                // Substitua pelo seu fluxo OAuth real!
+                window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=461681522805-dqqcv5as36rffbohlafvoof343f1bnng.apps.googleusercontent.com&redirect_uri=http://equipegymrats.github.io/inicio&response_type=token&scope=email%20profile%20openid';
+            });
             
             showRegisterBtn?.addEventListener('click', () => {
                 loginFormContainer.style.display = 'none';
@@ -495,6 +548,14 @@
                 registerFormContainer.style.display = 'none';
                 loginFormContainer.style.display = 'block';
             });
+
+            // Exibe notificação se veio de cadastro
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('created') === '1') {
+                showNotification('Conta criada com sucesso! Faça login.', 'success');
+                // Remove o parâmetro da URL sem recarregar
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         });
     </script>
     <script type="module" src="assets/js/header.js"></script>

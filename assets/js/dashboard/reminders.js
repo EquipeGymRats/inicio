@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedDays = [...daysSelector.querySelectorAll('.selected')].map(el => el.dataset.day);
         
         if (selectedDays.length === 0) {
-            alert('Selecione pelo menos um dia da semana para o lembrete.');
+            console.log('Selecione pelo menos um dia da semana para o lembrete.');
             return;
         }
 
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             daysSelector.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
             await loadReminders();
         } catch (error) {
-            alert(`Erro ao criar lembrete: ${error.message}`);
+            console.log(`Erro ao criar lembrete: ${error.message}`);
         } finally {
             createButton.disabled = false;
             createButton.textContent = 'Criar Lembrete';

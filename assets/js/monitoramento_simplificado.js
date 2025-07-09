@@ -214,10 +214,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
             if (error.name === "NotReadableError" || error.name === "OverconstrainedError") {
                  cameraLoadingIndicator.textContent = 'Erro: A câmera já está em uso por outro app? Tente recarregar.';
-                 alert('Não foi possível acessar sua câmera. Verifique se ela não está sendo usada por outro aplicativo (Zoom, Discord, etc.) e atualize a página.');
+                 console.log('Não foi possível acessar sua câmera. Verifique se ela não está sendo usada por outro aplicativo (Zoom, Discord, etc.) e atualize a página.');
             } else if (error.name === "NotAllowedError") {
                  cameraLoadingIndicator.textContent = 'Permissão da câmera negada.';
-                 alert('Você precisa permitir o acesso à câmera para usar esta funcionalidade.');
+                 console.log('Você precisa permitir o acesso à câmera para usar esta funcionalidade.');
             } else {
                  cameraLoadingIndicator.textContent = `Erro de câmera (${error.name}). Tente trocar de câmera (frontal/traseira).`;
             }
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initiateExerciseButton.addEventListener('click', () => {
         if (!currentStream || !currentStream.active || videoElement.readyState < 2 || videoElement.videoWidth === 0 || !pose) {
-            alert("Aguarde a câmera carregar e o sistema de monitoramento iniciar.");
+            console.log("Aguarde a câmera carregar e o sistema de monitoramento iniciar.");
             if (!currentStream || !currentStream.active) setupCamera();
             else if (!pose) initializePoseDetection();
             return;
