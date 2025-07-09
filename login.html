@@ -10,7 +10,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <meta name="google-signin-client_id" content="461681522805-dqqcv5as36rffbohlafvoof343f1bnng.apps.googleusercontent.com">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         /* Estilos Globais e de Fundo */
@@ -268,31 +267,44 @@
         .notification-toast.error { background-color: #dc3545; }
         .notification-toast i { font-size: 1.2em; }
 
-        .custom-google-btn {
+        /* Estilos para o botão do Google Sign-In SDK */
+        .google-btn-container {
             display: flex;
-            align-items: center;
             justify-content: center;
-            gap: 10px;
+            align-items: center;
             width: 100%;
-            padding: 13px 0;
-            background: #181818;
-            color: #fff;
-            border: 1.5px solid var(--color-yellow);
-            border-radius: 12px;
-            font-size: 1.08em;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 2px 12px 0 rgba(255,215,93,0.10);
-            transition: background 0.2s, border 0.2s, box-shadow 0.2s;
         }
-        .custom-google-btn img {
-            width: 22px;
-            height: 22px;
+        .google-btn-container > div, .google-btn-container > div > div {
+            width: 100% !important;
         }
-        .custom-google-btn:hover, .custom-google-btn:focus {
-            background: #222;
-            border: 1.5px solid #ffe484;
-            box-shadow: 0 4px 18px 0 rgba(255,215,93,0.18);
+        .google-btn-container .abcRioButton, .google-btn-container .abcRioButtonContentWrapper {
+            background: #181818 !important;
+            border-radius: 12px !important;
+            border: 1.5px solid var(--color-yellow) !important;
+            box-shadow: 0 2px 12px 0 rgba(255,215,93,0.10) !important;
+            color: var(--color-white) !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            padding: 0 !important;
+            transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+        }
+        .google-btn-container .abcRioButton:hover, .google-btn-container .abcRioButton:focus {
+            background: #222 !important;
+            border: 1.5px solid #ffe484 !important;
+            box-shadow: 0 4px 18px 0 rgba(255,215,93,0.18) !important;
+        }
+        .google-btn-container .abcRioButtonContentWrapper span, .google-btn-container .abcRioButtonContentWrapper {
+            color: var(--color-white) !important;
+            font-weight: 600 !important;
+            font-size: 1.05em !important;
+            letter-spacing: 0.5px;
+        }
+        .google-btn-container .abcRioButtonIcon {
+            margin-right: 10px !important;
+        }
+        .google-btn-container .abcRioButtonIcon img {
+            width: 22px !important;
+            height: 22px !important;
         }
 
         @media (max-width: 480px) {
@@ -373,10 +385,7 @@
                     <button type="submit" class="btn btn-primary">Entrar</button>
                     <div class="separator">OU</div>
                     <div class="google-btn-container">
-                        <button type="button" id="custom-google-btn" class="custom-google-btn">
-                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
-                            Entrar com Google
-                        </button>
+                        <div id="google-login-btn"></div>
                     </div>
                 </form>
                 <p class="toggle-form" id="show-register">Não tem uma conta? Crie agora!</p>
@@ -496,57 +505,82 @@
                 }
             });
 
-            function handleGoogleCredentialResponse(response) {
-                const googleToken = response.credential;
-                authService.loginWithGoogle(googleToken).then(result => {
+            async function handleGoogleCredentialResponse(response) {
+                try {
+                    const googleToken = response.credential;
+                    const result = await authService.loginWithGoogle(googleToken);
+                    
                     if (result.success) {
                         showNotification('Login com Google bem-sucedido!', 'success');
                         setTimeout(() => {
                             const redirectUrl = sessionStorage.getItem('redirectUrl');
                             sessionStorage.removeItem('redirectUrl');
-                            window.location.href = redirectUrl || 'home.html'; // Corrigido para dashboard
+                            window.location.href = redirectUrl || 'home.html';
                         }, 500);
                     } else {
-                        showNotification(result.message, 'error');
+                        showNotification(result.message || 'Erro no login com Google', 'error');
                     }
-                });
+                } catch (error) {
+                    console.error('Erro no login com Google:', error);
+                    showNotification('Erro inesperado no login com Google', 'error');
+                }
             }
 
-            // Inicialização do Google Sign-In - ATUALIZADA
-            window.onload = function () {
-                google.accounts.id.initialize({
-                    client_id: "461681522805-dqqcv5as36rffbohlafvoof343f1bnng.apps.googleusercontent.com", //
-                    callback: handleGoogleCredentialResponse //
-                });
+            // Inicialização do Google Sign-In - CORRIGIDA
+            function initializeGoogleSignIn() {
+                if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+                    google.accounts.id.initialize({
+                        client_id: "461681522805-dqqcv5as36rffbohlafvoof343f1bnng.apps.googleusercontent.com",
+                        callback: handleGoogleCredentialResponse
+                    });
 
-                // Renderiza o botão no formulário de LOGIN
-                google.accounts.id.renderButton(
-                    document.getElementById('google-login-btn'),
-                    { theme: "outline", size: "large", type: 'standard', text: 'signin_with', width: '300' } //
-                );
+                    // Renderiza o botão no formulário de LOGIN
+                    const loginBtn = document.getElementById('google-login-btn');
+                    if (loginBtn) {
+                        google.accounts.id.renderButton(loginBtn, { 
+                            theme: "outline", 
+                            size: "large", 
+                            type: 'standard', 
+                            text: 'signin_with', 
+                            width: '100%' 
+                        });
+                    }
 
-                // Renderiza o botão no formulário de CADASTRO
-                google.accounts.id.renderButton(
-                    document.getElementById('google-register-btn'),
-                    { theme: "outline", size: "large", type: 'standard', text: 'signup_with', width: '300' }
-                );
-
-                google.accounts.id.prompt(); //
+                    // Renderiza o botão no formulário de CADASTRO
+                    const registerBtn = document.getElementById('google-register-btn');
+                    if (registerBtn) {
+                        google.accounts.id.renderButton(registerBtn, { 
+                            theme: "outline", 
+                            size: "large", 
+                            type: 'standard', 
+                            text: 'signup_with', 
+                            width: '100%' 
+                        });
+                    }
+                } else {
+                    // Se o SDK ainda não carregou, tenta novamente em 100ms
+                    setTimeout(initializeGoogleSignIn, 100);
+                }
             }
 
-            document.getElementById('custom-google-btn').addEventListener('click', async () => {
-                // Substitua pelo seu fluxo OAuth real!
-                window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=461681522805-dqqcv5as36rffbohlafvoof343f1bnng.apps.googleusercontent.com&redirect_uri=http://equipegymrats.github.io/inicio&response_type=token&scope=email%20profile%20openid';
-            });
+            // Inicializa quando a página carrega
+            window.onload = initializeGoogleSignIn;
+
+            // Remove o botão customizado e usa apenas o Google Sign-In SDK
+            // O botão customizado foi removido para evitar conflitos com o SDK oficial
             
             showRegisterBtn?.addEventListener('click', () => {
                 loginFormContainer.style.display = 'none';
                 registerFormContainer.style.display = 'block';
+                // Reinicializa o Google Sign-In para o formulário de registro
+                setTimeout(initializeGoogleSignIn, 100);
             });
 
             showLoginBtn?.addEventListener('click', () => {
                 registerFormContainer.style.display = 'none';
                 loginFormContainer.style.display = 'block';
+                // Reinicializa o Google Sign-In para o formulário de login
+                setTimeout(initializeGoogleSignIn, 100);
             });
 
             // Exibe notificação se veio de cadastro
