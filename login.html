@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
-        /* Estilos Globais e de Fundo */
         :root {
             --color-black: #0A0A0A;
             --color-white: #FFFFFF;
@@ -49,11 +48,11 @@
             background: rgba(255, 255, 255, 0.05); border-radius: 50%;
             animation: floatElement 25s linear infinite; bottom: -150px;
         }
-        .floating-element:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 20s; }
-        .floating-element:nth-child(2) { left: 25%; animation-delay: 2s; animation-duration: 15s; }
-        .floating-element:nth-child(3) { left: 40%; animation-delay: 4s; animation-duration: 22s; }
-        .floating-element:nth-child(4) { left: 70%; animation-delay: 1s; animation-duration: 18s; }
-        .floating-element:nth-child(5) { left: 85%; animation-delay: 5s; animation-duration: 25s; }
+        .floating-element:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .floating-element:nth-child(2) { left: 25%; animation-delay: 2s; }
+        .floating-element:nth-child(3) { left: 40%; animation-delay: 4s; }
+        .floating-element:nth-child(4) { left: 70%; animation-delay: 1s; }
+        .floating-element:nth-child(5) { left: 85%; animation-delay: 5s; }
         @keyframes floatElement {
             from { transform: translateY(0) rotate(0deg); opacity: 0; }
             10% { opacity: 1; }
@@ -75,7 +74,6 @@
             padding: 40px;
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
-            -webkit-backdrop-filter: blur(var(--glass-blur));
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             border: 1px solid var(--border-color-glass);
@@ -83,160 +81,92 @@
             animation: fadeInScale 0.6s ease-out forwards;
         }
 
-        .auth-header {
-            margin-bottom: 30px;
-        }
+        .auth-header { margin-bottom: 30px; }
+        .auth-header .logo { font-family: 'Montserrat', sans-serif; font-size: 2.5em; color: var(--color-yellow); text-transform: uppercase; letter-spacing: 2px; margin: 0; text-shadow: 0 0 8px rgba(255, 215, 93, 0.4); }
+        .auth-header p { color: var(--color-light-gray); font-size: 1.1em; margin-top: 5px; }
+
+        .form-group { position: relative; margin-bottom: 25px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--color-light-gray); font-weight: 500; }
+        .input-wrapper { position: relative; }
+        .form-group input { width: 100%; padding: 14px 20px; padding-right: 45px; border-radius: 15px; border: 1px solid var(--border-color-glass); background-color: rgba(255, 255, 255, 0.05); color: var(--color-white); font-size: 1em; box-sizing: border-box; transition: all 0.3s ease; }
+        .form-group input:focus { outline: none; border-color: var(--color-yellow); background-color: rgba(255, 215, 93, 0.1); box-shadow: 0 0 0 4px rgba(255, 215, 93, 0.1); }
+        .password-toggle { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); color: var(--color-light-gray); cursor: pointer; transition: color 0.2s ease; }
+        .password-toggle:hover { color: var(--color-yellow); }
         
-        .auth-header .logo {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 2.5em;
-            color: var(--color-yellow);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin: 0;
-            text-shadow: 0 0 8px rgba(255, 215, 93, 0.4);
-        }
-
-        .auth-header p {
-            color: var(--color-light-gray);
-            font-size: 1.1em;
-            margin-top: 5px;
-        }
-
-        .form-group {
-            position: relative;
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--color-light-gray);
-            font-weight: 500;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 14px 20px;
-            padding-right: 45px;
-            border-radius: 15px;
-            border: 1px solid var(--border-color-glass);
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--color-white);
-            font-size: 1em;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--color-yellow);
-            background-color: rgba(255, 215, 93, 0.1);
-            box-shadow: 0 0 0 4px rgba(255, 215, 93, 0.1);
-        }
-        
-        .password-toggle {
-            position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
-            color: var(--color-light-gray);
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
-        
-        .password-toggle:hover {
-            color: var(--color-yellow);
-        }
-
+        /* --- ESTILO PARA TERMOS DE PRIVACIDADE --- */
         .terms-group {
             display: flex;
-            align-items: flex-start;
-            gap: 10px;
+            align-items: center; /* Alinha verticalmente */
+            gap: 12px;
             margin-bottom: 25px;
             text-align: left;
         }
         .terms-group input[type="checkbox"] {
-            margin-top: 5px;
-            flex-shrink: 0;
-            width: 16px;
-            height: 16px;
+            position: absolute; /* Oculta o checkbox original */
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
         .terms-group label {
+            position: relative;
+            padding-left: 30px; /* Espaço para o checkbox customizado */
             font-size: 0.9em;
             color: var(--color-light-gray);
             font-weight: 400;
-            margin-bottom: 0;
             line-height: 1.5;
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+        .terms-group label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--border-color-glass);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .terms-group input[type="checkbox"]:checked + label::before {
+            background: var(--color-yellow);
+            border-color: var(--color-yellow);
+        }
+        .terms-group label::after {
+            content: '\f00c'; /* Código do ícone de check do Font Awesome */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 4px;
+            top: 4px;
+            font-size: 12px;
+            color: var(--color-black);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease;
+        }
+        .terms-group input[type="checkbox"]:checked + label::after {
+            opacity: 1;
+            transform: scale(1);
         }
         .terms-group a {
             color: var(--color-yellow);
             text-decoration: underline;
         }
 
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 50px;
-            border: none;
-            font-size: 1.1em;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, var(--color-yellow), #E6C200);
-            color: var(--color-black);
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
-        }
-
-        .google-btn-container {
-            margin-top: 15px;
-            width: 100%;
-        }
-                
-        .separator {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: var(--color-light-gray);
-            margin: 25px 0;
-            font-weight: 500;
-        }
+        .btn { width: 100%; padding: 14px; border-radius: 50px; border: none; font-size: 1.1em; font-family: 'Montserrat', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.8px; }
+        .btn-primary { background: linear-gradient(45deg, var(--color-yellow), #E6C200); color: var(--color-black); box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5); }
+        .google-btn-container { margin-top: 15px; width: 100%; }
+        .separator { display: flex; align-items: center; text-align: center; color: var(--color-light-gray); margin: 25px 0; font-weight: 500; }
         .separator::before, .separator::after { content: ''; flex: 1; border-bottom: 1px solid var(--color-medium-gray); }
         .separator:not(:empty)::before { margin-right: .5em; }
         .separator:not(:empty)::after { margin-left: .5em; }
+        .toggle-form { margin-top: 25px; color: var(--color-light-gray); cursor: pointer; transition: color 0.3s ease; }
+        .toggle-form:hover { color: var(--color-yellow); text-decoration: underline; }
 
-        .toggle-form {
-            margin-top: 25px;
-            color: var(--color-light-gray);
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        
-        .toggle-form:hover {
-            color: var(--color-yellow);
-            text-decoration: underline;
-        }
-
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
         .notification-toast { position: fixed; top: 20px; right: 20px; background-color: #333; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); transform: translateX(120%); z-index: 1000; display: flex; align-items: center; gap: 10px; }
         .notification-toast.show { opacity: 1; visibility: visible; transform: translateX(0); }
@@ -360,7 +290,10 @@
                     </div>
                     <div class="terms-group">
                         <input type="checkbox" id="register-terms" required>
-                        <label for="register-terms">Eu li e aceito os <a href="termos.html" target="_blank">Termos de Serviço</a> e a <a href="privacidade.html" target="_blank">Política de Privacidade</a>.</label>
+                        <label for="register-terms">
+                            <span class="custom-checkbox"></span>
+                            <span>Eu li e aceito os <a href="legal/termos.html" target="_blank">Termos de Serviço</a> e a <a href="legal/privacidade.html" target="_blank">Política de Privacidade</a>.</span>
+                        </label>
                     </div>
                     <button type="submit" class="btn btn-primary">Cadastrar</button>
                     <div class="separator">OU</div>
@@ -374,7 +307,7 @@
     <div id="notification-toast" class="notification-toast"></div>
     
     <script type="module">
-        import { authService } from './assets/js/auth.js';
+        import { authService } from '/assets/js/auth.js';
 
         document.addEventListener('DOMContentLoaded', () => {
             const loginForm = document.getElementById('login-form');
@@ -391,7 +324,23 @@
 
             // Callback do Login com Google
             async function handleGoogleCredentialResponse(response) {
-                // Lógica de verificação dos termos...
+                // Se estiver na tela de cadastro, exija os termos
+                if (registerFormContainer.style.display === 'block') {
+                    if (!termsCheckbox.checked) {
+                        showNotification('Você precisa aceitar os termos para usar o Google.', 'error');
+                        return;
+                    }
+                }
+                const googleToken = response.credential;
+                const result = await authService.loginWithGoogle(googleToken);
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                    }, 1200);
+                } else {
+                    showNotification(result.message, 'error');
+                }
             }
             
             // Inicialização do Botão Google (AJUSTE AQUI)
@@ -430,7 +379,62 @@
             
             window.onload = initializeGoogleSignIn;
             
-            // ... (resto dos seus event listeners)
+            // Alternância entre Login e Cadastro
+            showRegisterBtn.addEventListener('click', () => {
+                loginFormContainer.style.display = 'none';
+                registerFormContainer.style.display = 'block';
+            });
+            showLoginBtn.addEventListener('click', () => {
+                registerFormContainer.style.display = 'none';
+                loginFormContainer.style.display = 'block';
+            });
+
+            // Função para exibir notificações
+            function showNotification(message, type = 'success') {
+                notificationToast.textContent = message;
+                notificationToast.className = `notification-toast show ${type}`;
+                setTimeout(() => {
+                    notificationToast.className = 'notification-toast';
+                }, 3500);
+            }
+
+            // SUBMIT LOGIN
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const result = await authService.login(email, password);
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                    }, 1200);
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            });
+
+            // SUBMIT CADASTRO
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('register-username').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const terms = document.getElementById('register-terms').checked;
+                if (!terms) {
+                    showNotification('Você precisa aceitar os termos para se cadastrar.', 'error');
+                    return;
+                }
+                const result = await authService.register(username, email, password);
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                    }, 1200);
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            });
         });
     </script>
     <script type="module" src="assets/js/header.js"></script>
