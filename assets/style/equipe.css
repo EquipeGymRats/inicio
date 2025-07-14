@@ -1,377 +1,310 @@
-/* Variáveis de Cores - Certifique-se que estão definidas globalmente ou copie-as aqui */
+/* assets/style/equipe.css - Versão Moderna com Hero Ampliado */
+
 :root {
-      --color-black: #0A0A0A;
-      --color-white: #FFFFFF;
-      --color-yellow: #ffd75d;
-      --color-light-gray: #E0E0E0;
-      --color-medium-gray: #1E1E1E;
-      --color-dark-gray: #0F0F0F;
-    }
+    --color-black: #0A0A0A;
+    --color-white: #FFFFFF;
+    --color-yellow: #ffd75d;
+    --color-light-gray: #E0E0E0;
+    --color-medium-gray: #1E1E1E;
+    --color-dark-gray: #0F0F0F;
+    --border-color-glass: rgba(255, 255, 255, 0.15);
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --glass-bg: rgba(30, 30, 30, 0.6);
+    --glass-blur: 10px;
+}
+
+/* Fundo Dinâmico (igual ao do style.css para consistência) */
+body {
+    background-color: var(--color-black);
+    background-image: radial-gradient(circle at 20% 20%, rgba(255, 215, 93, 0.05), transparent 30%),
+                      radial-gradient(circle at 80% 80%, rgba(106, 61, 232, 0.05), transparent 30%);
+    color: var(--color-white);
+    font-family: 'Roboto', sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.floating-elements {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; overflow: hidden; z-index: -1;
+}
+.floating-element {
+    position: absolute; display: block; width: 20px; height: 20px;
+    background: rgba(255, 255, 255, 0.05); border-radius: 50%;
+    animation: floatElement 25s linear infinite; bottom: -150px;
+}
+.floating-element:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 20s; }
+.floating-element:nth-child(2) { left: 25%; animation-delay: 2s; animation-duration: 15s; }
+.floating-element:nth-child(3) { left: 40%; animation-delay: 4s; animation-duration: 22s; }
+.floating-element:nth-child(4) { left: 70%; animation-delay: 1s; animation-duration: 18s; }
+.floating-element:nth-child(5) { left: 85%; animation-delay: 5s; animation-duration: 25s; }
+@keyframes floatElement {
+    from { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    to { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* Hero Section Modernizada e Ampliada */
+.team-hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../logo.png') no-repeat center center/cover;
+    background-attachment: fixed;
+    padding: 100px 20px; /* Padding vertical aumentado */
+    text-align: center;
+    border-bottom: 5px solid var(--color-yellow);
+    display: flex;
+    align-items: center;
+    min-height: 80vh;
+    justify-content: center;
+}
+
+.team-intro-content h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3em;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--color-yellow);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.team-intro-content p {
+    font-size: 1.2em;
+    max-width: 800px;
+    margin: 0 auto;
+    color: var(--color-light-gray);
+    line-height: 1.7;
+}
+
+/* Seção dos Membros da Equipe */
+.team-members-section, .project-pillars-section, .project-journal-section {
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.team-members-section h3, .project-pillars-section h3, .project-journal-section h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.5em;
+    margin-bottom: 50px;
+    color: var(--color-yellow);
+    font-weight: 700;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    perspective: 1000px;
+}
+
+/* Cards de Membros com Efeito de Vidro */
+.team-member-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    border: 1px solid var(--border-color-glass);
+    transition: all 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding-bottom: 70px;
+    min-height: 380px;
+}
+
+.team-member-card:hover {
+    transform: translateY(-10px) rotateX(5deg) rotateY(-3deg);
+    box-shadow: 0 15px 35px rgba(255, 215, 93, 0.2);
+    border-color: rgba(255, 215, 93, 0.5);
+}
+
+.member-photo {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--color-yellow);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.team-member-card:hover .member-photo {
+    transform: scale(1.05);
+}
+
+.professor-tag {
+    position: absolute;
+    top: 20px;
+    right: -10px;
+    background: linear-gradient(45deg, var(--color-yellow), #E6C200);
+    color: var(--color-black);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 0.9em;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    transition: transform 0.3s ease;
+}
+
+.team-member-card:hover .professor-tag {
+    transform: rotate(5deg);
+}
+
+.member-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--color-white);
+    margin-bottom: 5px;
+}
+
+.member-role {
+    font-size: 0.9em;
+    color: var(--color-light-gray);
+    line-height: 1.5;
+    margin-bottom: 15px;
+    font-style: italic;
+    flex-grow: 1;
+}
+
+.social-links-perfil {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+}
+
+.social-links-perfil a {
+    color: var(--color-light-gray);
+    font-size: 1.4em;
+    transition: color 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+}
+
+.social-links-perfil a:hover {
+    transform: translateY(-3px);
+    color: var(--color-yellow);
+}
+
+/* Seção Pilares do Projeto com Efeito de Vidro */
+.pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.pillar-item {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    border: 1px solid var(--border-color-glass);
+    transition: all 0.3s ease-out;
+}
+
+.pillar-item:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255, 215, 93, 0.5);
+}
+
+.pillar-item i {
+    font-size: 2.5em;
+    color: var(--color-yellow);
+    margin-bottom: 20px;
+}
+
+.pillar-item span {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.3em;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 15px;
+    color: var(--color-white);
+}
+
+.pillar-item p {
+    font-size: 0.95em;
+    color: var(--color-light-gray);
+    line-height: 1.6;
+}
+
+/* Seção Diário de Bordo com Efeito de Vidro */
+.journal-entry {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    padding: 40px;
+    border-radius: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: left;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    border: 1px solid var(--border-color-glass);
+    position: relative;
+    overflow: hidden;
+}
+
+.journal-entry p {
+    font-size: 1.1em;
+    color: var(--color-light-gray);
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+.journal-entry p:last-of-type {
+    margin-bottom: 0;
+}
+
+.dropcap {
+    float: left;
+    font-size: 4em;
+    line-height: 1;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: var(--color-yellow);
+    margin-right: 15px;
+    margin-top: 5px;
+}
+
+.journal-signature {
+    text-align: right;
+    font-style: italic;
+    font-size: 0.9em;
+    color: var(--text-muted);
+    margin-top: 30px;
+}
     
-    /* Geral para a página da equipe */
-    body {
-        background-color: var(--color-black);
-        color: var(--color-white);
-        font-family: 'Roboto', sans-serif;
-    }
-    
-    .container {
-        width: 90%;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px 0;
-    }
-    
-    /* Hero Section para a página da equipe */
-    .team-hero {
-        background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('../logo.png') no-repeat center center/cover;
-        background-position: center top;
-        padding: 80px 20px;
-        text-align: center;
-        border-bottom: 5px solid var(--color-yellow);
-    }
-    
-    .team-intro-content h2 {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 2.8em;
-        margin-bottom: 20px;
-        color: var(--color-yellow);
-        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
-    }
-    
-    .team-intro-content p {
-        font-size: 1.1em;
-        max-width: 800px;
-        margin: 0 auto;
-        color: var(--color-light-gray);
-    }
-    
-    /* Seção dos Membros da Equipe */
-    .team-members-section {
-        padding: 70px 20px;
-        background-color: var(--color-dark-gray);
-        text-align: center;
-    }
-    
-    .team-members-section h3 {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 2em;
-        margin-bottom: 50px;
-        color: var(--color-yellow);
-    }
-    
-    .team-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 30px;
-        max-width: 1000px;
-        margin: 0 auto;
-    }
-    
-    .team-member-card {
-        background-color: var(--color-black);
-        padding: 30px;
-        border-radius: 25px; /* MAIS ARREDONDADO */
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-        border: 2px solid var(--color-medium-gray);
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        position: relative;
-        padding-bottom: 70px; /* Aumenta o padding inferior para a tag e social-links-perfil */
-        min-height: 350px;
-    }
-    
-    .team-member-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 25px rgba(255, 215, 0, 0.4);
-        border-color: var(--color-yellow);
-    }
-    
-    /* REMOVIDO: Estilo específico para o card do professor como um todo,
-       agora ele tem o mesmo estilo base dos alunos e é diferenciado pela tag. */
-    /* .professor-card { ... } */
-    
-    /* Estilo para todas as fotos de membro */
-    .member-photo {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid var(--color-yellow);
-        margin-bottom: 20px;
-        transition: transform 0.3s ease;
-    }
-    
-    .team-member-card:hover .member-photo {
-        transform: scale(1.05);
-    }
-    
-    /* NOVO ESTILO PARA A TAG DO PROFESSOR */
-    .professor-tag {
-        position: absolute;
-        top: 20px; /* Posição no canto superior esquerdo */
-        right: 20px; /* Posição no canto superior direito */
-        background-color: var(--color-yellow);
-        color: var(--color-black);
-        padding: 8px 12px;
-        border-radius: 15px; /* Cantos arredondados para a tag */
-        font-size: 0.9em;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 8px; /* Espaço entre o ícone e o texto */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 10; /* Garante que a tag fique acima de outros elementos */
-        opacity: 0; /* Começa invisível */
-        transform: translateY(-10px); /* Efeito de slide para cima */
-        transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    
-    .team-member-card:hover .professor-tag {
-        opacity: 1; /* Torna visível no hover do card */
-        transform: translateY(0); /* Volta à posição original */
-    }
-    
-    .professor-tag i {
-        font-size: 1.1em; /* Tamanho do ícone dentro da tag */
-        color: var(--color-black);
-    }
-    
-    .member-name {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 1.5em;
-        font-weight: 700;
-        color: var(--color-white);
-        margin-bottom: 8px;
-        display: block;
-        text-align: center;
-    }
-    
-    .member-role {
-        font-size: 0.9em;
-        color: var(--color-light-gray);
-        display: block;
-        text-align: center;
-        line-height: 1.4;
-        margin-bottom: 15px;
-        font-style: italic;
-        font-weight: 300;
-        max-width: 90%;
-        white-space: normal;
-    }
-    
-    /* Estilo para os links sociais - REPOSICIONADO */
-    .social-links-perfil {
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 15px;
-        background-color: rgba(0, 0, 0, 0.5);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 5; /* Garante que esteja acima do conteúdo principal */
-    }
-    
-    .social-links-perfil a {
-        color: var(--color-yellow);
-        font-size: 1.4em;
-        transition: color 0.3s ease, transform 0.2s ease;
-        text-decoration: none;
-    }
-    
-    /* Estilo para o professor tag e social links dentro do card do professor */
-    /* Como o professor-card não tem mais estilo de fundo diferente,
-       o social-links-perfil dele terá o mesmo estilo dos outros cards, o que é consistente. */
-    /* Se quiser diferenciar as cores dos social-links-perfil do professor, pode reintroduzir uma classe específica no HTML do professor, ou algo como: */
-    /*
-    .team-member-card:has(.professor-tag) .social-links-perfil a {
-        color: var(--color-black);
-    }
-    .team-member-card:has(.professor-tag) .social-links-perfil a:hover {
-        color: var(--color-yellow);
-    }
-    */
-    /* Para este exemplo, manteremos os social-links-perfil do professor com a mesma cor dos alunos para consistência. */
-    
-    
-    .social-links-perfil a:hover {
-        transform: translateY(-3px);
-        color: var(--color-white);
-    }
-    
-    
-    /* Seção Pilares do Projeto */
-    .project-pillars-section {
-        padding: 70px 20px;
-        background-color: var(--color-black);
-        text-align: center;
-        border-top: 2px solid var(--color-medium-gray);
-    }
-    
-    .project-pillars-section h3 {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 2em;
-        margin-bottom: 40px;
-        color: var(--color-yellow);
-    }
-    
-    .pillars-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 30px;
-        max-width: 1000px;
-        margin: 0 auto;
-    }
-    
-    .pillar-item {
-        background-color: var(--color-dark-gray);
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        border: 3px solid #ffffff7b;
-        transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .pillar-item:hover {
-        background-color: var(--color-medium-gray);
-        transform: translateY(-5px);
-        box-shadow: 0 12px 25px #ffffff7b;
-    }
-    
-    .pillar-item i {
-        font-size: 2.5em;
-        color: var(--color-yellow);
-        margin-bottom: 15px;
-    }
-    
-    .pillar-item span {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 1.2em;
-        font-weight: 700;
-        display: block;
-        margin-bottom: 10px;
-        color: var(--color-white);
-    }
-    
-    .pillar-item p {
-        font-size: 0.95em;
-        color: var(--color-light-gray);
-        line-height: 1.5;
-    }
-    
-    /* Seção Diário de Bordo */
-    .project-journal-section {
-        padding: 70px 20px;
-        background-color: var(--color-dark-gray);
-        text-align: center;
-        border-top: 2px solid var(--color-medium-gray);
-    }
-    
-    .project-journal-section h3 {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 2em;
-        margin-bottom: 40px;
-        color: var(--color-yellow);
-    }
-    
-    .journal-entry {
-        background-color: var(--color-black);
-        padding: 40px;
-        border-radius: 15px;
-        max-width: 900px;
-        margin: 0 auto;
-        text-align: justify;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-        border: 3px solid var(--color-yellow);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .journal-entry p {
-        font-size: 1.1em;
-        color: var(--color-light-gray);
-        line-height: 1.8;
-        margin-bottom: 20px;
-    }
-    
-    .journal-entry p:last-of-type {
-        margin-bottom: 0;
-    }
-    
-    .dropcap {
-        float: left;
-        font-size: 4em;
-        line-height: 1;
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 700;
-        color: var(--color-yellow);
-        margin-right: 10px;
-        margin-top: 5px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }
-    
-    .journal-signature {
-        text-align: right;
-        font-style: italic;
-        font-size: 0.9em;
-        color: var(--color-medium-gray);
-        margin-top: 30px;
-    }
-    
-    
-    /* Media Queries para a página da equipe */
-    @media (max-width: 768px) {
-        .team-hero {
-            padding: 60px 20px;
-        }
-        .team-intro-content h2 {
-            font-size: 2.2em;
-        }
-        .team-grid {
-            grid-template-columns: 1fr;
-        }
-        .pillars-grid {
-            grid-template-columns: 1fr;
-        }
-        .journal-entry {
-            padding: 25px;
-        }
-        .dropcap {
-            font-size: 3em;
-        }
-        .social-links-perfil {
-            padding: 6px 12px;
-            font-size: 1.2em;
-        }
-        .professor-tag {
-            top: 15px; /* Ajusta para telas menores */
-            right: 15px;
-            padding: 6px 10px;
-            font-size: 0.8em;
-            gap: 5px;
-        }
-    }
-    
-    @media (min-width: 992px) {
-        .team-hero {
-            padding: 100px 50px;
-        }
-        .team-intro-content h2 {
-            font-size: 3.5em;
-        }
-        .team-members-section h3,
-        .project-pillars-section h3,
-        .project-journal-section h3 {
-            font-size: 2.8em;
-        }
-        .team-grid {
-            grid-template-columns: repeat(4, 1fr);
-            max-width: 1200px;
-        }
-    }
+/* Media Queries */
+@media (max-width: 768px) {
+    .team-hero { padding: 60px 20px; } /* Mantém um padding razoável no mobile */
+    .team-intro-content h2 { font-size: 2.2em; }
+    .team-members-section h3, .project-pillars-section h3, .project-journal-section h3 { font-size: 2.2em; }
+    .team-grid, .pillars-grid { grid-template-columns: 1fr; }
+    .journal-entry { padding: 30px; text-align: left; }
+}
+
+@media (min-width: 992px) {
+    .team-intro-content h2 { font-size: 3.2em; }
+    .team-grid { grid-template-columns: repeat(4, 1fr); }
+}

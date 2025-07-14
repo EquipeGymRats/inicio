@@ -42,6 +42,16 @@
           <a href="equipe"><i class="fas fa-users"></i> Equipe</a>
           <a href="equipe#aboutProject"><i class="fas fa-info-circle"></i> Sobre Nós</a>
           <a href="#contact"><i class="fas fa-envelope"></i> Contato</a>
+          <hr class="dropdown-divider">
+          <div id="mobile-auth-section">
+              <a href="login" id="mobile-login-link">
+                  <i class="fas fa-sign-in-alt"></i> 
+                  <span id="mobile-auth-text">Login</span>
+              </a>
+              <a href="#" id="mobile-logout-link" style="display: none;">
+                  <i class="fas fa-sign-out-alt"></i> Sair
+              </a>
+          </div>
         </div>
 
         <nav class="main-nav">
@@ -56,6 +66,13 @@
   </header>
 
     <main>
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
         <section class="treino-generator-section container">
             <div id="form-section" class="generator-form-section">
                 <h2><i class="fas fa-dumbbell"></i> Crie Seu Plano de Treino</h2>
@@ -116,9 +133,14 @@
                         </div>
                     </div>
 
-                    <div class="form-group slider-group">
-                        <label for="time-per-session"><i class="fas fa-hourglass-half"></i> Tempo por Sessão: <span id="time-value">60 minutos</span></label>
-                        <input type="range" id="time-per-session" name="timePerSession" min="30" max="120" value="60" step="15">
+                    <div class="form-group">
+                        <label for="time-per-session"><i class="fas fa-clock"></i> Tempo por sessão</label>
+                        <div class="slider-container">
+                            <input type="range" id="time-per-session" name="time" min="20" max="90" value="45" step="5" class="slider">
+                            <div class="slider-value">
+                                <span id="slider-time-value">45</span> min
+                            </div>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary"><i class="fas fa-magic"></i> Gerar Treino Personalizado</button>
@@ -153,46 +175,71 @@
                 </div>
 
                 <div class="output-actions">
-                    <button id="save-training-btn" class="btn btn-success" disabled><i class="fas fa-save"></i> Salvar Treino</button>
+                    <button id="save-training-btn" class="btn btn-success" disabled><i class="fas fa-redo-alt"></i> Salvar Treino</button>
                     <button id="new-training-btn" class="btn btn-secondary"><i class="fas fa-redo-alt"></i> Gerar Novo Treino</button>
                 </div>
+                
             </section>
         </section>
     </main>
 
   <footer class="main-footer">
     <div class="footer-container">
-        <div class="footer-brand">
-            <h3 class="brand-name">GYM RATS</h3>
-            <p class="brand-tagline">Sua jornada fitness começa aqui.</p>
-            <div class="social-links">
-                <a href="https://www.facebook.com/projetogymrats" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/projetogymrats" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.linkedin.com/company/projetogymrats" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://www.youtube.com/@projetogymrats" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+      <div class="footer-brand">
+        <h3 class="brand-name">GYM RATS</h3>
+        <p class="brand-tagline">Sua jornada fitness começa aqui.</p>
+        <div class="produced-by">
+            <p>Produzido por</p>
+            <a href="https://equipeaura.github.io/Aura/" target="_blank"><img src="assets/imagens/aura.png" alt="Logo Equipe Aura" class="aura-logo"></a>
+        </div>
+        </div>
+        <div class="footer-links-single"> <div class="link-group">
+                <h4>Navegação</h4>
+                <ul>
+                    <li><a href="#inicio">Início</a></li>
+                    <li><a href="#quem-somos">Quem Somos</a></li>
+                    <li><a href="#projetos">Nosso Projeto</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                </ul>
             </div>
         </div>
-        <div class="footer-bottom-bar">
-            <p>© 2025 Projeto Gym Rats. Todos os direitos reservados. Desenvolvido para a 16ª FETEPS.</p>
-        </div>
     </div>
-  </footer>
+    <div class="footer-bottom-bar">
+        <p>© 2025 Projeto Gym Rats. Todos os direitos reservados.</p>
+    </div>
+</footer>
 
     <div id="notification-toast" class="notification-toast"></div>
 
     <script type="module" src="assets/js/treino.js"></script>
       <script type="module" src="assets/js/header.js"></script>
     <script>
-        // Script para atualizar o valor do tempo por sessão
-        const timeInput = document.getElementById('time-per-session');
-        const timeValueSpan = document.getElementById('time-value');
-        timeInput.addEventListener('input', () => {
-            timeValueSpan.textContent = `${timeInput.value} minutos`;
-        });
-        // Definir valor inicial ao carregar a página
-        document.addEventListener('DOMContentLoaded', () => {
-            timeValueSpan.textContent = `${timeInput.value} minutos`;
-        });
+        const slider = document.getElementById('time-per-session');
+        const sliderValueDisplay = document.getElementById('slider-time-value');
+
+        function updateSlider() {
+            if (!slider || !sliderValueDisplay) return;
+
+            // 1. Atualiza o texto do valor (Ex: 45 min)
+            sliderValueDisplay.textContent = slider.value;
+
+            // 2. Calcula a porcentagem de preenchimento da barra
+            const min = slider.min;
+            const max = slider.max;
+            const val = slider.value;
+            const percentage = (val - min) * 100 / (max - min);
+
+            // 3. Aplica o gradiente dinâmico ao fundo da barra
+            slider.style.background = `linear-gradient(to right, var(--primary-color) ${percentage}%, rgba(255, 255, 255, 0.2) ${percentage}%)`;
+        }
+
+        // Adiciona o listener para o evento 'input' (quando o slider é movido)
+        if (slider) {
+            slider.addEventListener('input', updateSlider);
+        }
+
+        // Chama a função uma vez no início para definir o estado inicial correto
+        document.addEventListener('DOMContentLoaded', updateSlider);
     </script>
 </body>
 </html>

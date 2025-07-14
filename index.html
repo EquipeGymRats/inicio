@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gym Rats: Seu Treino Inteligente e Seguro</title>
   <link rel="stylesheet" href="assets/style/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="assets/style/header.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="shortcut icon" type="image/x-icon" href="assets/logo_page.png">
@@ -14,6 +13,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+  <div class="floating-elements">
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+  </div>
+
    <header class="main-header">
     <div class="container header-content">
         <div class="logo-area">
@@ -43,6 +50,16 @@
           <a href="equipe"><i class="fas fa-users"></i> Equipe</a>
           <a href="equipe#aboutProject"><i class="fas fa-info-circle"></i> Sobre Nós</a>
           <a href="#contact"><i class="fas fa-envelope"></i> Contato</a>
+          <hr class="dropdown-divider">
+          <div id="mobile-auth-section">
+              <a href="login" id="mobile-login-link">
+                  <i class="fas fa-sign-in-alt"></i> 
+                  <span id="mobile-auth-text">Login</span>
+              </a>
+              <a href="#" id="mobile-logout-link" style="display: none;">
+                  <i class="fas fa-sign-out-alt"></i> Sair
+              </a>
+          </div>
         </div>
 
         <nav class="main-nav">
@@ -119,15 +136,14 @@
 
   <footer class="main-footer">
     <div class="footer-container">
-        <div class="footer-brand">
-            <h3 class="brand-name">GYM RATS</h3>
-            <p class="brand-tagline">Sua jornada fitness começa aqui.</p>
-            <div class="social-links">
-                <a href="https://www.facebook.com/projetogymrats" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/projetogymrats" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.linkedin.com/company/projetogymrats" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://www.youtube.com/@projetogymrats" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-            </div>
+      <div class="footer-brand">
+        <h3 class="brand-name">GYM RATS</h3>
+        <p class="brand-tagline">Sua jornada fitness começa aqui.</p>
+        
+        <div class="produced-by">
+            <p>Produzido por</p>
+            <a href="https://equipeaura.github.io/Aura/" target="_blank"><img src="assets/imagens/aura.png" alt="Logo Equipe Aura" class="aura-logo"></a>
+        </div>
         </div>
 
         <div class="footer-links-single"> <div class="link-group">
@@ -142,7 +158,7 @@
         </div>
     </div>
     <div class="footer-bottom-bar">
-        <p>© 2025 Projeto Gym Rats. Todos os direitos reservados. Desenvolvido para a 16ª FETEPS.</p>
+        <p>© 2025 Projeto Gym Rats. Todos os direitos reservados.</p>
     </div>
 </footer>
 

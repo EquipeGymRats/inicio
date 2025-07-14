@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector(`input[name="equipment"][value="${planData.equipment}"]`).checked = true;
             const timeInput = document.getElementById('time-per-session');
             timeInput.value = planData.timePerSession;
-            document.getElementById('time-value').textContent = `${planData.timePerSession} minutos`;
+            document.getElementById('slider-time-value').textContent = `${planData.timePerSession} minutos`;
         } catch (e) {
             console.warn("Não foi possível preencher o formulário com os dados do treino carregado.");
         }
@@ -329,14 +329,14 @@ document.addEventListener('DOMContentLoaded', () => {
         outputSection.classList.add('hidden');
         formSection.classList.remove('hidden');
         trainingForm.reset();
-        document.getElementById('time-value').textContent = `60 minutos`;
+        document.getElementById('slider-time-value').textContent = `60 minutos`;
         currentTrainingPlan = null;
         saveTrainingBtn.disabled = false;
         saveTrainingBtn.textContent = 'Salvar Treino';
     });
 
     const timeInput = document.getElementById('time-per-session');
-    const timeValueSpan = document.getElementById('time-value');
+    const timeValueSpan = document.getElementById('slider-time-value');
     timeInput.addEventListener('input', () => {
         timeValueSpan.textContent = `${timeInput.value} minutos`;
     });

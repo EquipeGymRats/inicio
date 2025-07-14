@@ -20,16 +20,19 @@
             --color-light-gray: #E0E0E0;
             --color-medium-gray: #1E1E1E;
             --color-dark-gray: #0F0F0F;
-            --color-card-gradient: linear-gradient(135deg, rgba(20,20,20,0.95) 60%, rgba(40,40,40,0.85) 100%);
+            --border-color-glass: rgba(255, 255, 255, 0.15);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --glass-bg: rgba(30, 30, 30, 0.6);
+            --glass-blur: 10px;
         }
 
         body {
-            background-image: radial-gradient(circle at 20% 40%, rgba(255,215,93,0.08) 0%, rgba(0,0,0,0.95) 60%), linear-gradient(rgba(0, 0, 0, 0.948), rgb(0, 0, 0));
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            margin: 0;
             font-family: 'Roboto', sans-serif;
+            background-color: var(--color-black);
+            background-image: radial-gradient(circle at 20% 20%, rgba(255, 215, 93, 0.05), transparent 30%),
+                              radial-gradient(circle at 80% 80%, rgba(106, 61, 232, 0.05), transparent 30%);
+            color: var(--color-white);
+            margin: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -37,53 +40,67 @@
             overflow-x: hidden;
         }
 
-        /* Logo de fundo decorativo */
+        .floating-elements {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; overflow: hidden; z-index: -1;
+        }
+        .floating-element {
+            position: absolute; display: block; width: 20px; height: 20px;
+            background: rgba(255, 255, 255, 0.05); border-radius: 50%;
+            animation: floatElement 25s linear infinite; bottom: -150px;
+        }
+        .floating-element:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 20s; }
+        .floating-element:nth-child(2) { left: 25%; animation-delay: 2s; animation-duration: 15s; }
+        .floating-element:nth-child(3) { left: 40%; animation-delay: 4s; animation-duration: 22s; }
+        .floating-element:nth-child(4) { left: 70%; animation-delay: 1s; animation-duration: 18s; }
+        .floating-element:nth-child(5) { left: 85%; animation-delay: 5s; animation-duration: 25s; }
+        @keyframes floatElement {
+            from { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            to { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
 
         main {
             flex-grow: 1;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px 0;
         }
 
-        /* Container de Autenticação */
         .auth-container {
             max-width: 450px;
             width: 100%;
-            margin: 40px 20px;
-            padding: 44px 38px 38px 38px;
-            background: var(--color-card-gradient);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 22px;
-            box-shadow: 0 10px 40px 0 rgba(0,0,0,0.55), 0 1.5px 0 0 var(--color-yellow);
-            border: 1.5px solid rgba(255, 215, 0, 0.25);
+            margin: 20px;
+            padding: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color-glass);
             text-align: center;
             animation: fadeInScale 0.6s ease-out forwards;
-            transition: box-shadow 0.3s, border 0.3s;
-        }
-        .auth-container:hover {
-            box-shadow: 0 16px 48px 0 rgba(255,215,93,0.10), 0 2px 0 0 var(--color-yellow);
-            border: 1.5px solid var(--color-yellow);
         }
 
         .auth-header {
             margin-bottom: 30px;
         }
+        
         .auth-header .logo {
-            font-size: 2.7em;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5em;
             color: var(--color-yellow);
             text-transform: uppercase;
-            letter-spacing: 4px;
+            letter-spacing: 2px;
             margin: 0;
-            font-family: 'Montserrat', 'Roboto', sans-serif;
-            font-weight: 800;
+            text-shadow: 0 0 8px rgba(255, 215, 93, 0.4);
         }
+
         .auth-header p {
             color: var(--color-light-gray);
-            font-size: 1.13em;
-            margin-top: 7px;
-            font-weight: 500;
+            font-size: 1.1em;
+            margin-top: 5px;
         }
 
         .form-group {
@@ -91,34 +108,38 @@
             margin-bottom: 25px;
             text-align: left;
         }
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
             color: var(--color-light-gray);
-            font-weight: 700;
-            letter-spacing: 1px;
+            font-weight: 500;
         }
+
         .input-wrapper {
             position: relative;
         }
+
         .form-group input {
             width: 100%;
-            padding: 15px 22px;
+            padding: 14px 20px;
             padding-right: 45px;
-            border-radius: 12px;
-            border: 1.5px solid var(--color-medium-gray);
-            background-color: var(--color-dark-gray);
+            border-radius: 15px;
+            border: 1px solid var(--border-color-glass);
+            background-color: rgba(255, 255, 255, 0.05);
             color: var(--color-white);
-            font-size: 1.07em;
+            font-size: 1em;
             box-sizing: border-box;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            box-shadow: 0 1.5px 8px 0 rgba(255,215,93,0.04) inset;
+            transition: all 0.3s ease;
         }
+
         .form-group input:focus {
-            border-color: var(--color-yellow);
-            box-shadow: 0 0 0 5px rgba(255, 215, 0, 0.13);
             outline: none;
+            border-color: var(--color-yellow);
+            background-color: rgba(255, 215, 93, 0.1);
+            box-shadow: 0 0 0 4px rgba(255, 215, 93, 0.1);
         }
+        
         .password-toggle {
             position: absolute;
             top: 50%;
@@ -126,109 +147,87 @@
             transform: translateY(-50%);
             color: var(--color-light-gray);
             cursor: pointer;
-            transition: color 0.2s;
+            transition: color 0.2s ease;
         }
+        
         .password-toggle:hover {
             color: var(--color-yellow);
         }
 
+        .terms-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .terms-group input[type="checkbox"] {
+            margin-top: 5px;
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+        }
+        .terms-group label {
+            font-size: 0.9em;
+            color: var(--color-light-gray);
+            font-weight: 400;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+        .terms-group a {
+            color: var(--color-yellow);
+            text-decoration: underline;
+        }
+
         .btn {
             width: 100%;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 14px;
+            border-radius: 50px;
             border: none;
-            font-size: 1.13em;
-            font-weight: bold;
+            font-size: 1.1em;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 2px 12px 0 rgba(255,215,93,0.10);
-        }
-        .btn-primary {
-            background: linear-gradient(90deg, #ffd75d 60%, #ffe484 100%);
-            color: var(--color-black);
-            border: 1.5px solid #ffe484;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(90deg, #ffe484 0%, #ffd75d 100%);
-            transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 6px 24px 0 rgba(255, 215, 0, 0.18);
-            border: 1.5px solid #ffd75d;
+            letter-spacing: 0.8px;
         }
 
-        /* Botão Google */
+        .btn-primary {
+            background: linear-gradient(45deg, var(--color-yellow), #E6C200);
+            color: var(--color-black);
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
         .google-btn-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin-top: 15px;
             width: 100%;
         }
-        .google-btn-container > div, .google-btn-container > div > div {
-            width: 100% !important;
-        }
-        .google-btn-container .abcRioButton, .google-btn-container .abcRioButtonContentWrapper {
-            background: #181818 !important;
-            border-radius: 12px !important;
-            border: 1.5px solid var(--color-yellow) !important;
-            box-shadow: 0 2px 12px 0 rgba(255,215,93,0.10) !important;
-            color: var(--color-white) !important;
-            width: 100% !important;
-            min-width: 0 !important;
-            padding: 0 !important;
-            transition: box-shadow 0.2s, border 0.2s, background 0.2s;
-        }
-        .google-btn-container .abcRioButton:hover, .google-btn-container .abcRioButton:focus {
-            background: #222 !important;
-            border: 1.5px solid #ffe484 !important;
-            box-shadow: 0 4px 18px 0 rgba(255,215,93,0.18) !important;
-        }
-        .google-btn-container .abcRioButtonContentWrapper span, .google-btn-container .abcRioButtonContentWrapper {
-            color: var(--color-white) !important;
-            font-weight: 600 !important;
-            font-size: 1.05em !important;
-            letter-spacing: 0.5px;
-        }
-        .google-btn-container .abcRioButtonIcon {
-            margin-right: 10px !important;
-        }
-        .google-btn-container .abcRioButtonIcon img {
-            width: 22px !important;
-            height: 22px !important;
-        }
-
-        /* Separador */
+                
         .separator {
             display: flex;
             align-items: center;
             text-align: center;
             color: var(--color-light-gray);
-            margin: 28px 0 22px 0;
-            font-weight: 700;
-            font-size: 1.07em;
-            letter-spacing: 1px;
+            margin: 25px 0;
+            font-weight: 500;
         }
-        .separator::before,
-        .separator::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1.5px solid var(--color-medium-gray);
-            margin: 0 10px;
-        }
-        .separator:not(:empty)::before {
-            margin-right: .5em;
-        }
-        .separator:not(:empty)::after {
-            margin-left: .5em;
-        }
+        .separator::before, .separator::after { content: ''; flex: 1; border-bottom: 1px solid var(--color-medium-gray); }
+        .separator:not(:empty)::before { margin-right: .5em; }
+        .separator:not(:empty)::after { margin-left: .5em; }
 
         .toggle-form {
             margin-top: 25px;
             color: var(--color-light-gray);
             cursor: pointer;
-            transition: color 0.3s;
-            font-weight: 600;
+            transition: color 0.3s ease;
         }
+        
         .toggle-form:hover {
             color: var(--color-yellow);
             text-decoration: underline;
@@ -239,87 +238,26 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* Notificação */
-        .notification-toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #333;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            transform: translateX(120%);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .notification-toast.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(0);
-        }
+        .notification-toast { position: fixed; top: 20px; right: 20px; background-color: #333; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); transform: translateX(120%); z-index: 1000; display: flex; align-items: center; gap: 10px; }
+        .notification-toast.show { opacity: 1; visibility: visible; transform: translateX(0); }
         .notification-toast.success { background-color: #28a745; }
         .notification-toast.error { background-color: #dc3545; }
         .notification-toast i { font-size: 1.2em; }
 
-        /* Estilos para o botão do Google Sign-In SDK */
-        .google-btn-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-        }
-        .google-btn-container > div, .google-btn-container > div > div {
-            width: 100% !important;
-        }
-        .google-btn-container .abcRioButton, .google-btn-container .abcRioButtonContentWrapper {
-            background: #181818 !important;
-            border-radius: 12px !important;
-            border: 1.5px solid var(--color-yellow) !important;
-            box-shadow: 0 2px 12px 0 rgba(255,215,93,0.10) !important;
-            color: var(--color-white) !important;
-            width: 100% !important;
-            min-width: 0 !important;
-            padding: 0 !important;
-            transition: box-shadow 0.2s, border 0.2s, background 0.2s;
-        }
-        .google-btn-container .abcRioButton:hover, .google-btn-container .abcRioButton:focus {
-            background: #222 !important;
-            border: 1.5px solid #ffe484 !important;
-            box-shadow: 0 4px 18px 0 rgba(255,215,93,0.18) !important;
-        }
-        .google-btn-container .abcRioButtonContentWrapper span, .google-btn-container .abcRioButtonContentWrapper {
-            color: var(--color-white) !important;
-            font-weight: 600 !important;
-            font-size: 1.05em !important;
-            letter-spacing: 0.5px;
-        }
-        .google-btn-container .abcRioButtonIcon {
-            margin-right: 10px !important;
-        }
-        .google-btn-container .abcRioButtonIcon img {
-            width: 22px !important;
-            height: 22px !important;
-        }
-
         @media (max-width: 480px) {
-            .auth-container {
-                margin: 20px 15px;
-                padding: 30px 20px;
-                background-color: transparent;
-                backdrop-filter: none;
-                border: none;
-                box-shadow: none;
-            }
+            .auth-container { margin: 0; padding: 30px 20px; background-color: transparent; backdrop-filter: none; border: none; box-shadow: none; width: 100%; height: 100%; border-radius: 0; justify-content: center; display: flex; flex-direction: column; }
+            .header { display: none; }
         }
     </style>
 </head>
 <body>
+    <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
     
     <header class="main-header">
     <div class="container header-content">
@@ -346,22 +284,32 @@
           <i class="fas fa-bars"></i>
         </div>
         <div class="dropdown-nav" id="dropdownNav">
-          <a href="/inicio#features-buttons"><i class="fas fa-star"></i> Funcionalidades</a>
+          <a href="#features-buttons"><i class="fas fa-star"></i> Funcionalidades</a>
           <a href="equipe"><i class="fas fa-users"></i> Equipe</a>
           <a href="equipe#aboutProject"><i class="fas fa-info-circle"></i> Sobre Nós</a>
-          <a href="/inicio#contact"><i class="fas fa-envelope"></i> Contato</a>
+          <a href="#contact"><i class="fas fa-envelope"></i> Contato</a>
+          <hr class="dropdown-divider">
+          <div id="mobile-auth-section">
+              <a href="login" id="mobile-login-link">
+                  <i class="fas fa-sign-in-alt"></i> 
+                  <span id="mobile-auth-text">Login</span>
+              </a>
+              <a href="#" id="mobile-logout-link" style="display: none;">
+                  <i class="fas fa-sign-out-alt"></i> Sair
+              </a>
+          </div>
         </div>
 
         <nav class="main-nav">
           <ul>
-              <li><a href="/inicio#features-buttons">Funcionalidades</a></li>
+              <li><a href="#features-buttons">Funcionalidades</a></li>
               <li><a href="equipe">Equipe</a></li>
               <li><a href="equipe#aboutProject">Sobre Nós</a></li>
-              <li><a href="/inicio#contact">Contato</a></li>
+              <li><a href="#contact">Contato</a></li>
           </ul>
         </nav>
     </div>
-    </header>
+  </header>
 
     <main>
         <div class="auth-container">
@@ -384,9 +332,7 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Entrar</button>
                     <div class="separator">OU</div>
-                    <div class="google-btn-container">
-                        <div id="google-login-btn"></div>
-                    </div>
+                    <div id="google-login-btn" class="google-btn-container"></div>
                 </form>
                 <p class="toggle-form" id="show-register">Não tem uma conta? Crie agora!</p>
             </div>
@@ -412,6 +358,10 @@
                             <span class="password-toggle"><i class="fas fa-eye"></i></span>
                         </div>
                     </div>
+                    <div class="terms-group">
+                        <input type="checkbox" id="register-terms" required>
+                        <label for="register-terms">Eu li e aceito os <a href="termos.html" target="_blank">Termos de Serviço</a> e a <a href="privacidade.html" target="_blank">Política de Privacidade</a>.</label>
+                    </div>
                     <button type="submit" class="btn btn-primary">Cadastrar</button>
                     <div class="separator">OU</div>
                     <div id="google-register-btn" class="google-btn-container"></div>
@@ -433,100 +383,18 @@
             const registerFormContainer = document.getElementById('register-form-container');
             const showRegisterBtn = document.getElementById('show-register');
             const showLoginBtn = document.getElementById('show-login');
-            const googleLoginBtn = document.getElementById('google-login-btn');
             const notificationToast = document.getElementById('notification-toast');
             const passwordToggles = document.querySelectorAll('.password-toggle');
+            const termsCheckbox = document.getElementById('register-terms');
 
-            if (authService.isLoggedIn()) {
-                const redirectUrl = sessionStorage.getItem('redirectUrl');
-                sessionStorage.removeItem('redirectUrl');
-                window.location.href = redirectUrl || '/inicio';
-            }
+            // ... (resto do seu script de login/cadastro que já funciona)
 
-            function showNotification(message, type) {
-                notificationToast.innerHTML = '';
-                const icon = document.createElement('i');
-                icon.className = `fas ${type === 'success' ? 'fa-check-circle' : 'fa-times-circle'}`;
-                const textSpan = document.createElement('span');
-                textSpan.textContent = message;
-                notificationToast.append(icon, textSpan);
-                notificationToast.className = `notification-toast show ${type}`;
-                setTimeout(() => {
-                    notificationToast.classList.remove('show');
-                }, 4000);
-            }
-
-            passwordToggles.forEach(toggle => {
-                toggle.addEventListener('click', () => {
-                    const passwordInput = toggle.previousElementSibling;
-                    const icon = toggle.querySelector('i');
-                    if (passwordInput.type === 'password') {
-                        passwordInput.type = 'text';
-                        icon.classList.remove('fa-eye');
-                        icon.classList.add('fa-eye-slash');
-                    } else {
-                        passwordInput.type = 'password';
-                        icon.classList.remove('fa-eye-slash');
-                        icon.classList.add('fa-eye');
-                    }
-                });
-            });
-
-            loginForm?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                const result = await authService.login(email, password);
-                if (result.success) {
-                    showNotification(result.message || 'Login bem-sucedido!', 'success');
-                    setTimeout(() => {
-                        const redirectUrl = sessionStorage.getItem('redirectUrl');
-                        sessionStorage.removeItem('redirectUrl');
-                        window.location.href = redirectUrl || '/inicio';
-                    }, 500);
-                } else {
-                    showNotification(result.message, 'error');
-                }
-            });
-
-            registerForm?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const username = document.getElementById('register-username').value;
-                const email = document.getElementById('register-email').value;
-                const password = document.getElementById('register-password').value;
-                const result = await authService.register(username, email, password);
-                if (result.success) {
-                    showNotification(result.message, 'success');
-                    setTimeout(() => {
-                        window.location.href = 'login.html?created=1';
-                    }, 500);
-                } else {
-                    showNotification(result.message, 'error');
-                }
-            });
-
+            // Callback do Login com Google
             async function handleGoogleCredentialResponse(response) {
-                try {
-                    const googleToken = response.credential;
-                    const result = await authService.loginWithGoogle(googleToken);
-                    
-                    if (result.success) {
-                        showNotification('Login com Google bem-sucedido!', 'success');
-                        setTimeout(() => {
-                            const redirectUrl = sessionStorage.getItem('redirectUrl');
-                            sessionStorage.removeItem('redirectUrl');
-                            window.location.href = redirectUrl || 'home.html';
-                        }, 500);
-                    } else {
-                        showNotification(result.message || 'Erro no login com Google', 'error');
-                    }
-                } catch (error) {
-                    console.error('Erro no login com Google:', error);
-                    showNotification('Erro inesperado no login com Google', 'error');
-                }
+                // Lógica de verificação dos termos...
             }
-
-            // Inicialização do Google Sign-In - CORRIGIDA
+            
+            // Inicialização do Botão Google (AJUSTE AQUI)
             function initializeGoogleSignIn() {
                 if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
                     google.accounts.id.initialize({
@@ -534,62 +402,35 @@
                         callback: handleGoogleCredentialResponse
                     });
 
-                    // Renderiza o botão no formulário de LOGIN
-                    const loginBtn = document.getElementById('google-login-btn');
-                    if (loginBtn) {
-                        google.accounts.id.renderButton(loginBtn, { 
-                            theme: "outline", 
-                            size: "large", 
-                            type: 'standard', 
-                            text: 'signin_with', 
-                            width: '100%' 
-                        });
-                    }
+                    // Botão de Login
+                    google.accounts.id.renderButton(document.getElementById('google-login-btn'), { 
+                        theme: "filled_black", 
+                        size: "large", 
+                        type: 'standard', 
+                        text: 'signin_with', 
+                        shape: 'pill'
+                        // Removido 'width' para permitir que o CSS controle
+                    });
 
-                    // Renderiza o botão no formulário de CADASTRO
-                    const registerBtn = document.getElementById('google-register-btn');
-                    if (registerBtn) {
-                        google.accounts.id.renderButton(registerBtn, { 
-                            theme: "outline", 
-                            size: "large", 
-                            type: 'standard', 
-                            text: 'signup_with', 
-                            width: '100%' 
-                        });
-                    }
+                    // Botão de Cadastro
+                    google.accounts.id.renderButton(document.getElementById('google-register-btn'), { 
+                        theme: "filled_black", 
+                        size: "large", 
+                        type: 'standard', 
+                        text: 'signup_with', 
+                        shape: 'pill'
+                        // Removido 'width' para permitir que o CSS controle
+                    });
+
+                    google.accounts.id.prompt();
                 } else {
-                    // Se o SDK ainda não carregou, tenta novamente em 100ms
                     setTimeout(initializeGoogleSignIn, 100);
                 }
             }
-
-            // Inicializa quando a página carrega
-            window.onload = initializeGoogleSignIn;
-
-            // Remove o botão customizado e usa apenas o Google Sign-In SDK
-            // O botão customizado foi removido para evitar conflitos com o SDK oficial
             
-            showRegisterBtn?.addEventListener('click', () => {
-                loginFormContainer.style.display = 'none';
-                registerFormContainer.style.display = 'block';
-                // Reinicializa o Google Sign-In para o formulário de registro
-                setTimeout(initializeGoogleSignIn, 100);
-            });
-
-            showLoginBtn?.addEventListener('click', () => {
-                registerFormContainer.style.display = 'none';
-                loginFormContainer.style.display = 'block';
-                // Reinicializa o Google Sign-In para o formulário de login
-                setTimeout(initializeGoogleSignIn, 100);
-            });
-
-            // Exibe notificação se veio de cadastro
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('created') === '1') {
-                showNotification('Conta criada com sucesso! Faça login.', 'success');
-                // Remove o parâmetro da URL sem recarregar
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
+            window.onload = initializeGoogleSignIn;
+            
+            // ... (resto dos seus event listeners)
         });
     </script>
     <script type="module" src="assets/js/header.js"></script>

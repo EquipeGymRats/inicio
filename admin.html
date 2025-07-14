@@ -160,6 +160,58 @@
         })();
     </script> -->
 
+    <header class="main-header">
+    <div class="container header-content">
+        <div class="logo-area">
+          <h1 class="logo"><a href="/inicio">GYM RATS</a></h1>
+        </div>
+
+        <div class="auth-section">
+          <div class="user-info" id="user-auth-display">
+              <i class="fas fa-user-circle"></i>
+              <span id="auth-text">Perfil</span>
+          </div>
+          <div class="auth-dropdown" id="auth-dropdown">
+              <a href="login" id="login-link">
+              <i class="fas fa-sign-in-alt"></i> Login
+              </a>
+              <a href="#" id="logout-link" style="display: none;">
+              <i class="fas fa-sign-out-alt"></i> Sair
+              </a>
+          </div>
+        </div>
+
+        <div class="dropdown-menu-toggle" id="dropdownMenuToggle">
+          <i class="fas fa-bars"></i>
+        </div>
+        <div class="dropdown-nav" id="dropdownNav">
+          <a href="#features-buttons"><i class="fas fa-star"></i> Funcionalidades</a>
+          <a href="equipe"><i class="fas fa-users"></i> Equipe</a>
+          <a href="equipe#aboutProject"><i class="fas fa-info-circle"></i> Sobre Nós</a>
+          <a href="#contact"><i class="fas fa-envelope"></i> Contato</a>
+          <hr class="dropdown-divider">
+          <div id="mobile-auth-section">
+              <a href="login" id="mobile-login-link">
+                  <i class="fas fa-sign-in-alt"></i> 
+                  <span id="mobile-auth-text">Login</span>
+              </a>
+              <a href="#" id="mobile-logout-link" style="display: none;">
+                  <i class="fas fa-sign-out-alt"></i> Sair
+              </a>
+          </div>
+        </div>
+
+        <nav class="main-nav">
+          <ul>
+              <li><a href="#features-buttons">Funcionalidades</a></li>
+              <li><a href="equipe">Equipe</a></li>
+              <li><a href="equipe#aboutProject">Sobre Nós</a></li>
+              <li><a href="#contact">Contato</a></li>
+          </ul>
+        </nav>
+    </div>
+  </header>
+
     <div class="admin-layout">
         <nav class="sidebar">
             <div class="sidebar-header">
@@ -214,6 +266,32 @@
             </div>
         </main>
     </div>
+
+    <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <h3 class="brand-name">GYM RATS</h3>
+        <p class="brand-tagline">Sua jornada fitness começa aqui.</p>
+        <div class="produced-by">
+            <p>Produzido por</p>
+            <a href="https://equipeaura.github.io/Aura/" target="_blank"><img src="assets/imagens/aura.png" alt="Logo Equipe Aura" class="aura-logo"></a>
+        </div>
+        </div>
+        <div class="footer-links-single"> <div class="link-group">
+                <h4>Navegação</h4>
+                <ul>
+                    <li><a href="#inicio">Início</a></li>
+                    <li><a href="#quem-somos">Quem Somos</a></li>
+                    <li><a href="#projetos">Nosso Projeto</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom-bar">
+        <p>© 2025 Projeto Gym Rats. Todos os direitos reservados.</p>
+    </div>
+</footer>
 
     <div id="viewPlanModal" class="modal">
         <div class="modal-content">
