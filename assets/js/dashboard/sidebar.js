@@ -1,61 +1,116 @@
-/**
- * sidebar.js
- * * Gerencia o comportamento da sidebar, como o toggle em telas móveis.
- */
-import { authService } from '../auth.js';
+// assets/js/dashboard/sidebar.js
 
-document.addEventListener('DOMContentLoaded', async () => {
+import { api } from '../apiService.js'; // Importa o serviço de API
+
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Lógica da Sidebar (Toggle) ---
     const sidebar = document.getElementById('sidebar');
-    const toggleMobileBtn = document.getElementById('sidebar-toggle-mobile');
-    const toggleDesktopBtn = document.getElementById('sidebar-toggle-desktop');
+    const toggleDesktop = document.getElementById('sidebar-toggle-desktop');
+    const toggleMobile = document.getElementById('sidebar-toggle-mobile');
 
-    if (!sidebar || !toggleMobileBtn || !toggleDesktopBtn) {
-        console.error('Elementos da sidebar não encontrados.');
-        return;
-    }
+    toggleDesktop?.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+    });
+    toggleMobile?.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+    });
 
-    const isAdmin = await authService.isAdmin();
-
-    if (isAdmin) {
-        const navList = document.querySelector('.sidebar-nav ul');
-        if (navList) {
-            const adminLink = document.createElement('li');
-            adminLink.innerHTML = `<a href="admin.html" class="nav-link"><i class="fa-solid fa-user-shield"></i> <span>Admin</span></a>`;
-            navList.appendChild(adminLink); // Adiciona o link ao final do menu
-        }
-    }
-
-    // Função para abrir/fechar a sidebar
-    const toggleSidebar = () => {
-        sidebar.classList.toggle('open');
-        // Adicionar um overlay no main content quando a sidebar estiver aberta em mobile
-    };
-
-    // Event listeners para os botões de toggle
-    toggleMobileBtn.addEventListener('click', toggleSidebar);
-    toggleDesktopBtn.addEventListener('click', toggleSidebar);
-
-    // Fechar a sidebar se clicar fora dela em modo mobile
-    document.addEventListener('click', (event) => {
-        const isMobile = window.innerWidth <= 768;
-        if (isMobile && sidebar.classList.contains('open')) {
-            // Se o clique não foi na sidebar nem no botão que a abre
-            if (!sidebar.contains(event.target) && !toggleDesktopBtn.contains(event.target)) {
-                sidebar.classList.remove('open');
-            }
+    document.querySelector('.main-header .sidebar-toggle-desktop')?.addEventListener('click', (e) => {
+        // Para telas menores, onde o botão do header abre a sidebar
+        if (window.innerWidth < 992) {
+            sidebar.classList.add('open');
         }
     });
 
-    // Gerenciar link ativo
-    const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
-    const currentPath = window.location.pathname.split('/').pop() || 'home.html';
+    // --- Lógica do Dropdown de Notificação ---
+    const notificationBtn = document.getElementById('notification-btn');
+    const notificationDropdown = document.getElementById('notification-dropdown');
+    const notificationList = document.getElementById('notification-list');
+    const notificationBadge = document.querySelector('.notification-badge');
+    const markAllReadLink = document.getElementById('mark-all-read-link');
 
-    navLinks.forEach(link => {
-        const linkPath = link.getAttribute('href').split('/').pop();
-        if (linkPath === currentPath) {
-            link.classList.add('active');
+    // Função para buscar e renderizar notificações
+    const fetchAndRenderNotifications = async () => {
+        try {
+            const notifications = await api.getNotifications();
+            renderNotifications(notifications);
+        } catch (error) {
+            console.error('Erro ao buscar notificações:', error);
+            if (notificationList) {
+                notificationList.innerHTML = '<p class="error-msg" style="padding: 1rem; text-align: center;">Erro ao carregar.</p>';
+            }
+        }
+    };
+
+    // Função para renderizar as notificações no dropdown
+    const renderNotifications = (notifications) => {
+        if (!notificationList) return;
+
+        if (notifications.length === 0) {
+            notificationList.innerHTML = '<p class="info-msg" style="padding: 1rem; text-align: center;">Nenhuma notificação nova.</p>';
+            notificationBadge.style.display = 'none';
+            return;
+        }
+
+        notificationList.innerHTML = notifications.map(createNotificationHtml).join('');
+        const unreadCount = notifications.filter(n => !n.read).length;
+        
+        if (unreadCount > 0) {
+            notificationBadge.textContent = unreadCount;
+            notificationBadge.style.display = 'flex';
         } else {
-            link.classList.remove('active');
+            notificationBadge.style.display = 'none';
+        }
+    };
+
+    // Função para criar o HTML de um item de notificação
+    const createNotificationHtml = (notification) => {
+        const isUnreadClass = notification.read ? '' : 'unread';
+        let message = '';
+        let commentSnippet = '';
+
+        if (notification.type === 'like') {
+            message = `<strong>${notification.sender.username}</strong> curtiu seu post.`;
+        } else if (notification.type === 'comment') {
+            message = `<strong>${notification.sender.username}</strong> comentou no seu post:`;
+            commentSnippet = `<span class="comment-snippet">"${notification.commentText}..."</span>`;
+        }
+
+        return `
+            <div class="notification-item ${isUnreadClass}" data-post-id="${notification.post}">
+                <img src="${notification.sender.profilePicture}" alt="Avatar" class="notification-avatar">
+                <div class="notification-text">
+                    <p>${message}</p>
+                    ${commentSnippet}
+                </div>
+            </div>
+        `;
+    };
+
+    // Abre/Fecha o dropdown
+    notificationBtn?.addEventListener('click', (e) => {
+        e.stopPropagation(); // Impede que o clique feche o dropdown imediatamente
+        const isVisible = notificationDropdown.classList.toggle('show');
+        if (isVisible) {
+            fetchAndRenderNotifications();
+        }
+    });
+
+    // Marca todas como lidas
+    markAllReadLink?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+            await api.markAllNotificationsAsRead();
+            fetchAndRenderNotifications(); // Atualiza a lista
+        } catch (error) {
+            console.error('Erro ao marcar notificações como lidas:', error);
+        }
+    });
+    
+    // Fecha o dropdown se clicar fora
+    window.addEventListener('click', (e) => {
+        if (notificationDropdown && !notificationDropdown.contains(e.target) && !notificationBtn.contains(e.target)) {
+            notificationDropdown.classList.remove('show');
         }
     });
 });

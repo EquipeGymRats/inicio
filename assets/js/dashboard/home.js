@@ -19,29 +19,18 @@ let isApiUnstable = false;
 document.addEventListener('DOMContentLoaded', () => {
     loadAllData();
     setupEventListeners();
-    startApiStatusMonitoring();
+    checkApiStatus();
 });
 
 /**
  * Inicia o monitoramento do status da API
  */
-function startApiStatusMonitoring() {
-    // Verifica o status da API a cada 30 segundos
-    apiStatusCheckInterval = setInterval(checkApiStatus, 30000);
-    
-    // Primeira verificação imediata
-    checkApiStatus();
-}
-
 /**
  * Verifica se a API está funcionando corretamente
  */
 async function checkApiStatus() {
     try {
-        // Tenta fazer uma requisição simples para verificar se a API está online
         await api.ping();
-        
-        // Se chegou até aqui, a API está funcionando
         if (isApiUnstable) {
             hideApiUnstableWarning();
         }
@@ -58,14 +47,9 @@ async function checkApiStatus() {
  */
 function showApiUnstableWarning() {
     isApiUnstable = true;
-    
-    // Remove aviso existente se houver
     const existingWarning = document.getElementById('api-unstable-warning');
-    if (existingWarning) {
-        existingWarning.remove();
-    }
+    if (existingWarning) return;
     
-    // Cria o aviso
     const warning = document.createElement('div');
     warning.id = 'api-unstable-warning';
     warning.className = 'api-unstable-warning';
@@ -78,8 +62,6 @@ function showApiUnstableWarning() {
             </button>
         </div>
     `;
-    
-    // Adiciona o aviso no topo da página
     document.body.insertBefore(warning, document.body.firstChild);
 }
 
@@ -101,15 +83,13 @@ function hideApiUnstableWarning() {
 async function loadAllData() {
     try {
         currentUserIsAdmin = await authService.isAdmin();
-        
         loadUserProfile();
         loadTodayWorkout();
         loadTodayNutrition();
         loadPosts(1);
-        checkUrlForProfile(); // Verifica se um perfil deve ser aberto via URL
+        checkUrlForProfile();
     } catch (error) {
         console.error('Erro ao carregar dados iniciais:', error);
-        // Se falhar no carregamento inicial, mostra o aviso de instabilidade
         showApiUnstableWarning();
     }
 }
@@ -125,13 +105,21 @@ function setupEventListeners() {
     document.getElementById('view-diet-btn')?.addEventListener('click', () => redirectToPage('nutrition-plan.html'));
     document.getElementById('view-training-btn')?.addEventListener('click', () => redirectToPage('my-training.html'));
     document.getElementById('post-image')?.addEventListener('change', handleFileSelection);
-    window.addEventListener('popstate', handleBrowserNavigation);
-    
-    // Limpa o intervalo de monitoramento quando a página for fechada
-    window.addEventListener('beforeunload', () => {
-        if (apiStatusCheckInterval) {
-            clearInterval(apiStatusCheckInterval);
+
+    // === MELHORIA: Event Listeners para Contadores de Caracteres ===
+    const postTextarea = document.getElementById('post-textarea');
+    if (postTextarea) {
+        postTextarea.addEventListener('input', handleCharCounter);
+    }
+    document.getElementById('feed-posts')?.addEventListener('input', (event) => {
+        if (event.target.matches('.comment-input')) {
+            handleCharCounter(event);
         }
+    });
+
+    window.addEventListener('popstate', handleBrowserNavigation);
+    window.addEventListener('beforeunload', () => {
+        if (apiStatusCheckInterval) clearInterval(apiStatusCheckInterval);
     });
 }
 
@@ -144,7 +132,6 @@ async function loadUserProfile() {
     } catch (error) {
         console.error('Erro ao buscar perfil do usuário:', error);
         document.getElementById('profile-card').innerHTML = '<p class="error-msg">Não foi possível carregar o perfil.</p>';
-        // Se for erro de conectividade, mostra o aviso de instabilidade
         if (error.message.includes('API não está acessível') || error.message.includes('fetch')) {
             showApiUnstableWarning();
         }
@@ -155,39 +142,18 @@ async function loadTodayWorkout() {
     const workoutContent = document.getElementById('workout-content');
     const workoutActions = document.querySelector('#workout-day .card-actions');
     try {
-        // =======================================================
-        // INÍCIO DA CORREÇÃO
-        // =======================================================
-        // 1. Recebe a resposta completa da API.
         const response = await api.getTodayWorkout();
-
-        // 2. Verifica se é um dia de descanso ou um dia de treino.
         if (response.isRestDay) {
-            // Se for descanso, a estrutura da resposta já é a esperada.
             renderTodayWorkout(response);
         } else {
-            // Se for treino, extrai o objeto 'workout' aninhado.
-            currentWorkout = response.workout; // Atualiza o estado global com os dados corretos.
-            // Passa apenas a parte que contém os exercícios para a função de renderização.
+            currentWorkout = response.workout;
             renderTodayWorkout(response.workout);
         }
-        // =======================================================
-        // FIM DA CORREÇÃO
-        // =======================================================
     } catch (error) {
         console.error('Erro ao buscar treino do dia:', error);
-        if(workoutContent) workoutContent.innerHTML = `
-            <div class="empty-state-container">
-                <i class="fas fa-dumbbell empty-state-icon"></i>
-                <h5 class="empty-state-title">Comece a Treinar</h5>
-                <p class="empty-state-text">Nenhum plano de treino encontrado. Crie um para ver seu resumo diário aqui!</p>
-            </div>
-        `; 
+        if(workoutContent) workoutContent.innerHTML = `<div class="empty-state-container"><i class="fas fa-dumbbell empty-state-icon"></i><h5 class="empty-state-title">Comece a Treinar</h5><p class="empty-state-text">Nenhum plano de treino encontrado. Crie um para ver seu resumo diário aqui!</p></div>`; 
         if (workoutActions) workoutActions.style.display = 'none';
-        
-        if (error.message.includes('API não está acessível') || error.message.includes('fetch')) {
-            showApiUnstableWarning();
-        }
+        if (error.message.includes('API não está acessível') || error.message.includes('fetch')) showApiUnstableWarning();
     }
 }
 
@@ -198,33 +164,15 @@ async function loadTodayNutrition() {
         const nutritionPlan = await api.getNutritionPlan();
         renderTodayNutrition(nutritionPlan);
     } catch (error) {
-        if(nutritionContent) nutritionContent.innerHTML = nutritionContent.innerHTML = `
-            <div class="empty-state-container">
-                <i class="fas fa-utensils empty-state-icon"></i>
-                <h5 class="empty-state-title">Defina sua Dieta</h5>
-                <p class="empty-state-text">Nenhum plano alimentar encontrado. Gere o seu para ver o resumo das refeições do dia.</p>
-            </div>
-        `;
+        if(nutritionContent) nutritionContent.innerHTML = `<div class="empty-state-container"><i class="fas fa-utensils empty-state-icon"></i><h5 class="empty-state-title">Defina sua Dieta</h5><p class="empty-state-text">Nenhum plano alimentar encontrado. Gere o seu para ver o resumo das refeições do dia.</p></div>`;
         if (nutritionActions) nutritionActions.style.display = 'none';
-        
-        // Se for erro de conectividade, mostra o aviso de instabilidade
-        if (error.message.includes('API não está acessível') || error.message.includes('fetch')) {
-            showApiUnstableWarning();
-        }
+        if (error.message.includes('API não está acessível') || error.message.includes('fetch')) showApiUnstableWarning();
     }
 }
 
-/**
- * Carrega os posts de uma página específica.
- * [VERSÃO FINAL COM TRATAMENTO DE ERRO APRIMORADO]
- */
 async function loadPosts(page = 1) {
     const feedContainer = document.getElementById('feed-posts');
-    if (!feedContainer) {
-        console.warn('O elemento com id="feed-posts" não foi encontrado na página. O feed não será carregado.');
-        return;
-    }
-
+    if (!feedContainer) return;
     if (isLoadingFeed) return;
     isLoadingFeed = true;
     
@@ -234,47 +182,19 @@ async function loadPosts(page = 1) {
     try {
         const response = await api.getFeedPosts(page);
         renderFeed(response.posts, page > 1);
-        
         currentPage = response.currentPage;
         totalPages = response.totalPages;
-
-        if (currentPage >= totalPages && trigger) {
-            trigger.style.display = 'none';
-        }
+        if (currentPage >= totalPages && trigger) trigger.style.display = 'none';
     } catch (error) {
         console.error('Erro ao buscar feed:', error);
         if (page === 1) {
-            // =======================================================
-            // INÍCIO DA MUDANÇA: Bloco de erro aprimorado
-            // =======================================================
-            feedContainer.innerHTML = `
-                <div class="empty-state-container" id="feed-error-state">
-                    <i class="fas fa-exclamation-triangle empty-state-icon" style="color: #E74C3C;"></i>
-                    <h5 class="empty-state-title">Ocorreu um Erro</h5>
-                    <p class="empty-state-text">Não conseguimos carregar seu feed. Pode ser um problema de conexão.</p>
-                    <button class="btn btn-secondary" id="retry-feed-button">Tentar Novamente</button>
-                </div>
-            `;
-            // Adiciona a funcionalidade de "Tentar Novamente" ao botão
-            const retryButton = document.getElementById('retry-feed-button');
-            if(retryButton){
-                retryButton.addEventListener('click', () => loadPosts(1));
-            }
-            // =======================================================
-            // FIM DA MUDANÇA
-            // =======================================================
+            feedContainer.innerHTML = `<div class="empty-state-container" id="feed-error-state"><i class="fas fa-exclamation-triangle empty-state-icon" style="color: #E74C3C;"></i><h5 class="empty-state-title">Ocorreu um Erro</h5><p class="empty-state-text">Não conseguimos carregar seu feed. Pode ser um problema de conexão.</p><button class="btn btn-secondary" id="retry-feed-button">Tentar Novamente</button></div>`;
+            document.getElementById('retry-feed-button')?.addEventListener('click', () => location.reload());
         }
-        
-        // Se for erro de conectividade, mostra o aviso de instabilidade
-        if (error.message.includes('API não está acessível') || error.message.includes('fetch')) {
-            showApiUnstableWarning();
-        }
+        if (error.message.includes('API não está acessível') || error.message.includes('fetch')) showApiUnstableWarning();
     } finally {
         isLoadingFeed = false;
-        // Esconde o gatilho se o carregamento falhar também
-        if (trigger && currentPage >= totalPages) {
-           trigger.style.display = 'none';
-        }
+        if (trigger && currentPage >= totalPages) trigger.style.display = 'none';
     }
 }
 
@@ -295,7 +215,7 @@ function renderProfileCard(user) {
     const xpPercentage = Math.min((xpGainedInThisLevel / totalXpNeededForNext) * 100, 100);
 
     profileCard.innerHTML = `
-        <img src="${profilePicture}" alt="Foto do Perfil" class="profile-card-avatar">
+        <img src="${profilePicture || 'assets/imagens/default-avatar.png'}" alt="Foto do Perfil" class="profile-card-avatar">
         <div class="profile-card-info">
             <div class="profile-card-header">
                 <div class="author-name-container">
@@ -370,24 +290,25 @@ function renderTodayNutrition(nutritionPlan) {
 
 function renderFeed(posts, append = false) {
     const feedContainer = document.getElementById('feed-posts');
-    // Verificação de segurança
     if (!feedContainer) return;
-    
-    if (!append) {
-        feedContainer.innerHTML = '';
-    }
-
+    if (!append) feedContainer.innerHTML = '';
     if (posts.length === 0 && !append) {
         feedContainer.innerHTML = '<p class="info-msg">Ainda não há posts. Seja o primeiro!</p>';
         return;
     }
-
     const postsHtml = posts.map(createPostHtml).join('');
     feedContainer.insertAdjacentHTML('beforeend', postsHtml);
 }
+
 function createPostHtml(post) {
-    const postDate = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(post.createdAt));
-    const borderColor = post.user?.levelInfo?.currentLevel?.borderColor || 'transparent';
+    if (!post.user) {
+        console.warn(`Post com ID ${post._id} não possui um usuário associado.`, post);
+        return '';
+    }
+
+    const isLikedClass = post.isLiked ? 'liked' : '';
+    const heartIconClass = post.isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+    const roleTagHtml = createUserRoleTag(post.user);
     const optionsMenuHtml = currentUserIsAdmin ? `
         <div class="post-options">
             <button class="post-options-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
@@ -398,20 +319,43 @@ function createPostHtml(post) {
         <div class="post" data-post-id="${post._id}">
             <div class="post-header">
                 <div class="post-author-details">
-                    <img src="${post.user.profilePicture}" alt="Avatar" class="post-avatar" style="border-color: ${borderColor}; box-shadow: 0 0 7px ${borderColor}80;">
-                    <div class="post-author-info">
-                        <div class="author-name-container">
-                            <div class="author-name">${post.user.username}</div>
-                            ${createUserRoleTag(post.user)}
-                        </div>
-                        <div class="post-date">${postDate}</div>
-                    </div>
+                     <img src="${post.user.profilePicture || 'assets/imagens/default-avatar.png'}" alt="Avatar" class="post-avatar">
+                     <div class="post-author-info">
+                         <div class="author-name-container">
+                             <div class="author-name">${post.user.username}</div>
+                             ${roleTagHtml}
+                         </div>
+                         <div class="post-date">${new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(post.createdAt))}</div>
+                     </div>
                 </div>
-                ${optionsMenuHtml}
+                ${currentUserIsAdmin ? `
+                    <div class="post-options">
+                        <button class="post-options-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                        <div class="post-options-menu"><a href="#" class="delete-post-action">Deletar Post</a></div>
+                    </div>` : ''}
             </div>
             <div class="post-content">
                 <p>${post.text.replace(/\n/g, '<br>')}</p>
                 ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Imagem do post" class="post-image">` : ''}
+            </div>
+            <div class="post-actions">
+                <button class="action-btn like-btn ${post.isLiked ? 'liked' : ''}">
+                    <i class="${post.isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}"></i>
+                    <span class="like-count">${post.likeCount}</span>
+                </button>
+                <button class="action-btn comment-btn">
+                    <i class="fa-regular fa-comment"></i>
+                    <span class="comment-count">${post.commentCount}</span>
+                </button>
+            </div>
+            <div class="comment-section">
+                <div class="comment-input-area">
+                    <div class="comment-input-wrapper">
+                        <input type="text" class="comment-input" placeholder="Adicione um comentário..." maxlength="300">
+                        <span class="char-counter">300</span>
+                    </div>
+                    <button class="comment-submit-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
             </div>
         </div>`;
 }
@@ -423,7 +367,31 @@ function createUserRoleTag(user) {
     return '';
 }
 
+function createCommentHtml(comment) {
+    return `
+        <div class="comment" data-comment-id="${comment._id}">
+            <img src="${comment.user.profilePicture || 'assets/imagens/default-avatar.png'}" alt="Avatar" class="comment-avatar">
+            <div class="comment-content">
+                <strong class="comment-author">${comment.user.username}</strong>
+                <p class="comment-text">${comment.text}</p>
+            </div>
+        </div>`;
+}
+
+function createCommentSkeletonHtml() {
+    return Array(2).fill('').map(() => `
+        <div class="comment-skeleton">
+            <div class="skeleton skeleton-avatar" style="width: 32px; height: 32px; flex-shrink: 0;"></div>
+            <div style="flex-grow: 1;">
+                <div class="skeleton skeleton-text" style="width: 30%; height: 12px; margin-bottom: 6px;"></div>
+                <div class="skeleton skeleton-text" style="width: 80%; height: 14px;"></div>
+            </div>
+        </div>
+    `).join('');
+}
+
 // --- HANDLERS DE EVENTOS ---
+// (O resto das funções de handler permanecem as mesmas)
 
 async function handleWorkoutCompletion() {
     if (!currentWorkout?.dayName) return;
@@ -465,11 +433,17 @@ async function handlePostCreation(event) {
 
         submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Postando...';
         await api.createPost(formData);
-        // A API de criar post pode não retornar os dados completos do user, então buscamos de novo
-        await loadPosts(1); 
+        await loadPosts(1);
         
         form.reset();
         document.getElementById('file-name-display').innerHTML = '';
+        
+        // === MELHORIA: Reseta o contador do post ===
+        const postCounter = document.getElementById('post-char-counter');
+        if (postCounter) {
+            postCounter.textContent = '300';
+            postCounter.classList.remove('visible', 'warning', 'error');
+        }
     } catch (error) {
         console.log(error.message || 'Falha ao criar o post.');
     } finally {
@@ -489,33 +463,123 @@ function handleFeedScroll(event) {
 function handleFileSelection(event) {
     const fileInput = event.target;
     const fileNameDisplay = document.getElementById('file-name-display');
-    if(!fileNameDisplay) return;
-    fileNameDisplay.innerHTML = '';
+    if (!fileNameDisplay) return;
+
+    fileNameDisplay.innerHTML = ''; // Limpa o conteúdo
+    fileNameDisplay.style.display = 'none'; // Garante que esteja oculto
+
     if (fileInput.files.length > 0) {
+        fileNameDisplay.style.display = 'inline-flex'; // Mostra o elemento
         const fileName = fileInput.files[0].name;
-        fileNameDisplay.innerHTML = `<i class="fa-solid fa-paperclip"></i> <span class="file-name-text">${fileName}</span>`;
+        
+        // Adiciona o ícone e o nome do arquivo
+        const textSpan = document.createElement('span');
+        textSpan.className = 'file-name-text';
+        textSpan.textContent = fileName;
+        
+        const icon = document.createElement('i');
+        icon.className = 'fa-solid fa-paperclip';
+
+        fileNameDisplay.appendChild(icon);
+        fileNameDisplay.appendChild(textSpan);
+
+        // Cria e adiciona o botão de remover
         const removeBtn = document.createElement('button');
         removeBtn.className = 'remove-file-btn';
         removeBtn.type = 'button';
         removeBtn.innerHTML = '&times;';
         removeBtn.onclick = () => {
-            fileInput.value = '';
-            fileNameDisplay.innerHTML = '';
+            fileInput.value = ''; // Limpa o input
+            fileNameDisplay.innerHTML = ''; // Limpa o display
+            fileNameDisplay.style.display = 'none'; // Oculta o display
         };
         fileNameDisplay.appendChild(removeBtn);
     }
 }
 
+// Função para tratar todos os cliques no feed
 function handleFeedClick(event) {
+    const likeBtn = event.target.closest('.like-btn');
+    const commentBtn = event.target.closest('.comment-btn');
+    const submitCommentBtn = event.target.closest('.comment-submit-btn');
     const authorDetails = event.target.closest('.post-author-details');
     const optionsBtn = event.target.closest('.post-options-btn');
 
-    if (authorDetails && !optionsBtn) {
+    if (likeBtn) {
+        const postElement = likeBtn.closest('.post');
+        handleLikePost(postElement.dataset.postId, likeBtn);
+    } else if (commentBtn) {
+        const postElement = commentBtn.closest('.post');
+        const commentSection = postElement.querySelector('.comment-section');
+        const isVisible = commentSection.style.display === 'block';
+        commentSection.style.display = isVisible ? 'none' : 'block';
+        if (!isVisible && !commentSection.dataset.loaded) {
+            loadComments(postElement.dataset.postId, commentSection);
+        }
+    } else if (submitCommentBtn) {
+        const postElement = submitCommentBtn.closest('.post');
+        const input = postElement.querySelector('.comment-input');
+        if (input.value.trim()) {
+            handleAddComment(postElement.dataset.postId, input.value, postElement);
+            input.value = '';
+        }
+    } else if (authorDetails && !optionsBtn) {
         event.preventDefault();
         const username = authorDetails.querySelector('.author-name').textContent;
         openProfileModal(username);
     }
     handleFeedActions(event);
+}
+
+// Funções assíncronas para interagir com a API
+async function handleLikePost(postId, buttonElement) {
+    try {
+        const response = await api.likePost(postId);
+        buttonElement.classList.toggle('liked', response.isLiked);
+        buttonElement.querySelector('i').className = response.isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+        buttonElement.querySelector('.like-count').textContent = response.likeCount;
+    } catch (error) {
+        console.error("Erro ao curtir:", error);
+    }
+}
+
+async function handleAddComment(postId, text, postElement) {
+    try {
+        const newComment = await api.addComment(postId, text);
+        const listContainer = postElement.querySelector('.comment-list');
+        listContainer.insertAdjacentHTML('beforeend', createCommentHtml(newComment));
+        
+        // === MELHORIA: Reseta o contador do comentário ===
+        const commentCounter = postElement.querySelector('.comment-input-wrapper .char-counter');
+        if (commentCounter) {
+            commentCounter.textContent = '300';
+            commentCounter.classList.remove('visible', 'warning', 'error');
+        }
+        
+        const countSpan = postElement.querySelector('.comment-count');
+        countSpan.textContent = parseInt(countSpan.textContent, 10) + 1;
+    } catch (error) {
+        console.error("Erro ao comentar:", error);
+    }
+}
+
+async function loadComments(postId, commentSectionElement) {
+    let listContainer = commentSectionElement.querySelector('.comment-list');
+    if (!listContainer) {
+        listContainer = document.createElement('div');
+        listContainer.className = 'comment-list';
+        commentSectionElement.prepend(listContainer);
+    }
+
+    listContainer.innerHTML = createCommentSkeletonHtml(); // Mostra o skeleton
+    commentSectionElement.dataset.loaded = "true";
+
+    try {
+        const comments = await api.getComments(postId);
+        listContainer.innerHTML = comments.length > 0 ? comments.map(createCommentHtml).join('') : '<p class="info-msg" style="text-align: center; padding: 1rem 0;">Seja o primeiro a comentar!</p>';
+    } catch (error) {
+        listContainer.innerHTML = '<p class="error-msg">Não foi possível carregar os comentários.</p>';
+    }
 }
 
 async function handleFeedActions(event) {
@@ -561,7 +625,7 @@ function redirectToPage(url) {
 }
 
 // ===================================================================
-// START: Bloco de Funcionalidade do Modal de Perfil
+// Bloco de Funcionalidade do Modal de Perfil
 // ===================================================================
 
 async function openProfileModal(username) {
@@ -613,7 +677,6 @@ function renderProfileModal(userProfile) {
         ? `<ul class="modal-content-list">${userProfile.nutrition.plan.map(day => `<li><strong>${day.dayName}:</strong> ${day.meals.length} refeições</li>`).join('')}</ul>`
         : '<p class="info-msg">O usuário não possui um plano de alimentação ativo.</p>';
 
-    // NOVO HTML: Estrutura de duas colunas
     const modalHtml = `
         <div class="profile-modal profile-modal-centered">
             <div class="modal-profile-info">
@@ -648,18 +711,15 @@ function renderProfileModal(userProfile) {
     if(!modalBackdrop) return;
     modalBackdrop.innerHTML = modalHtml;
     
-    // Avatar com borda colorida
     const avatar = modalBackdrop.querySelector('.profile-modal-avatar');
     if (avatar && levelInfo.borderColor) {
         avatar.style.borderColor = levelInfo.borderColor;
         avatar.style.boxShadow = `0 0 15px ${levelInfo.borderColor}aa`;
     }
 
-    // Fechar modal
     modalBackdrop.querySelector('.modal-close-btn')?.addEventListener('click', closeProfileModal);
     modalBackdrop.addEventListener('click', e => e.target.id === 'profile-modal-backdrop' && closeProfileModal());
 
-    // Troca de abas
     const tabBtns = modalBackdrop.querySelectorAll('.modal-tab-btn');
     const tabContents = modalBackdrop.querySelectorAll('.modal-content');
     tabBtns.forEach((btn, idx) => {
@@ -671,7 +731,6 @@ function renderProfileModal(userProfile) {
         });
     });
 
-    // Botão seguir
     const followBtn = modalBackdrop.querySelector('.follow-button');
     followBtn?.addEventListener('click', async () => {
         const userId = followBtn.dataset.userId;
@@ -691,7 +750,6 @@ function renderProfileModal(userProfile) {
         }
     });
 
-    // Lógica de "Ver mais" para conteúdos grandes
     modalBackdrop.querySelectorAll('.modal-content').forEach(content => {
         if (content.scrollHeight > 280) {
             content.classList.remove('expanded');
@@ -713,6 +771,37 @@ function checkUrlForProfile() {
         if (username) openProfileModal(username);
     }
 }
-// ===================================================================
-// END: Bloco de Funcionalidade do Modal de Perfil
-// ===================================================================
+
+/**
+ * === MELHORIA: Nova função para lidar com o contador de caracteres ===
+ * @param {Event} event O evento de input do textarea ou input.
+ */
+function handleCharCounter(event) {
+    const inputElement = event.target;
+    const maxLength = inputElement.maxLength;
+    const currentLength = inputElement.value.length;
+    const charsLeft = maxLength - currentLength;
+
+    // Encontra o contador associado
+    let counterElement;
+    if (inputElement.id === 'post-textarea') {
+        counterElement = document.getElementById('post-char-counter');
+    } else {
+        counterElement = inputElement.nextElementSibling; // Pega o span irmão
+    }
+
+    if (!counterElement) return;
+
+    // Atualiza o texto e a visibilidade
+    counterElement.textContent = charsLeft;
+    counterElement.classList.add('visible');
+
+    // Atualiza as classes de aviso
+    counterElement.classList.toggle('warning', charsLeft < 21 && charsLeft > 0);
+    counterElement.classList.toggle('error', charsLeft <= 0);
+
+    // Esconde o contador se o campo estiver vazio
+    if (currentLength === 0) {
+        counterElement.classList.remove('visible');
+    }
+}

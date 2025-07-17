@@ -1,8 +1,10 @@
-/* ===== Sidebar Styles ===== */
+/* ===== Sidebar Styles - Moderno ===== */
 
 .sidebar {
-    background-color: var(--color-dark-gray);
-    border-right: 1px solid var(--color-medium-gray);
+    background: rgba(18, 18, 18, 0.5); /* Fundo de Vidro */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-right: 1px solid var(--border-color-glass);
     width: 250px;
     position: fixed;
     top: 0;
@@ -24,6 +26,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color-glass);
 }
 
 .sidebar-logo {
@@ -48,21 +52,24 @@
     align-items: center;
     gap: 1rem;
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: 12px; /* Cantos mais suaves */
     margin-bottom: 0.5rem;
-    font-weight: 500;
+    font-weight: 600; /* Fonte mais forte */
     transition: var(--transition-smooth);
+    border: 1px solid transparent; /* Para manter o layout no hover */
 }
 
 .nav-link:hover {
-    background-color: var(--color-medium-gray);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-color-glass);
     color: var(--color-white);
 }
 
 .nav-link.active {
     background-color: var(--color-yellow);
     color: var(--color-black);
-    font-weight: 600;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(255, 215, 93, 0.2);
 }
 
 .nav-link i {
@@ -71,47 +78,289 @@
     text-align: center;
 }
 
+/* Badge de Notificação */
+.nav-link { position: relative; }
+.notification-badge {
+    position: absolute;
+    top: 8px; left: 28px;
+    background-color: var(--status-error);
+    color: white;
+    border-radius: 50%;
+    width: 18px; height: 18px;
+    font-size: 0.7rem; font-weight: bold;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--color-dark-gray);
+}
+
+/* Painel de Notificações */
+.notifications-panel {
+    position: fixed; top: 0; left: var(--sidebar-width);
+    width: 350px; height: 100vh;
+    background-color: var(--color-dark-gray);
+    border-right: 1px solid var(--color-medium-gray);
+    z-index: 999;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    display: flex; flex-direction: column;
+}
+.notifications-panel.open { transform: translateX(0); }
+.panel-header { padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-medium-gray); }
+.panel-header h3 { color: var(--color-yellow); }
+#close-notifications-panel { background: none; border: none; color: var(--color-light-gray); font-size: 1.5rem; cursor: pointer; }
+.panel-content { flex-grow: 1; overflow-y: auto; padding: 1rem; }
+.notification-item { display: flex; gap: 1rem; padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem; background-color: var(--color-medium-gray); cursor: pointer; }
+.notification-item.unread { background-color: var(--gymrats-highlight-yellow-light); border-left: 3px solid var(--color-yellow); }
+.notification-avatar { width: 40px; height: 40px; border-radius: 50%; }
+.notification-text { font-size: 0.9rem; }
+.notification-post-snippet { font-style: italic; color: var(--gymrats-text-secondary); border-left: 2px solid var(--gymrats-border); padding-left: 0.5rem; margin-top: 0.5rem; }
+.panel-footer { padding: 1rem; text-align: center; border-top: 1px solid var(--color-medium-gray); }
+#mark-all-read-link { color: var(--color-yellow); font-size: 0.9rem; }
+
+
+/* Ajustes no Footer da Sidebar */
 .sidebar-footer {
-    margin-top: auto;
+    margin-top: auto; /* Garante que o footer fique na base */
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color-glass);
+}
+
+.sidebar-footer-controls {
+    display: flex;
+    justify-content: space-between; /* Alinha o botão de notificação e o de sair */
+    align-items: center;
+}
+
+/* Container do Dropdown de Notificação */
+.notification-dropdown-container {
+    position: relative;
+}
+
+/* Botão de Notificação */
+.notification-button {
+    background: none;
+    border: none;
+    color: var(--color-light-gray);
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: relative;
+    
+    /* Adicionado para criar o formato de círculo */
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Transição suave para o background */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.notification-button:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Mesmo efeito dos nav-links */
+    color: var(--color-white); /* Destaca o ícone */
+}
+
+.notification-badge {
+    position: absolute;
+    top: 4px;   /* Ajuste para o novo tamanho do botão */
+    right: 4px; /* Ajuste para o novo tamanho do botão */
+    background-color: var(--status-error);
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-dark-gray);
+}
+
+/* Dropdown de Notificações - VERSÃO CORRIGIDA E COM GLASSMORPHISM */
+.notification-dropdown {
+    position: absolute;
+    bottom: 100%; /* Posiciona o dropdown acima do botão */
+    left: 0;
+    transform: none; /* Remove a centralização que causava o problema */
+    width: 350px;
+    max-height: 450px;
+    background: rgba(30, 30, 30, 0.6); /* Fundo semitransparente */
+    backdrop-filter: blur(12px); /* O desfoque principal */
+    -webkit-backdrop-filter: blur(12px); /* Suporte para Safari */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.notification-dropdown.show {
+    display: flex;
+}
+
+.dropdown-header,
+.dropdown-footer {
+    padding: 1rem 1.25rem;
+    background: rgba(0, 0, 0, 0.2); /* Um pouco mais escuro para diferenciar */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.dropdown-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-white);
+    font-weight: 500;
+}
+
+#mark-all-read-link {
+    color: var(--color-primary); /* Use uma cor primária/de destaque */
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+#mark-all-read-link:hover {
+    color: var(--color-primary-light);
+}
+
+.dropdown-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.notification-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.notification-item.unread {
+    background-color: rgba(255, 215, 93, 0.1);
+}
+
+.notification-avatar {
+    width: 48px; /* Avatar um pouco maior */
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid var(--border-color-glass); /* Adiciona uma pequena borda */
+}
+
+.notification-text {
+    flex-grow: 1;
+}
+
+.notification-text p {
+    margin: 0 0 0.2rem 0; /* Espaçamento entre as linhas de texto */
+    font-size: 0.9rem;
+    color: var(--color-light-gray);
+    line-height: 1.4;
+}
+
+.notification-text p strong {
+    color: var(--color-white);
+    font-weight: 600; /* Um pouco mais forte */
+}
+
+.notification-text .comment-snippet {
+    font-style: italic;
+    color: var(--color-gray); /* Tom de cinza mais claro para o snippet */
+    display: block;
+    margin-top: 0.4rem;
+    padding-left: 0.6rem;
+    border-left: 2px solid var(--border-color-glass);
+    font-size: 0.85rem;
+}
+
+.dropdown-footer {
+    border-top: 1px solid var(--border-color-glass);
+    justify-content: center; /* Centraliza o link "Marcar todas como lidas" */
+}
+
+/* Skeleton para Notificações */
+.notification-skeleton {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color-glass);
+}
+
+.notification-skeleton:last-child {
+    border-bottom: none;
+}
+
+.skeleton-avatar-small {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--color-medium-gray);
+    flex-shrink: 0;
+}
+
+.skeleton-text-group {
+    flex-grow: 1;
+}
+
+.skeleton-text {
+    height: 16px;
+    background-color: var(--color-medium-gray);
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+}
+
+.skeleton-text:last-child {
+    margin-bottom: 0;
 }
 
 .logout-button {
     background: none;
     color: var(--color-light-gray);
-    width: 100%;
     text-align: left;
     display: flex;
     align-items: center;
     gap: 1rem;
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 1rem;
+    font-weight: 600;
     transition: var(--transition-smooth);
 }
 
 .logout-button:hover {
-    background-color: var(--color-medium-gray);
-    color: var(--color-white);
+    background-color: rgba(255, 70, 70, 0.2);
+    color: #ff8a8a;
 }
 
 .sidebar-toggle-mobile {
-    display: none; /* Hidden by default, shown on mobile */
+    display: none;
     background: none;
     color: var(--color-light-gray);
     font-size: 1.5rem;
 }
 
-/* ===== Responsive Styles for Sidebar ===== */
 @media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-
-    .sidebar.open {
-        transform: translateX(0);
-    }
-    
-    .sidebar-toggle-mobile {
-        display: block;
-    }
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-toggle-mobile { display: block; }
 }

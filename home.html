@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <link rel="stylesheet" href="assets/style/dashboard/global.css">
     <link rel="stylesheet" href="assets/style/dashboard/sidebar.css">
     <link rel="stylesheet" href="assets/style/dashboard/home.css">
@@ -29,7 +30,7 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i> <span>Início</span></a></li>
+                    <li><a href="home.html" class="nav-link active"><i class="fa-solid fa-house"></i> <span>Início</span></a></li>
                     <li><a href="my-training.html" class="nav-link"><i class="fa-solid fa-person-running"></i> <span>Meu Treino</span></a></li>
                     <li><a href="nutrition-plan.html" class="nav-link"><i class="fa-solid fa-utensils"></i> <span>Alimentação</span></a></li>
                     <li><a href="reminders.html" class="nav-link"><i class="fa-solid fa-bell"></i> <span>Lembretes</span></a></li>
@@ -38,10 +39,43 @@
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <button class="logout-button" id="logout-btn">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Sair</span>
-                </button>
+                <div class="sidebar-footer-controls">
+                    <div class="notification-dropdown-container">
+                        <button class="notification-button" id="notification-btn">
+                            <i class="fa-solid fa-bell"></i>
+                            <span class="notification-badge" style="display: none;"></span>
+                        </button>
+                        <div class="notification-dropdown" id="notification-dropdown">
+                            <div class="dropdown-header">
+                                <h3>Notificações</h3>
+                            </div>
+                            <div class="dropdown-content" id="notification-list">
+                                <div class="notification-skeleton">
+                                    <div class="skeleton skeleton-avatar-small"></div>
+                                    <div class="skeleton-text-group">
+                                        <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                                        <div class="skeleton skeleton-text" style="width: 50%; height: 10px;"></div>
+                                    </div>
+                                </div>
+                                <div class="notification-skeleton">
+                                    <div class="skeleton skeleton-avatar-small"></div>
+                                    <div class="skeleton-text-group">
+                                        <div class="skeleton skeleton-text" style="width: 70%;"></div>
+                                        <div class="skeleton skeleton-text" style="width: 40%; height: 10px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="#" id="mark-all-read-link">Marcar todas como lidas</a>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <button class="logout-button" id="logout-btn">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Sair</span>
+                    </button>
+                </div>
             </div>
         </aside>
 
@@ -92,7 +126,10 @@
                     </div>
                     <div class="card-content">
                         <form class="post-form" id="post-form">
-                            <textarea name="text" placeholder="Compartilhe seu progresso..." required></textarea>
+                            <div class="textarea-wrapper">
+                                <textarea name="text" id="post-textarea" placeholder="Compartilhe seu progresso..." required maxlength="300"></textarea>
+                                <span class="char-counter" id="post-char-counter">300</span>
+                            </div>
                             <div class="form-actions">
                                 <div class="file-upload-container">
                                     <label for="post-image" class="file-upload-button">

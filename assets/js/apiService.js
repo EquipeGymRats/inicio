@@ -93,14 +93,22 @@ export const api = {
     getFeedPosts: (page = 1) => request(`/posts?page=${page}&limit=5`),
     createPost: (formData) => request('/posts', 'POST', formData, true),
     deletePost: (postId) => request(`/posts/${postId}`, 'DELETE'),
+    getUserProfileByUsername: (username) => request(`/user/${username}`),
+
+    likePost: (postId) => request(`/posts/${postId}/like`, 'POST'),
+    addComment: (postId, text) => request(`/posts/${postId}/comment`, 'POST', { text }),
+    getComments: (postId) => request(`/posts/${postId}/comments`),
+    getNotifications: () => request('/notifications'),
+    markAllNotificationsAsRead: () => request('/notifications/read-all', 'POST'),
 
     // --- Nutrição ---
     getNutritionPlan: () => request('/nutrition'),
-
+    
     // --- Lembretes ---
     getReminders: () => request('/reminders'),
     createReminder: (data) => request('/reminders', 'POST', data),
     updateReminder: (id, data) => request(`/reminders/${id}`, 'PUT', data),
     deleteReminder: (id) => request(`/reminders/${id}`, 'DELETE'),
     savePushSubscription: (subscription) => request('/push/subscribe', 'POST', { subscription }),
+
 };
